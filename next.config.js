@@ -2,14 +2,10 @@
 const nextConfig = {
   images: {
     remotePatterns: [
+      // Production media CDN
       {
         protocol: "https",
         hostname: "media.rcsb.in",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "cdn.sanity.io",
         pathname: "/**",
       },
       // Cloudflare R2 direct (dev before custom domain)
@@ -18,11 +14,19 @@ const nextConfig = {
         hostname: "*.r2.cloudflarestorage.com",
         pathname: "/**",
       },
+      // Unsplash placeholder images
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
+      },
+      // Mixkit video assets
+      {
+        protocol: "https",
+        hostname: "assets.mixkit.co",
+        pathname: "/**",
+      },
     ],
-  },
-  // Allow Sanity Studio to render in Next.js App Router
-  experimental: {
-    taint: true,
   },
 };
 

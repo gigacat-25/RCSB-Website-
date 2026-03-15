@@ -2,15 +2,17 @@ import { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { ClerkProvider } from "@clerk/nextjs";
+import Providers from "./providers";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | RCSB",
-    default: "Rotaract Club of Swarna Bengaluru",
+    template: "%s | Rotaract Swarna Bengaluru",
+    default: "Rotaract Club of Swarna Bengaluru — Together, Change is Possible!",
   },
   description:
-    "Rotaract Club of Swarna Bengaluru — Together, Change is Possible! A community of young professionals committed to service above self in Bengaluru.",
-  keywords: ["Rotaract", "Bengaluru", "RCSB", "Service", "Youth", "Community"],
+    "A community of young professionals committed to service above self. Grow your leadership and create impact with Rotaract Swarna Bengaluru.",
+  keywords: ["Rotaract", "Bengaluru", "RCSB", "Service", "Youth", "Community", "Rotary"],
   authors: [{ name: "RCSB" }],
   openGraph: {
     type: "website",
@@ -21,22 +23,22 @@ export const metadata: Metadata = {
   },
 };
 
-import Providers from "./providers";
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen flex flex-col bg-white">
-        <Providers>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </Providers>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className="min-h-screen flex flex-col font-sans bg-brand-light">
+          <Providers>
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </Providers>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

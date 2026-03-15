@@ -2,17 +2,81 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { useUser, useClerk } from "@clerk/nextjs";
+import { isAdmin } from "@/lib/admin";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/events", label: "Events" },
-  { href: "/gallery", label: "Gallery" },
   { href: "/projects", label: "Projects" },
-  { href: "/team", label: "Team" },
-  { href: "/blog", label: "Blog" },
-  { href: "/contact", label: "Contact" },
+  { href: "/team", label: "Leadership" },
+  { href: "/contact", label: "Contact Us" },
 ];
+
+function AuthSection({ mobile = false }: { mobile?: boolean }) {
+  const { isSignedIn, isLoaded, user } = useUser();
+  const { openSignIn, signOut, openUserProfile } = useClerk();
+  const userEmail = user?.primaryEmailAddress?.emailAddress;
+  const isUserAdmin = isAdmin(userEmail);
+
+  if (!isLoaded) return null;
+
+  if (isSignedIn) {
+    return mobile ? (
+      <div className="flex flex-col gap-2 w-full">
+        {isUserAdmin && (
+          <Link 
+            href="/admin" 
+            className="w-full text-center py-3 rounded-lg text-sm font-bold bg-brand-gold text-brand-blue hover:bg-white transition-colors border border-brand-gold"
+          >
+            Admin Dashboard
+          </Link>
+        )}
+        <button 
+          onClick={() => openUserProfile()}
+          className="w-full flex items-center justify-center gap-3 px-2 py-3 text-brand-blue font-semibold hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <img src={user?.imageUrl} alt="Profile" className="w-8 h-8 rounded-full" />
+          <span>Manage Account</span>
+        </button>
+      </div>
+    ) : (
+      <div className="flex items-center gap-6">
+        {isUserAdmin && (
+          <Link 
+            href="/admin" 
+            className="text-xs font-bold text-brand-gold uppercase tracking-widest hover:text-brand-azure transition-colors"
+          >
+            Dashboard
+          </Link>
+        )}
+        <div className="flex items-center gap-4">
+          <button onClick={() => openUserProfile()} className="hover:scale-105 transition-transform">
+            <img src={user?.imageUrl} alt="Profile" className="w-8 h-8 rounded-full border-2 border-brand-azure" />
+          </button>
+          <button 
+            onClick={() => signOut()} 
+            className="text-sm font-medium text-gray-500 hover:text-brand-cranberry transition-colors"
+          >
+            Sign Out
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <button 
+      onClick={() => openSignIn()}
+      className={`font-semibold rounded-full transition-colors ${
+        mobile 
+          ? "w-full py-3 text-brand-white bg-brand-blue hover:bg-brand-blue/90" 
+          : "px-6 py-2.5 text-sm text-brand-white bg-brand-blue hover:bg-brand-blue/90 shadow-md hover:shadow-lg"
+      }`}
+    >
+      Admin Login
+    </button>
+  );
+}
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -20,100 +84,96 @@ export default function Navbar() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
+    const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => { setOpen(false); }, [pathname]);
+  
+  // Don't show public navbar on admin routes
+  if (pathname?.startsWith("/admin")) return null;
 
   return (
-    <header className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-5xl transition-all duration-300">
-      <div className={`glass-panel px-6 py-3 flex items-center justify-between ${scrolled ? "bg-white/5" : "bg-transparent shadow-none"}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/80 backdrop-blur-md shadow-md py-3" : "bg-white/40 backdrop-blur-md py-5 border-b border-white/20"}`}>
+      <div className="container-custom flex items-center justify-between">
+        
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group relative z-10">
-          <div className="w-10 h-10 rounded-full bg-brand-blue flex items-center justify-center text-white font-heading font-bold text-sm shadow-[0_0_20px_rgba(0,61,165,0.5)]">
-            RC
-          </div>
-          <div className="hidden sm:block">
-            <p className="font-heading font-bold text-white text-sm leading-tight tracking-wide">RCSB</p>
-            <p className="font-heading font-semibold text-brand-gold text-xs leading-tight opacity-90">Swarna Bengaluru</p>
-          </div>
+        <Link href="/" className="flex items-center group">
+          <img 
+            src="/logo.png" 
+            alt="Rotaract Swarna Bengaluru Logo" 
+            className="h-24 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+          />
         </Link>
 
-        {/* Desktop Links */}
-        <nav className="hidden md:flex items-center gap-2">
-          {navLinks.map(({ href, label }) => {
-            const isActive = pathname === href;
-            return (
-              <div key={href} className="relative">
-                <Link
-                  href={href}
-                  className={`relative z-10 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                    isActive
-                      ? "text-white"
-                      : "text-gray-400 hover:text-white hover:bg-white/5"
-                  }`}
-                >
-                  {label}
-                </Link>
-                {isActive && (
-                  <motion.div
-                    layoutId="nav-pill"
-                    className="absolute inset-0 bg-white/10 rounded-full -z-10 border border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]"
-                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                  />
-                )}
-              </div>
-            );
-          })}
-        </nav>
-
-        {/* Mobile Hamburger */}
-        <button
-          onClick={() => setOpen(!open)}
-          className="md:hidden p-2 rounded-full text-gray-300 hover:text-white bg-white/5 border border-white/10 focus:outline-none relative z-10"
-          aria-label="Toggle menu"
-        >
-          <div className="w-5 flex flex-col gap-[5px]">
-            <span className={`block h-[2px] bg-current rounded-full transition-all duration-300 ${open ? "rotate-45 translate-y-[7px]" : ""}`} />
-            <span className={`block h-[2px] bg-current rounded-full transition-all duration-300 ${open ? "opacity-0" : ""}`} />
-            <span className={`block h-[2px] bg-current rounded-full transition-all duration-300 ${open ? "-rotate-45 -translate-y-[7px]" : ""}`} />
-          </div>
-        </button>
-      </div>
-
-      {/* Mobile Menu Dropdown */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 10, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="md:hidden absolute top-full left-0 right-0 glass-panel p-2 mt-2"
-          >
-            <nav className="flex flex-col gap-1 relative z-10">
-              {navLinks.map(({ href, label }) => {
-                const isActive = pathname === href;
-                return (
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-8">
+          <ul className="flex items-center gap-6">
+            {navLinks.map(({ href, label }) => {
+              const isActive = pathname === href;
+              return (
+                <li key={href}>
                   <Link
-                    key={href}
                     href={href}
-                    className={`block py-3 px-4 rounded-xl text-sm font-medium transition-all ${
-                      isActive
-                        ? "bg-white/10 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
-                        : "text-gray-400 hover:bg-white/5 hover:text-white"
+                    className={`text-sm font-semibold transition-colors ${
+                      isActive 
+                        ? "text-brand-azure" 
+                        : "text-brand-gray hover:text-brand-blue"
                     }`}
                   >
                     {label}
                   </Link>
-                );
-              })}
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                </li>
+              );
+            })}
+          </ul>
+          
+          <div className="pl-6 border-l border-gray-200">
+            <AuthSection />
+          </div>
+        </nav>
+
+        {/* Mobile Menu Toggle */}
+        <button
+          onClick={() => setOpen(!open)}
+          className="md:hidden p-2 text-brand-blue focus:outline-none"
+          aria-label="Toggle menu"
+        >
+          <div className="w-6 flex flex-col gap-[6px]">
+            <span className={`block h-[2px] bg-current rounded-full transition-transform duration-300 ${open ? "rotate-45 translate-y-[8px]" : ""}`} />
+            <span className={`block h-[2px] bg-current rounded-full transition-opacity duration-300 ${open ? "opacity-0" : ""}`} />
+            <span className={`block h-[2px] bg-current rounded-full transition-transform duration-300 ${open ? "-rotate-45 -translate-y-[8px]" : ""}`} />
+          </div>
+        </button>
+      </div>
+
+      {/* Mobile Navigation Dropdown */}
+      {open && (
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-xl border-t border-gray-100">
+          <nav className="container-custom py-4 flex flex-col gap-2">
+            {navLinks.map(({ href, label }) => {
+              const isActive = pathname === href;
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`block py-3 px-4 rounded-lg text-sm font-semibold transition-colors ${
+                    isActive
+                      ? "bg-brand-light text-brand-blue"
+                      : "text-brand-gray hover:bg-gray-50 hover:text-brand-blue"
+                  }`}
+                >
+                  {label}
+                </Link>
+              );
+            })}
+            <div className="mt-4 pt-4 border-t border-gray-100 px-4">
+              <AuthSection mobile />
+            </div>
+          </nav>
+        </div>
+      )}
     </header>
   );
 }

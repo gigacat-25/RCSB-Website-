@@ -1,0 +1,15 @@
+
+ ?????? wrangler 4.73.0
+?????????????????????????????????????????????????????????
+Total Upload: 5.25 KiB / gzip: 1.20 KiB
+Your Worker has access to the following bindings:
+Binding                                               Resource                  
+env.DB (rcsb-db)                                      D1 Database               
+env.MEDIA_BUCKET (rcsb-media)                         R2 Bucket                 
+env.WORKER_SECRET ("RCSB_Admin_Secure_Key_2026")      Environment Variable      
+env.R2_PUBLIC_URL ("https://media.rcsb.in")           Environment Variable      
+
+Uploaded rcsb-api-worker (5.01 sec)
+Deployed rcsb-api-worker triggers (1.69 sec)
+  https://rcsb-api-worker.impact1-iceas.workers.dev
+Current Version ID: 1200569b-5fc0-4f68-a0f9-d807b8e99ede

@@ -1,76 +1,81 @@
-import { Metadata } from "next";
-import { client } from "@/sanity/lib/client";
-import { allProjectsQuery } from "@/sanity/lib/queries";
-import SectionHeader from "@/components/ui/SectionHeader";
-import ProjectCard from "@/components/projects/ProjectCard";
+import Link from "next/link";
+import { apiFetch } from "@/lib/api";
 
-export const metadata: Metadata = {
-  title: "Projects",
-  description: "Service projects by RCSB — Project Sthree, ROSHANY, Vedtathva, and more.",
-};
-
-export const revalidate = 3600;
-
-const SEED_PROJECTS = [
-  {
-    _id: "sthree",
-    title: "Project Sthree",
-    slug: { current: "project-sthree" },
-    coverImage: null,
-    impactStats: [
-      { label: "Beneficiaries", value: "500+" },
-      { label: "Years Active", value: "3+" },
-    ],
-    description: [{ _type: "block", children: [{ _type: "span", text: "Empowering women through skill development, awareness programs, and community support across Bengaluru." }] }],
-  },
-  {
-    _id: "roshany",
-    title: "Project ROSHANY",
-    slug: { current: "project-roshany" },
-    coverImage: null,
-    impactStats: [
-      { label: "Children Reached", value: "300+" },
-      { label: "Sessions Held", value: "20+" },
-    ],
-    description: [{ _type: "block", children: [{ _type: "span", text: "Bringing quality education and opportunities to underprivileged children in Bengaluru." }] }],
-  },
-  {
-    _id: "vedtathva",
-    title: "Vedtathva",
-    slug: { current: "vedtathva" },
-    coverImage: null,
-    impactStats: [
-      { label: "Participants", value: "200+" },
-      { label: "Editions", value: "5+" },
-    ],
-    description: [{ _type: "block", children: [{ _type: "span", text: "A leadership and community development initiative that roots youth in values and practical service." }] }],
-  },
-];
+export const revalidate = 60; // Revalidate every minute
 
 export default async function ProjectsPage() {
-  const cmsProjects = await client.fetch(allProjectsQuery).catch(() => []);
-  const projects = cmsProjects.length > 0 ? cmsProjects : SEED_PROJECTS;
+  let projects = [];
+  try {
+    projects = await apiFetch("/api/projects");
+  } catch (error) {
+    console.error("Failed to fetch projects:", error);
+  }
 
   return (
-    <div className="pt-24 pb-20 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeader
-          title="Our Projects"
-          subtitle="Initiatives that create real, lasting impact in the communities we serve."
-        />
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project: Parameters<typeof ProjectCard>[0] & { _id: string }) => (
-            <ProjectCard
-              key={project._id}
-              title={project.title}
-              slug={project.slug?.current || ""}
-              description={project.description}
-              coverImage={project.coverImage}
-              impactStats={project.impactStats}
-            />
-          ))}
+    <div className="bg-brand-light min-h-screen">
+      {/* Header */}
+      <section className="bg-brand-blue py-20 text-white">
+        <div className="container-custom">
+          <h1 className="text-4xl md:text-5xl font-heading font-bold mb-4">Our Projects</h1>
+          <p className="text-blue-100 max-w-2xl text-lg">
+            Discover how we're making a difference. From local community service to global initiatives, our projects reflect our commitment to change.
+          </p>
         </div>
-      </div>
+      </section>
+
+      {/* Projects Grid */}
+      <section className="py-20">
+        <div className="container-custom">
+          <div className="flex flex-wrap gap-4 mb-12">
+            {["All", "Leadership", "Community Service", "Social Service", "Environment", "Education"].map((tag) => (
+              <button key={tag} className={`px-5 py-2 rounded-full text-sm font-semibold border ${tag === "All" ? "bg-brand-blue text-white border-brand-blue" : "bg-white text-brand-gray border-gray-200 hover:border-brand-blue"}`}>
+                {tag}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {projects.length === 0 ? (
+              <div className="col-span-full text-center py-20 text-gray-400 font-bold">
+                No projects found. Check back later for updates!
+              </div>
+            ) : (
+              projects.map((project: any, idx: number) => (
+                <div key={idx} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col group">
+                  <div className="relative h-56 overflow-hidden">
+                    <img 
+                      src={project.image_url || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80"} 
+                      alt={project.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute top-4 left-4 bg-brand-gold text-brand-blue text-[10px] font-bold uppercase px-3 py-1 rounded-full">
+                      {project.year}
+                    </div>
+                  </div>
+                  <div className="p-6 flex flex-col flex-1">
+                    <span className="text-brand-azure text-xs font-bold uppercase tracking-wider mb-2">{project.category}</span>
+                    <h3 className="text-xl font-heading font-bold text-brand-blue mb-3 group-hover:text-brand-azure transition-colors">
+                      {project.title}
+                    </h3>
+                    <p className="text-gray-500 text-sm mb-6 line-clamp-3">
+                      {project.description}
+                    </p>
+                    <div className="mt-auto pt-4 border-t border-gray-50">
+                      <Link 
+                        href={`/projects/${project.slug}`} 
+                        className="text-brand-blue font-bold text-sm flex items-center gap-2 group-hover:gap-3 transition-all"
+                      >
+                        Read Case Study <span>&rarr;</span>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
+

@@ -10,16 +10,13 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          blue: "#00897B",     // Peacock Teal (Replaces old 'blue')
-          gold: "#F9A826",     // Marigold / Saffron Gold
+          blue: "#0F3B82",      // Official Rotary Blue
+          gold: "#F7A81B",      // Official Rotary Gold
+          azure: "#01B4E7",     // Official Rotary Light Blue
+          cranberry: "#D91B5C", // Official Rotary Cranberry
+          gray: "#333333",      // Dark typography
+          light: "#F8F9FA",     // Light background
           white: "#FFFFFF",
-          grey: "#F5F5F5",
-          void: "#110515",     // Deep Plum Dark Mode
-          pink: "#E91E63",     // Rani Pink
-          glass: "rgba(255, 255, 255, 0.03)", 
-          "glass-hover": "rgba(255, 255, 255, 0.06)",
-          "glass-border": "rgba(255, 255, 255, 0.1)", 
-          "mid-grey": "#6B7280",
         },
       },
       fontFamily: {

@@ -1,68 +1,61 @@
-import { Metadata } from "next";
-import { client } from "@/sanity/lib/client";
-import { teamQuery } from "@/sanity/lib/queries";
-import SectionHeader from "@/components/ui/SectionHeader";
-import MemberCard from "@/components/team/MemberCard";
+import { apiFetch } from "@/lib/api";
 
-export const metadata: Metadata = {
-  title: "Our Team",
-  description: "Meet the board of the Rotaract Club of Swarna Bengaluru (2025–26).",
-};
-
-export const revalidate = 3600;
-
-const SEED_TEAM = [
-  { _id: "president", name: "Rtr Dr Harish", role: "President 2025–26", category: "board", photo: null, year: 2025 },
-  { _id: "sec", name: "Secretary", role: "Honorary Secretary", category: "board", photo: null, year: 2025 },
-  { _id: "treas", name: "Treasurer", role: "Honorary Treasurer", category: "board", photo: null, year: 2025 },
-  { _id: "saa", name: "Sergeant at Arms", role: "SAA", category: "board", photo: null, year: 2025 },
-  { _id: "dir1", name: "Community Service Director", role: "Director — Community Service", category: "board", photo: null, year: 2025 },
-  { _id: "dir2", name: "Club Service Director", role: "Director — Club Service", category: "board", photo: null, year: 2025 },
-];
-
-interface TeamMember { _id: string; name: string; role: string; photo?: string; year?: number; category?: string; }
+export const revalidate = 60;
 
 export default async function TeamPage() {
-  const cmsTeam = await client.fetch(teamQuery).catch(() => []);
-  const team: TeamMember[] = cmsTeam.length > 0 ? cmsTeam : SEED_TEAM;
-
-  const boardMembers = team.filter((m) => !m.category || m.category === "board");
-  const advisors = team.filter((m) => m.category === "advisor" || m.category === "mentor");
+  let teamMembers = [];
+  try {
+    teamMembers = await apiFetch("/api/team");
+  } catch (error) {
+    console.error("Failed to fetch team:", error);
+  }
 
   return (
-    <div className="pt-24 pb-20 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeader
-          title="Our Team"
-          subtitle="The dedicated board members who make RCSB's mission possible."
-        />
+    <div className="bg-white min-h-screen">
+      {/* Header */}
+      <section className="bg-brand-blue py-20 text-white">
+        <div className="container-custom">
+          <h1 className="text-4xl md:text-5xl font-heading font-bold mb-4">Our Leadership</h1>
+          <p className="text-blue-100 max-w-2xl text-lg">
+            The dedicated individuals behind our initiatives. Meet the board members of Rotaract Club of Swarna Bengaluru.
+          </p>
+        </div>
+      </section>
 
-        {boardMembers.length > 0 && (
-          <div className="mb-12">
-            <h2 className="font-heading font-semibold text-gray-600 text-sm uppercase tracking-widest mb-6">
-              Board 2025–26
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-              {boardMembers.map((member) => (
-                <MemberCard key={member._id} name={member.name} role={member.role} photo={member.photo} category={member.category} />
-              ))}
-            </div>
+      {/* Leadership Grid */}
+      <section className="py-20">
+        <div className="container-custom">
+          
+          <div className="mb-16">
+            <h2 className="text-3xl font-heading font-bold text-brand-blue mb-8 pb-2 border-b-2 border-brand-gold inline-block">Board of Directors 2024-25</h2>
+            
+            {teamMembers.length === 0 ? (
+              <div className="text-center py-20 text-gray-400 font-bold">
+                Team roster updating soon.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+                {teamMembers.map((member: any, idx: number) => (
+                  <div key={idx} className="group flex flex-col">
+                    <div className="relative aspect-square rounded-2xl overflow-hidden mb-6 shadow-md border border-gray-100">
+                      <img 
+                        src={member.image_url || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"} 
+                        alt={member.name} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                    <h3 className="text-xl font-heading font-bold text-brand-blue mb-1">{member.name}</h3>
+                    <p className="text-brand-azure font-bold text-sm uppercase mb-3">{member.role} <span className="text-gray-300 mx-2">|</span> {member.period}</p>
+                    {member.bio && <p className="text-gray-500 text-sm italic">"{member.bio}"</p>}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        )}
 
-        {advisors.length > 0 && (
-          <div>
-            <h2 className="font-heading font-semibold text-gray-600 text-sm uppercase tracking-widest mb-6">
-              Advisors & Mentors
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-              {advisors.map((member) => (
-                <MemberCard key={member._id} name={member.name} role={member.role} photo={member.photo} category={member.category} />
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+        </div>
+      </section>
     </div>
   );
 }
+

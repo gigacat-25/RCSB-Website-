@@ -1,85 +1,77 @@
+"use client";
 import Link from "next/link";
-
-const footerLinks = [
-  { label: "Events", href: "/events" },
-  { label: "Gallery", href: "/gallery" },
-  { label: "Projects", href: "/projects" },
-  { label: "Team", href: "/team" },
-  { label: "Blog", href: "/blog" },
-  { label: "Contact", href: "/contact" },
-];
+import { usePathname } from "next/navigation";
 
 export default function Footer() {
+  const pathname = usePathname();
+  const currentYear = new Date().getFullYear();
+
+  if (pathname?.startsWith("/admin")) return null;
+
   return (
-    <footer className="bg-brand-dark-grey text-white mt-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          {/* Brand */}
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-brand-blue flex items-center justify-center text-white font-heading font-bold">
-                RC
-              </div>
-              <div>
-                <p className="font-heading font-bold text-white text-sm leading-tight">Rotaract Club of</p>
-                <p className="font-heading font-bold text-brand-gold text-sm leading-tight">Swarna Bengaluru</p>
-              </div>
-            </div>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Together, Change is Possible! Serving the community of Bengaluru since 2014. Part of Rotary International.
-            </p>
+    <footer className="bg-brand-blue text-white pt-16 pb-8 border-t-[6px] border-brand-gold">
+      <div className="container-custom grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        
+        {/* Brand Column */}
+        <div className="col-span-1 md:col-span-1">
+          <div className="flex items-center mb-6">
+            <img 
+              src="/logo.png" 
+              alt="Rotaract Swarna Bengaluru Logo" 
+              className="h-32 w-auto object-contain brightness-0 invert" 
+            />
           </div>
-
-          {/* Quick Links */}
-          <div>
-            <h3 className="font-heading font-semibold text-white mb-4">Quick Links</h3>
-            <ul className="flex flex-col gap-2">
-              {footerLinks.map(({ label, href }) => (
-                <li key={href}>
-                  <Link href={href} className="text-gray-400 hover:text-brand-gold text-sm transition-colors">
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h3 className="font-heading font-semibold text-white mb-4">Contact</h3>
-            <div className="flex flex-col gap-3 text-sm text-gray-400">
-              <div>
-                <p className="text-white font-medium mb-1">Address</p>
-                <p>Rotary House of Friendship</p>
-                <p>11 Lavelle Road, Bengaluru</p>
-              </div>
-              <div>
-                <p className="text-white font-medium mb-1">Email</p>
-                <a href="mailto:rota.rcbs@gmail.com" className="hover:text-brand-gold transition-colors">
-                  rota.rcbs@gmail.com
-                </a>
-              </div>
-              <div className="flex gap-3 mt-2">
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram"
-                  className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-brand-gold transition-colors text-xs font-bold">
-                  IG
-                </a>
-                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook"
-                  className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-brand-gold transition-colors text-xs font-bold">
-                  FB
-                </a>
-              </div>
-            </div>
-          </div>
+          <p className="text-sm text-blue-100 leading-relaxed mb-6">
+            A community of young leaders creating positive, lasting change in our communities and around the world.
+          </p>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 text-xs">
-            © {new Date().getFullYear()} Rotaract Club of Swarna Bengaluru. All rights reserved.
-          </p>
-          <p className="text-gray-600 text-xs">
-            Formerly Rotaract Club of Bangalore Seshadripuram · Founded 2014
-          </p>
+        {/* Links Column */}
+        <div>
+          <h3 className="font-heading font-bold text-lg mb-4 text-brand-gold">Discover</h3>
+          <ul className="flex flex-col gap-3">
+            <li><Link href="/about" className="text-sm text-blue-100 hover:text-white transition-colors">Who We Are</Link></li>
+            <li><Link href="/projects" className="text-sm text-blue-100 hover:text-white transition-colors">Our Projects</Link></li>
+            <li><Link href="/team" className="text-sm text-blue-100 hover:text-white transition-colors">Leadership</Link></li>
+            <li><Link href="/contact" className="text-sm text-blue-100 hover:text-white transition-colors">Contact Us</Link></li>
+          </ul>
+        </div>
+
+        {/* Get Involved Column */}
+        <div>
+          <h3 className="font-heading font-bold text-lg mb-4 text-brand-gold">Get Involved</h3>
+          <ul className="flex flex-col gap-3">
+            <li><Link href="/join" className="text-sm text-blue-100 hover:text-white transition-colors">Join the Club</Link></li>
+            <li><Link href="/donate" className="text-sm text-blue-100 hover:text-white transition-colors">Donate</Link></li>
+            <li><Link href="/partner" className="text-sm text-blue-100 hover:text-white transition-colors">Partner With Us</Link></li>
+          </ul>
+        </div>
+
+        {/* Contact Column */}
+        <div>
+          <h3 className="font-heading font-bold text-lg mb-4 text-brand-gold">Contact</h3>
+          <address className="not-italic flex flex-col gap-3 text-sm text-blue-100">
+            <p>
+              <strong>Rotaract Club of Swarna Bengaluru</strong><br />
+              Bengaluru, Karnataka, India
+            </p>
+            <p>
+              Email: <a href="mailto:contact@rcsb.in" className="hover:text-white transition-colors">contact@rcsb.in</a>
+            </p>
+          </address>
+        </div>
+
+      </div>
+
+      <div className="container-custom pt-8 border-t border-blue-800 flex flex-col md:flex-row items-center justify-between gap-4">
+        <p className="text-xs text-blue-200">
+          &copy; {currentYear} Rotaract Club of Swarna Bengaluru. All rights reserved.
+        </p>
+        <div className="flex gap-4">
+          {/* Placeholder Social Icons */}
+          <a href="#" className="w-8 h-8 rounded-full bg-blue-800 flex items-center justify-center hover:bg-brand-azure transition-colors text-xs">FB</a>
+          <a href="#" className="w-8 h-8 rounded-full bg-blue-800 flex items-center justify-center hover:bg-brand-azure transition-colors text-xs">IG</a>
+          <a href="#" className="w-8 h-8 rounded-full bg-blue-800 flex items-center justify-center hover:bg-brand-azure transition-colors text-xs">LI</a>
         </div>
       </div>
     </footer>
