@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";

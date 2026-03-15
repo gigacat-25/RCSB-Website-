@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import { NextResponse } from "next/server";
 import { API_URL, API_SECRET } from "@/lib/api";
 
