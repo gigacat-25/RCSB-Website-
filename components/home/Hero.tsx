@@ -27,96 +27,100 @@ export default function Hero({ headline, subtext }: HeroProps) {
   const words = headline.split(" ");
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-white pt-16">
-      {/* Background decorative elements */}
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-brand-grey/40 rounded-bl-[80px] z-0" />
-      <div className="absolute top-20 right-8 w-64 h-64 md:w-80 md:h-80 opacity-60 z-0">
-        {ROTARACT_WHEEL}
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-brand-void pt-20">
+      {/* 21st.dev inspired Aurora Background */}
+      <div className="absolute inset-0 z-0">
+        <div 
+          className="absolute inset-0 opacity-[0.25] animate-aurora"
+          style={{
+            backgroundImage: "radial-gradient(circle at 50% 50%, #F9A826 0%, transparent 40%), radial-gradient(circle at 80% 20%, #E91E63 0%, transparent 30%), radial-gradient(circle at 20% 80%, #00897B 0%, transparent 40%)",
+            backgroundSize: "200% 200%",
+            filter: "blur(60px)"
+          }}
+        />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+        <div className="absolute inset-0 bg-gradient-to-b from-brand-void/40 via-transparent to-brand-void" />
       </div>
-      <div className="absolute bottom-10 left-4 w-6 h-24 bg-brand-gold rounded-full opacity-40 z-0" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
-        <div className="max-w-2xl">
-          {/* Kicker */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex items-center gap-3 mb-6"
-          >
-            <div className="w-1 h-8 bg-brand-gold rounded-full" />
-            <span className="text-sm font-medium text-brand-gold tracking-widest uppercase">
-              Rotaract Club of Swarna Bengaluru
-            </span>
-          </motion.div>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center w-full flex flex-col items-center">
+        {/* Kicker Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-8 badge-glass px-4 py-1.5 rounded-full inline-flex items-center gap-2"
+        >
+          <span className="w-2 h-2 rounded-full bg-brand-gold animate-pulse" />
+          <span className="text-xs font-medium text-white tracking-widest uppercase opacity-90">
+            Rotaract Club of Swarna Bengaluru
+          </span>
+        </motion.div>
 
-          {/* Headline: words animate in staggered */}
-          <h1 className="font-heading font-extrabold text-4xl sm:text-5xl md:text-6xl text-brand-blue leading-tight mb-6">
-            {words.map((word, i) => (
-              <motion.span
-                key={i}
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 + i * 0.08 }}
-                className="inline-block mr-3"
-              >
-                {i === words.length - 1 ? (
-                  <span className="text-brand-gold">{word}</span>
-                ) : word}
-              </motion.span>
-            ))}
-          </h1>
-
-          {/* Subtext */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.7 }}
-            className="text-base md:text-lg text-gray-600 mb-10 max-w-xl leading-relaxed"
-          >
-            {subtext}
-          </motion.p>
-
-          {/* CTAs */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.9 }}
-            className="flex flex-col sm:flex-row gap-4"
-          >
-            <Link
-              href="/events"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-blue text-white font-semibold rounded-xl hover:bg-brand-blue/90 transition-all text-sm"
+        {/* Massive Typography Headline */}
+        <h1 className="font-heading font-extrabold text-5xl sm:text-7xl md:text-8xl lg:text-[100px] text-white leading-[1.05] tracking-tighter mb-8 max-w-5xl text-glow-blue flex flex-wrap justify-center gap-x-4 gap-y-2">
+          {words.map((word, i) => (
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
+              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+              transition={{ duration: 0.8, delay: 0.1 * i, type: "spring", stiffness: 100 }}
+              className={i === words.length - 1 ? "text-brand-gold text-glow-gold" : ""}
             >
-              View Events →
-            </Link>
-            <Link
-              href="/projects"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-brand-blue text-brand-blue font-semibold rounded-xl hover:bg-brand-blue hover:text-white transition-all text-sm"
-            >
-              Our Projects
-            </Link>
-          </motion.div>
+              {word}
+            </motion.span>
+          ))}
+        </h1>
 
-          {/* Stats bar */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1.2 }}
-            className="flex gap-8 mt-12 pt-8 border-t border-gray-100"
+        {/* Subtext */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+          className="text-lg md:text-xl text-gray-400 mb-12 max-w-2xl leading-relaxed font-light"
+        >
+          {subtext}
+        </motion.p>
+
+        {/* CTAs */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.7 }}
+          className="flex flex-col sm:flex-row gap-6 items-center"
+        >
+          <Link
+            href="/events"
+            className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-brand-void font-bold rounded-full hover:scale-105 transition-all duration-300 shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)]"
           >
-            {[
-              { value: "2014", label: "Founded" },
-              { value: "10+", label: "Years of Service" },
-              { value: "50+", label: "Projects" },
-            ].map(({ value, label }) => (
-              <div key={label}>
-                <p className="font-heading font-bold text-2xl text-brand-blue">{value}</p>
-                <p className="text-xs text-gray-500">{label}</p>
-              </div>
-            ))}
-          </motion.div>
-        </div>
+            <span>View Events</span>
+            <span className="group-hover:translate-x-1 transition-transform">→</span>
+          </Link>
+          <Link
+            href="/projects"
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 glass-panel text-white font-medium hover:bg-white/10 transition-all duration-300"
+          >
+            Our Projects
+          </Link>
+        </motion.div>
+
+        {/* Stats bar floating below */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 1 }}
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-12 glass-panel px-10 py-5 w-max z-20"
+        >
+          {[
+            { value: "2014", label: "Founded" },
+            { value: "10+", label: "Years of Service" },
+            { value: "50+", label: "Projects" },
+          ].map(({ value, label }) => (
+            <div key={label} className="text-center">
+              <p className="font-heading font-bold text-3xl text-white tracking-tight">{value}</p>
+              <p className="text-[10px] uppercase tracking-widest text-gray-400 mt-1">{label}</p>
+            </div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );

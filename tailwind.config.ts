@@ -10,11 +10,15 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          blue: "#003DA5",
-          gold: "#F5A623",
+          blue: "#00897B",     // Peacock Teal (Replaces old 'blue')
+          gold: "#F9A826",     // Marigold / Saffron Gold
           white: "#FFFFFF",
           grey: "#F5F5F5",
-          "dark-grey": "#1A1A2E",
+          void: "#110515",     // Deep Plum Dark Mode
+          pink: "#E91E63",     // Rani Pink
+          glass: "rgba(255, 255, 255, 0.03)", 
+          "glass-hover": "rgba(255, 255, 255, 0.06)",
+          "glass-border": "rgba(255, 255, 255, 0.1)", 
           "mid-grey": "#6B7280",
         },
       },
@@ -23,15 +27,18 @@ const config: Config = {
         heading: ["Poppins", "system-ui", "sans-serif"],
       },
       animation: {
-        "fade-up": "fadeUp 0.6s ease-out forwards",
+        "fade-up": "fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards",
         "fade-in": "fadeIn 0.4s ease-out forwards",
         "slide-in": "slideIn 0.5s ease-out forwards",
-        marquee: "marquee 30s linear infinite",
+        marquee: "marquee 40s linear infinite",
+        aurora: "aurora 20s ease infinite",
+        float: "float 6s ease-in-out infinite",
+        spotlight: "spotlight 2s ease .75s 1 forwards",
       },
       keyframes: {
         fadeUp: {
-          "0%": { opacity: "0", transform: "translateY(24px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
+          "0%": { opacity: "0", transform: "translateY(24px)", filter: "blur(4px)" },
+          "100%": { opacity: "1", transform: "translateY(0)", filter: "blur(0)" },
         },
         fadeIn: {
           "0%": { opacity: "0" },
@@ -44,6 +51,18 @@ const config: Config = {
         marquee: {
           "0%": { transform: "translateX(0%)" },
           "100%": { transform: "translateX(-50%)" },
+        },
+        aurora: {
+          from: { backgroundPosition: "50% 50%, 50% 50%" },
+          to: { backgroundPosition: "350% 50%, 350% 50%" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        spotlight: {
+          "0%": { opacity: "0", transform: "translate(-72%, -62%) scale(0.5)" },
+          "100%": { opacity: "1", transform: "translate(-50%,-40%) scale(1)" },
         },
       },
     },

@@ -16,34 +16,47 @@ export default function EventCard({ title, date, location, slug, coverImage, isU
   });
 
   return (
-    <Link href={`/events/${slug}`} className="block group">
-      <div className="card-hover rounded-xl overflow-hidden border border-gray-100 bg-white h-full">
-        <div className="relative h-48 bg-brand-grey overflow-hidden">
-          {coverImage ? (
-            <Image
-              src={`${coverImage}?width=600&format=webp`}
-              alt={title}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <div className="text-brand-blue/20 text-6xl font-heading font-bold">RCSB</div>
-            </div>
-          )}
-          {isUpcoming && (
-            <span className="absolute top-3 left-3 bg-brand-gold text-white text-xs font-semibold px-2 py-1 rounded-full">
-              Upcoming
-            </span>
-          )}
+    <Link href={`/events/${slug}`} className="block group h-full">
+      <div className="glass-panel overflow-hidden h-full flex flex-col relative">
+        <div className="absolute inset-0 bg-gradient-to-tr from-brand-blue/10 to-transparent flex-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0" />
+        
+        <div className="relative h-48 bg-brand-void/50 overflow-hidden shrink-0 z-10 p-2">
+          <div className="relative w-full h-full rounded-xl overflow-hidden">
+            {coverImage ? (
+              <Image
+                src={`${coverImage}?width=600&format=webp`}
+                alt={title}
+                fill
+                className="object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-white/5">
+                <div className="text-white/20 text-4xl font-heading font-bold tracking-tighter">RCSB</div>
+              </div>
+            )}
+            <div className="absolute inset-0 bg-brand-void/20 group-hover:bg-transparent transition-colors duration-500" />
+            
+            {isUpcoming && (
+              <span className="absolute top-3 left-3 bg-brand-gold text-brand-void text-[10px] uppercase tracking-widest font-bold px-3 py-1.5 rounded-full shadow-lg">
+                Upcoming
+              </span>
+            )}
+          </div>
         </div>
-        <div className="p-4">
-          <h3 className="font-heading font-semibold text-brand-blue text-base mb-2 line-clamp-2 group-hover:text-brand-gold transition-colors">
+        
+        <div className="p-5 sm:p-6 flex-1 flex flex-col z-10">
+          <h3 className="font-heading font-bold text-white text-lg lg:text-xl mb-3 line-clamp-2 group-hover:text-brand-gold transition-colors tracking-tight">
             {title}
           </h3>
-          <div className="flex flex-col gap-1 text-xs text-gray-500">
-            <span className="flex items-center gap-1">📅 {formattedDate}</span>
-            {location && <span className="flex items-center gap-1">📍 {location}</span>}
+          <div className="flex flex-col gap-2 text-sm text-gray-400 mt-auto font-light">
+            <span className="flex items-center gap-2">
+              <span className="opacity-60">📅</span> {formattedDate}
+            </span>
+            {location && (
+              <span className="flex items-center gap-2 line-clamp-1">
+                <span className="opacity-60">📍</span> {location}
+              </span>
+            )}
           </div>
         </div>
       </div>

@@ -28,87 +28,89 @@ export default function Navbar() {
   useEffect(() => { setOpen(false); }, [pathname]);
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-white shadow-sm border-b border-gray-100" : "bg-white/95 backdrop-blur-sm"
-      }`}
-    >
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+    <header className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-5xl transition-all duration-300">
+      <div className={`glass-panel px-6 py-3 flex items-center justify-between ${scrolled ? "bg-white/5" : "bg-transparent shadow-none"}`}>
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-9 h-9 rounded-full bg-brand-blue flex items-center justify-center text-white font-heading font-bold text-sm">
+        <Link href="/" className="flex items-center gap-3 group relative z-10">
+          <div className="w-10 h-10 rounded-full bg-brand-blue flex items-center justify-center text-white font-heading font-bold text-sm shadow-[0_0_20px_rgba(0,61,165,0.5)]">
             RC
           </div>
           <div className="hidden sm:block">
-            <p className="font-heading font-bold text-brand-blue text-sm leading-tight">Rotaract Club of</p>
-            <p className="font-heading font-bold text-brand-gold text-sm leading-tight">Swarna Bengaluru</p>
+            <p className="font-heading font-bold text-white text-sm leading-tight tracking-wide">RCSB</p>
+            <p className="font-heading font-semibold text-brand-gold text-xs leading-tight opacity-90">Swarna Bengaluru</p>
           </div>
         </Link>
 
         {/* Desktop Links */}
-        <ul className="hidden md:flex items-center gap-1">
-          {navLinks.map(({ href, label }) => (
-            <li key={href}>
-              <Link
-                href={href}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  pathname === href
-                    ? "text-brand-blue font-semibold"
-                    : "text-gray-600 hover:text-brand-blue"
-                }`}
-              >
-                {label}
-                {pathname === href && (
+        <nav className="hidden md:flex items-center gap-2">
+          {navLinks.map(({ href, label }) => {
+            const isActive = pathname === href;
+            return (
+              <div key={href} className="relative">
+                <Link
+                  href={href}
+                  className={`relative z-10 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                    isActive
+                      ? "text-white"
+                      : "text-gray-400 hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  {label}
+                </Link>
+                {isActive && (
                   <motion.div
-                    layoutId="nav-indicator"
-                    className="h-0.5 bg-brand-gold mt-0.5 rounded-full"
+                    layoutId="nav-pill"
+                    className="absolute inset-0 bg-white/10 rounded-full -z-10 border border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]"
+                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
                 )}
-              </Link>
-            </li>
-          ))}
-        </ul>
+              </div>
+            );
+          })}
+        </nav>
 
         {/* Mobile Hamburger */}
         <button
           onClick={() => setOpen(!open)}
-          className="md:hidden p-2 rounded-md text-gray-600 hover:text-brand-blue focus:outline-none"
+          className="md:hidden p-2 rounded-full text-gray-300 hover:text-white bg-white/5 border border-white/10 focus:outline-none relative z-10"
           aria-label="Toggle menu"
         >
-          <div className="w-6 flex flex-col gap-1.5">
-            <span className={`block h-0.5 bg-current transition-all duration-300 ${open ? "rotate-45 translate-y-2" : ""}`} />
-            <span className={`block h-0.5 bg-current transition-all duration-300 ${open ? "opacity-0" : ""}`} />
-            <span className={`block h-0.5 bg-current transition-all duration-300 ${open ? "-rotate-45 -translate-y-2" : ""}`} />
+          <div className="w-5 flex flex-col gap-[5px]">
+            <span className={`block h-[2px] bg-current rounded-full transition-all duration-300 ${open ? "rotate-45 translate-y-[7px]" : ""}`} />
+            <span className={`block h-[2px] bg-current rounded-full transition-all duration-300 ${open ? "opacity-0" : ""}`} />
+            <span className={`block h-[2px] bg-current rounded-full transition-all duration-300 ${open ? "-rotate-45 -translate-y-[7px]" : ""}`} />
           </div>
         </button>
-      </nav>
+      </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Dropdown */}
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="md:hidden overflow-hidden bg-white border-t border-gray-100"
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 10, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="md:hidden absolute top-full left-0 right-0 glass-panel p-2 mt-2"
           >
-            <ul className="px-4 py-4 flex flex-col gap-2">
-              {navLinks.map(({ href, label }) => (
-                <li key={href}>
+            <nav className="flex flex-col gap-1 relative z-10">
+              {navLinks.map(({ href, label }) => {
+                const isActive = pathname === href;
+                return (
                   <Link
+                    key={href}
                     href={href}
-                    className={`block py-2 px-3 rounded-md text-sm font-medium ${
-                      pathname === href
-                        ? "bg-brand-grey text-brand-blue font-semibold"
-                        : "text-gray-600 hover:bg-brand-grey hover:text-brand-blue"
+                    className={`block py-3 px-4 rounded-xl text-sm font-medium transition-all ${
+                      isActive
+                        ? "bg-white/10 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
+                        : "text-gray-400 hover:bg-white/5 hover:text-white"
                     }`}
                   >
                     {label}
                   </Link>
-                </li>
-              ))}
-            </ul>
+                );
+              })}
+            </nav>
           </motion.div>
         )}
       </AnimatePresence>
