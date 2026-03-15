@@ -56,7 +56,7 @@ function AuthSection({ mobile = false }: { mobile?: boolean }) {
           </button>
           <button 
             onClick={() => signOut()} 
-            className="text-sm font-medium text-gray-500 hover:text-brand-cranberry transition-colors"
+            className="text-sm font-medium opacity-60 hover:opacity-100 transition-opacity"
           >
             Sign Out
           </button>
@@ -96,41 +96,47 @@ export default function Navbar() {
   if (pathname?.startsWith("/admin")) return null;
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/80 backdrop-blur-md shadow-md py-3" : "bg-white/40 backdrop-blur-md py-5 border-b border-white/20"}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      scrolled 
+        ? "bg-white/70 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.05)] py-2 border-b border-white/20" 
+        : "bg-transparent py-5"
+    }`}>
       <div className="container-custom flex items-center justify-between">
         
         {/* Logo */}
-        <Link href="/" className="flex items-center group">
+        <Link href="/" className="flex items-center group relative">
+          <div className="absolute -inset-2 bg-brand-gold/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <img 
             src="/logo.png" 
             alt="Rotaract Swarna Bengaluru Logo" 
-            className="h-24 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+            className={`h-20 w-auto object-contain transition-all duration-500 ${scrolled ? "scale-90" : "scale-100"}`}
           />
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-8">
-          <ul className="flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-10">
+          <ul className="flex items-center gap-8">
             {navLinks.map(({ href, label }) => {
               const isActive = pathname === href;
               return (
                 <li key={href}>
                   <Link
                     href={href}
-                    className={`text-sm font-semibold transition-colors ${
+                    className={`text-[13px] font-bold uppercase tracking-[0.15em] transition-all duration-300 relative group py-2 ${
                       isActive 
-                        ? "text-brand-azure" 
-                        : "text-brand-gray hover:text-brand-blue"
+                        ? (scrolled ? "text-brand-blue" : "text-white")
+                        : (scrolled ? "text-brand-gray/80 hover:text-brand-blue" : "text-white/70 hover:text-white")
                     }`}
                   >
                     {label}
+                    <span className={`absolute bottom-0 left-0 h-[2px] bg-brand-gold transition-all duration-300 rounded-full ${isActive ? "w-full" : "w-0 group-hover:w-full"}`} />
                   </Link>
                 </li>
               );
             })}
           </ul>
           
-          <div className="pl-6 border-l border-gray-200">
+          <div className="pl-6 border-l border-slate-200/50">
             <AuthSection />
           </div>
         </nav>
@@ -138,43 +144,54 @@ export default function Navbar() {
         {/* Mobile Menu Toggle */}
         <button
           onClick={() => setOpen(!open)}
-          className="md:hidden p-2 text-brand-blue focus:outline-none"
+          className="md:hidden p-3 text-brand-blue glass rounded-2xl focus:outline-none hover:scale-105 active:scale-95 transition-all"
           aria-label="Toggle menu"
         >
           <div className="w-6 flex flex-col gap-[6px]">
-            <span className={`block h-[2px] bg-current rounded-full transition-transform duration-300 ${open ? "rotate-45 translate-y-[8px]" : ""}`} />
-            <span className={`block h-[2px] bg-current rounded-full transition-opacity duration-300 ${open ? "opacity-0" : ""}`} />
-            <span className={`block h-[2px] bg-current rounded-full transition-transform duration-300 ${open ? "-rotate-45 -translate-y-[8px]" : ""}`} />
+            <span className={`block h-[2px] bg-current rounded-full transition-all duration-300 ${open ? "rotate-45 translate-y-[8px] w-6" : "w-6"}`} />
+            <span className={`block h-[2px] bg-current rounded-full transition-all duration-300 ${open ? "opacity-0" : "w-4"}`} />
+            <span className={`block h-[2px] bg-current rounded-full transition-all duration-300 ${open ? "-rotate-45 -translate-y-[8px] w-6" : "w-5"}`} />
           </div>
         </button>
       </div>
 
       {/* Mobile Navigation Dropdown */}
-      {open && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-xl border-t border-gray-100">
-          <nav className="container-custom py-4 flex flex-col gap-2">
-            {navLinks.map(({ href, label }) => {
+      <div className={`md:hidden absolute top-0 left-0 right-0 h-screen transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        open ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"
+      }`}>
+        <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-2xl" />
+        <div className="relative h-full flex flex-col items-center justify-center p-8">
+          <button 
+            onClick={() => setOpen(false)}
+            className="absolute top-6 right-6 p-4 text-white hover:rotate-90 transition-transform duration-300"
+          >
+            <span className="text-4xl leading-none">&times;</span>
+          </button>
+          
+          <nav className="flex flex-col items-center gap-8 w-full max-w-xs">
+            {navLinks.map(({ href, label }, idx) => {
               const isActive = pathname === href;
               return (
                 <Link
                   key={href}
                   href={href}
-                  className={`block py-3 px-4 rounded-lg text-sm font-semibold transition-colors ${
+                  style={{ transitionDelay: `${idx * 50}ms` }}
+                  className={`text-2xl font-heading font-bold transition-all duration-500 ${
                     isActive
-                      ? "bg-brand-light text-brand-blue"
-                      : "text-brand-gray hover:bg-gray-50 hover:text-brand-blue"
-                  }`}
+                      ? "text-brand-gold scale-110"
+                      : "text-white/60 hover:text-white"
+                  } ${open ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
                 >
                   {label}
                 </Link>
               );
             })}
-            <div className="mt-4 pt-4 border-t border-gray-100 px-4">
+            <div className={`mt-10 w-full pt-10 border-t border-white/10 ${open ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"} transition-all duration-1000 delay-300`}>
               <AuthSection mobile />
             </div>
           </nav>
         </div>
-      )}
+      </div>
     </header>
   );
 }

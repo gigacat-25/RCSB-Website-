@@ -51,44 +51,56 @@ export default function BlogsPage() {
   };
 
   return (
-    <main className="min-h-screen pt-32 pb-20 bg-[#F8FAFC]">
-      <div className="container mx-auto px-6">
-        {/* Header */}
-        <div className="max-w-4xl mx-auto text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-heading font-bold text-brand-blue mb-4">Our Stories & Blogs</h1>
-          <p className="text-xl text-brand-gray mb-8">Insights, reports, and experiences from the hearts of our Rotaractors.</p>
-          <Link 
-            href="/admin/blogs/add"
-            className="inline-flex items-center gap-3 px-8 py-4 bg-brand-gold text-brand-blue font-black rounded-2xl hover:bg-brand-blue hover:text-white transition-all shadow-xl hover:-translate-y-1"
-          >
-            <PencilSquareIcon className="w-6 h-6" />
-            Write a Story
-          </Link>
+    <main className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <section className="relative py-32 overflow-hidden bg-brand-blue">
+        <div className="absolute inset-0 bg-mesh-gradient opacity-40 mix-blend-overlay" />
+        <div className="container-custom relative z-10 text-white">
+          <div className="max-w-4xl animate-fade-up pt-16 md:pt-24">
+            <span className="text-[10px] font-black text-brand-gold uppercase tracking-[0.4em] mb-6 block">Our Stories</span>
+            <h1 className="text-6xl md:text-8xl font-heading font-black text-white mb-8 leading-[1.1]">
+              Insights and <br />
+              <span className="text-brand-gold italic">Perspectives.</span>
+            </h1>
+            <div className="flex flex-col md:flex-row items-center gap-8">
+              <p className="text-white/90 text-xl font-light leading-relaxed max-w-xl">
+                Exploring the heart of Rotaract through reports, reflections, and deep-dives into our community impact.
+              </p>
+              <Link 
+                href="/admin/blogs/add"
+                className="group px-10 py-5 bg-brand-gold text-brand-blue font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl hover:bg-white transition-all shadow-xl hover:-translate-y-1 active:translate-y-0 flex items-center gap-3 whitespace-nowrap"
+              >
+                <PencilSquareIcon className="w-4 h-4" />
+                Draft a Story
+              </Link>
+            </div>
+          </div>
         </div>
+      </section>
 
+      <div className="container-custom -translate-y-12 relative z-20">
         {/* Search & Filter Bar */}
-        <div className="max-w-6xl mx-auto mb-12">
-          <div className="bg-white p-4 rounded-[32px] shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4">
+        <div className="max-w-6xl mx-auto mb-20 animate-fade-up" style={{ animationDelay: "200ms" }}>
+          <div className="glass p-4 rounded-[2.5rem] shadow-premium flex flex-col lg:flex-row gap-4">
             <div className="flex-1 relative">
-              <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <MagnifyingGlassIcon className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-blue/30" />
               <input 
                 type="text" 
                 placeholder="Search stories by title or keywords..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-gray-50 border-transparent focus:bg-white focus:border-brand-azure focus:ring-0 rounded-2xl outline-none transition-all text-brand-blue font-medium"
+                className="w-full pl-16 pr-6 py-4 bg-white/50 border-transparent focus:bg-white focus:shadow-inner rounded-2xl outline-none transition-all text-brand-blue font-bold text-sm tracking-tight"
               />
             </div>
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 px-2">
-              <TagIcon className="w-5 h-5 text-gray-400 hidden md:block" />
+            <div className="flex items-center gap-3 overflow-x-auto pb-1 lg:pb-0 px-2 lg:border-l lg:border-slate-100 lg:pl-6">
               {categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-4 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${
+                  className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] transition-all whitespace-nowrap ${
                     activeCategory === cat 
-                      ? "bg-brand-blue text-white shadow-md"
-                      : "bg-gray-50 text-brand-gray hover:bg-gray-100"
+                      ? "bg-brand-blue text-white shadow-xl scale-105"
+                      : "text-brand-blue/60 hover:bg-brand-blue/5 hover:text-brand-blue"
                   }`}
                 >
                   {cat}
@@ -99,73 +111,78 @@ export default function BlogsPage() {
         </div>
 
         {/* Blogs Grid */}
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto mb-40 px-4 md:px-0">
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
               {[1, 2, 3].map((n) => (
-                <div key={n} className="bg-white rounded-3xl h-96 animate-pulse border border-gray-100"></div>
+                <div key={n} className="bg-white rounded-[3rem] h-[500px] animate-pulse border border-slate-100 shadow-sm"></div>
               ))}
             </div>
           ) : filteredBlogs.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredBlogs.map((blog: any) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-20">
+              {filteredBlogs.map((blog: any, idx) => (
                 <Link 
                   href={`/blogs/${blog.slug}`} 
                   key={blog.id}
-                  className="group bg-white rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 border border-gray-100 flex flex-col h-full p-4"
+                  className="premium-card group flex flex-col animate-fade-up"
+                  style={{ animationDelay: `${idx * 100}ms` }}
                 >
-                  <div className="h-56 relative overflow-hidden rounded-[24px]">
+                  <div className="h-72 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-brand-blue/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
                     <img 
                       src={fixImageUrl(blog.image_url)} 
                       alt={blog.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
                     />
-                    <div className="absolute top-4 left-4">
-                      <span className="bg-black/60 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-lg">
+                    <div className="absolute top-6 left-6 z-20">
+                      <span className="glass px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-brand-blue">
                         {blog.category}
                       </span>
                     </div>
                   </div>
                   
-                  <div className="p-6 flex flex-col flex-1">
-                    <div className="flex items-center gap-3 text-brand-gray mb-4 text-[11px] font-bold uppercase tracking-widest">
-                      <div className="w-8 h-8 rounded-full bg-brand-gold/20 flex items-center justify-center">
-                        <UserIcon className="w-4 h-4 text-brand-gold" />
+                  <div className="p-10 flex flex-col flex-1 bg-white">
+                    <div className="flex items-center gap-4 text-brand-blue/30 mb-6 text-[10px] font-black uppercase tracking-[0.2em]">
+                      <div className="flex items-center gap-2">
+                        <UserIcon className="w-3 h-3" />
+                        <span className="truncate max-w-[100px]">{blog.author_email?.split('@')[0] || "Author"}</span>
                       </div>
-                      <span className="truncate max-w-[120px]">By {blog.author_email?.split('@')[0] || "Club Member"}</span>
-                      <span className="text-gray-200">•</span>
+                      <span className="w-1 h-1 bg-brand-gold rounded-full" />
                       <span>{blog.year}</span>
                     </div>
                     
-                    <h3 className="text-xl font-heading font-black text-brand-blue mb-4 leading-tight group-hover:text-brand-azure transition-colors line-clamp-2">
+                    <h3 className="text-2xl font-heading font-black text-brand-blue mb-4 leading-tight group-hover:text-brand-azure transition-colors line-clamp-2">
                       {blog.title}
                     </h3>
                     
-                    <p className="text-brand-gray text-sm line-clamp-3 mb-8 flex-1 italic">
-                      "{blog.description}"
+                    <p className="text-brand-gray/60 text-sm line-clamp-3 mb-10 flex-1 font-light leading-relaxed">
+                      {blog.description}
                     </p>
                     
-                    <div className="pt-4 border-t border-gray-50 flex items-center justify-between">
-                      <span className="text-brand-azure font-black text-[11px] uppercase tracking-widest flex items-center gap-2">
-                        Read Full Story <span className="group-hover:translate-x-2 transition-transform duration-300">&rarr;</span>
+                    <div className="mt-auto flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-blue/40 group-hover:text-brand-azure transition-colors">
+                        Read Story
                       </span>
+                      <div className="w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center group-hover:bg-brand-blue group-hover:text-white transition-all duration-300">
+                        &rarr;
+                      </div>
                     </div>
                   </div>
                 </Link>
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-[40px] p-20 text-center border border-gray-100 max-w-2xl mx-auto shadow-xl">
-              <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                <BookOpenIcon className="w-10 h-10 text-gray-300" />
+            <div className="glass p-24 text-center rounded-[4rem] max-w-2xl mx-auto shadow-premium animate-fade-up">
+              <div className="w-24 h-24 bg-brand-blue/5 rounded-full flex items-center justify-center mx-auto mb-8">
+                <BookOpenIcon className="w-10 h-10 text-brand-blue/20" />
               </div>
-              <h3 className="text-2xl font-black text-brand-blue mb-3">No stories found</h3>
-              <p className="text-brand-gray font-medium">Try adjusting your search or category filters to find what you're looking for.</p>
+              <h3 className="text-3xl font-heading font-black text-brand-blue mb-4 italic">No stories found</h3>
+              <p className="text-brand-gray/60 font-light text-lg mb-10">Our archives are deep, but we couldn't find a match. Try broadening your criteria.</p>
               <button 
                 onClick={() => { setSearchQuery(""); setActiveCategory("All"); }}
-                className="mt-8 text-brand-azure font-bold hover:underline"
+                className="px-8 py-3 bg-brand-blue text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl hover:bg-brand-azure transition-all shadow-xl"
               >
-                Clear all filters
+                Reset Exploration
               </button>
             </div>
           )}

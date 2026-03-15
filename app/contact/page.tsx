@@ -47,157 +47,179 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="bg-brand-light min-h-screen">
+    <div className="bg-slate-50 min-h-screen">
       {/* Header */}
-      <section className="bg-brand-blue py-20 text-white">
-        <div className="container-custom">
-          <h1 className="text-4xl md:text-5xl font-heading font-bold mb-4">Get in Touch</h1>
-          <p className="text-blue-100 max-w-2xl text-lg">
-            Have questions or want to collaborate? We'd love to hear from you. Reach out to our team today.
-          </p>
+      <section className="relative py-32 overflow-hidden bg-brand-blue border-b border-brand-gold/20">
+        <div className="absolute inset-0 bg-mesh-gradient opacity-40 mix-blend-overlay" />
+        <div className="container-custom relative z-10 text-white">
+          <div className="max-w-4xl animate-fade-up pt-16 md:pt-24">
+            <span className="text-[10px] font-black text-brand-gold uppercase tracking-[0.4em] mb-6 block">Contact Us</span>
+            <h1 className="text-6xl md:text-8xl font-heading font-black text-white mb-8 leading-[1.1]">
+              Start a <br />
+              <span className="text-brand-gold italic">Conversation.</span>
+            </h1>
+            <p className="text-white/90 text-xl font-light leading-relaxed max-w-2xl">
+              Whether you're looking to join our ranks, partner on a project, or simply learn more about our impact, we're here to listen and collaborate.
+            </p>
+          </div>
         </div>
       </section>
 
       {/* Contact Content */}
-      <section className="py-20">
+      <section className="py-24">
         <div className="container-custom">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
             
             {/* Contact Info */}
-            <div>
-              <h2 className="text-3xl font-heading font-bold text-brand-blue mb-8">Contact Information</h2>
-              <div className="space-y-8">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-brand-blue shrink-0">
-                    <EnvelopeIcon className="w-6 h-6" />
+            <div className="space-y-12 animate-fade-up">
+              <div>
+                <h2 className="text-3xl font-heading font-black text-brand-blue italic mb-10 underline decoration-brand-gold decoration-4 underline-offset-8">
+                  Get Information
+                </h2>
+                <div className="grid gap-8">
+                  <div className="glass p-8 rounded-[2rem] flex items-start gap-6 group hover:translate-x-2 transition-all duration-300">
+                    <div className="w-14 h-14 rounded-2xl bg-brand-blue/5 flex items-center justify-center text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-all">
+                      <EnvelopeIcon className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h4 className="text-[10px] font-black uppercase tracking-widest text-brand-blue/40 mb-2">Email Us</h4>
+                      <p className="text-brand-blue font-bold text-lg mb-1">contact@rcsb.in</p>
+                      <p className="text-[10px] text-brand-azure font-black uppercase tracking-widest">Typical response: 24h</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-bold mb-1">Email Us</h4>
-                    <p className="text-gray-600">contact@rcsb.in</p>
-                    <p className="text-xs text-brand-azure mt-1 font-semibold">Expect a response within 24 hours.</p>
-                  </div>
-                </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-brand-gold shrink-0">
-                    <MapPinIcon className="w-6 h-6" />
+                  <div className="glass p-8 rounded-[2rem] flex items-start gap-6 group hover:translate-x-2 transition-all duration-300">
+                    <div className="w-14 h-14 rounded-2xl bg-brand-gold/5 flex items-center justify-center text-brand-gold group-hover:bg-brand-gold group-hover:text-brand-blue transition-all">
+                      <MapPinIcon className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h4 className="text-[10px] font-black uppercase tracking-widest text-brand-blue/40 mb-2">Find Us</h4>
+                      <p className="text-brand-blue font-bold text-lg mb-1">Bengaluru, KA, India</p>
+                      <p className="text-[10px] text-brand-azure font-black uppercase tracking-widest">Swarna Bengaluru Community</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-bold mb-1">Our Location</h4>
-                    <p className="text-gray-600">Bengaluru, Karnataka, India</p>
-                    <p className="text-xs text-brand-azure mt-1 font-semibold">Serving the Swarna Bengaluru community.</p>
-                  </div>
-                </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-azure-100 flex items-center justify-center text-brand-azure shrink-0">
-                    <GlobeAltIcon className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold mb-1">Social Media</h4>
-                    <div className="flex gap-4 mt-2">
-                      <span className="text-sm font-bold text-brand-blue hover:text-brand-azure cursor-pointer">Instagram</span>
-                      <span className="text-sm font-bold text-brand-blue hover:text-brand-azure cursor-pointer">LinkedIn</span>
+                  <div className="glass p-8 rounded-[2rem] flex items-start gap-6 group hover:translate-x-2 transition-all duration-300">
+                    <div className="w-14 h-14 rounded-2xl bg-brand-azure/5 flex items-center justify-center text-brand-azure group-hover:bg-brand-azure group-hover:text-white transition-all">
+                      <GlobeAltIcon className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h4 className="text-[10px] font-black uppercase tracking-widest text-brand-blue/40 mb-2">Connect</h4>
+                      <div className="flex gap-6 mt-3">
+                        <a href="#" className="text-[10px] font-black text-brand-blue uppercase tracking-widest hover:text-brand-azure transition-colors">Instagram</a>
+                        <a href="#" className="text-[10px] font-black text-brand-blue uppercase tracking-widest hover:text-brand-azure transition-colors">LinkedIn</a>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-16 p-8 bg-brand-blue rounded-3xl text-white shadow-xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
-                <h3 className="text-2xl font-heading font-bold mb-4">Want to Join?</h3>
-                <p className="text-blue-100 mb-6">If you're between 18-30 and looking to create impact, join our club!</p>
-                <button className="px-8 py-3 bg-brand-gold text-brand-blue font-bold rounded-full hover:bg-white transition-all shadow-md">
-                  Membership Inquiry
-                </button>
+              <div className="premium-card group p-12 bg-brand-blue relative overflow-hidden">
+                <div className="absolute inset-0 bg-mesh-gradient opacity-20" />
+                <div className="relative z-10">
+                  <span className="text-[10px] font-black text-brand-gold uppercase tracking-[0.4em] mb-4 block">Membership</span>
+                  <h3 className="text-3xl font-heading font-black text-white mb-6 leading-tight">Ready to create <br /><span className="text-brand-gold italic">Impact?</span></h3>
+                  <p className="text-blue-50/70 text-sm font-light leading-relaxed mb-10">
+                    Join a community of 18-30 year olds dedicated to service above self. Let's make a difference together.
+                  </p>
+                  <button className="px-10 py-5 bg-brand-gold text-brand-blue font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl hover:bg-white transition-all shadow-xl">
+                    Inquire About Membership
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* Contact Form */}
-            <div className="bg-white p-8 md:p-12 rounded-3xl shadow-xl border border-gray-100">
-              {success ? (
-                <div className="text-center py-12">
-                  <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <CheckCircleIcon className="w-12 h-12" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-brand-blue mb-4">Message Sent!</h3>
-                  <p className="text-brand-gray font-medium mb-8">Thank you for reaching out. Our team will get back to you shortly.</p>
-                  <button 
-                    onClick={() => setSuccess(false)}
-                    className="px-8 py-3 bg-brand-blue text-white font-bold rounded-full hover:bg-brand-azure transition-all"
-                  >
-                    Send another message
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <h3 className="text-2xl font-heading font-bold text-brand-blue mb-8">Send us a message</h3>
-                  {error && (
-                    <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 font-semibold border-l-4 border-red-500">
-                      {error}
+            <div className="animate-fade-up" style={{ animationDelay: "200ms" }}>
+              <div className="glass p-10 md:p-16 rounded-[3rem] shadow-premium relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-brand-blue/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
+                
+                {success ? (
+                  <div className="text-center py-16 relative z-10">
+                    <div className="w-24 h-24 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
+                      <CheckCircleIcon className="w-12 h-12" />
                     </div>
-                  )}
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-700">First Name</label>
-                        <input 
-                          type="text" 
-                          name="firstName"
-                          value={formData.firstName}
-                          onChange={handleChange}
-                          required
-                          className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-brand-blue" 
-                          placeholder="John" 
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-700">Last Name</label>
-                        <input 
-                          type="text" 
-                          name="lastName"
-                          value={formData.lastName}
-                          onChange={handleChange}
-                          required
-                          className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-brand-blue" 
-                          placeholder="Doe" 
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-gray-700">Email Address</label>
-                      <input 
-                        type="email" 
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-brand-blue" 
-                        placeholder="john@example.com" 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-gray-700">Message</label>
-                      <textarea 
-                        name="message"
-                        value={formData.message}
-                        onChange={handleChange}
-                        required
-                        rows={5} 
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-brand-blue" 
-                        placeholder="How can we help?"
-                      ></textarea>
-                    </div>
+                    <h3 className="text-4xl font-heading font-black text-brand-blue mb-4">Message Received.</h3>
+                    <p className="text-brand-gray/60 font-light text-lg mb-10 max-w-sm mx-auto">Thank you for reaching out. A club representative will contact you shortly.</p>
                     <button 
-                      type="submit"
-                      disabled={loading}
-                      className="w-full py-4 bg-brand-blue text-white font-bold rounded-xl hover:bg-brand-azure transition-all shadow-md disabled:opacity-50"
+                      onClick={() => setSuccess(false)}
+                      className="px-10 py-5 bg-brand-blue text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl hover:bg-brand-azure transition-all shadow-xl"
                     >
-                      {loading ? "Sending..." : "Submit Message"}
+                      Send Another Message
                     </button>
-                  </form>
-                </>
-              )}
+                  </div>
+                ) : (
+                  <>
+                    <h3 className="text-3xl font-heading font-black text-brand-blue italic mb-10 underline decoration-brand-gold decoration-4 underline-offset-8 relative z-10">
+                      Send a Message
+                    </h3>
+                    {error && (
+                      <div className="bg-red-50 text-red-600 p-6 rounded-[1.5rem] mb-10 font-black text-[10px] uppercase tracking-widest border border-red-100 relative z-10 animate-shake">
+                        {error}
+                      </div>
+                    )}
+                    <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-brand-blue/40 ml-2">First Name</label>
+                          <input 
+                            type="text" 
+                            name="firstName"
+                            value={formData.firstName}
+                            onChange={handleChange}
+                            required
+                            className="w-full px-6 py-4 bg-white/50 border border-slate-100 rounded-2xl focus:outline-none focus:bg-white focus:shadow-inner transition-all text-brand-blue font-bold tracking-tight" 
+                            placeholder="John" 
+                          />
+                        </div>
+                        <div className="space-y-3">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-brand-blue/40 ml-2">Last Name</label>
+                          <input 
+                            type="text" 
+                            name="lastName"
+                            value={formData.lastName}
+                            onChange={handleChange}
+                            required
+                            className="w-full px-6 py-4 bg-white/50 border border-slate-100 rounded-2xl focus:outline-none focus:bg-white focus:shadow-inner transition-all text-brand-blue font-bold tracking-tight" 
+                            placeholder="Doe" 
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-brand-blue/40 ml-2">Email Address</label>
+                        <input 
+                          type="email" 
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          required
+                          className="w-full px-6 py-4 bg-white/50 border border-slate-100 rounded-2xl focus:outline-none focus:bg-white focus:shadow-inner transition-all text-brand-blue font-bold tracking-tight" 
+                          placeholder="john@example.com" 
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-brand-blue/40 ml-2">Your Message</label>
+                        <textarea 
+                          name="message"
+                          value={formData.message}
+                          onChange={handleChange}
+                          required
+                          rows={6} 
+                          className="w-full px-6 py-4 bg-white/50 border border-slate-100 rounded-2xl focus:outline-none focus:bg-white focus:shadow-inner transition-all text-brand-blue font-bold tracking-tight resize-none" 
+                          placeholder="How can we help?"
+                        ></textarea>
+                      </div>
+                      <button 
+                        type="submit"
+                        disabled={loading}
+                        className="w-full py-6 bg-brand-blue text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl hover:bg-brand-azure transition-all shadow-xl disabled:opacity-50 hover:-translate-y-1 active:translate-y-0"
+                      >
+                        {loading ? "Transmitting..." : "Submit Message"}
+                      </button>
+                    </form>
+                  </>
+                )}
+              </div>
             </div>
 
           </div>

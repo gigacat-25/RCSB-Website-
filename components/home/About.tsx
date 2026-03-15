@@ -1,67 +1,90 @@
+"use client";
+import Link from "next/link";
+
 export default function About() {
   return (
-    <section className="py-24 bg-white overflow-hidden">
+    <section className="py-32 bg-white relative overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 right-0 w-1/3 h-full bg-brand-light/50 -skew-x-12 translate-x-1/2 -z-10" />
+      <div className="absolute bottom-20 left-10 w-64 h-64 bg-brand-gold opacity-5 blur-[100px] -z-10" />
+      
       <div className="container-custom">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           
-          <div className="relative">
-            {/* Image Placeholder with Rotary Style Frame */}
-            <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl aspect-[4/3]">
+          {/* Visual Side */}
+          <div className="relative animate-fade-up">
+            <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-premium aspect-[4/5] group">
+              <div className="absolute inset-0 bg-brand-blue/20 group-hover:bg-transparent transition-colors duration-700" />
                <img 
                  src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=2070&auto=format&fit=crop" 
-                 alt="Rotaract Team" 
-                 className="w-full h-full object-cover"
+                 alt="Rotaract Team in Action" 
+                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                />
             </div>
-            {/* Decorative background elements */}
-            <div className="absolute -top-6 -left-6 w-32 h-32 bg-brand-gold rounded-2xl -z-10 opacity-20" />
-            <div className="absolute -bottom-6 -right-6 w-64 h-64 bg-brand-azure rounded-full -z-10 opacity-10 blur-2xl" />
             
-            <div className="absolute -bottom-10 left-10 bg-brand-blue p-6 rounded-xl shadow-xl text-white max-w-xs hidden md:block">
-              <p className="font-heading font-bold text-2xl mb-1">50+</p>
-              <p className="text-xs uppercase tracking-wider font-semibold text-blue-100">Active Members Creating Change</p>
+            {/* Floating Info Card */}
+            <div className="absolute -bottom-10 -right-10 glass p-8 rounded-[2rem] shadow-xl max-w-[280px] hidden md:block animate-float">
+              <div className="flex flex-col gap-2">
+                <span className="text-4xl font-heading font-black text-brand-blue">50+</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-gray/60 leading-tight">
+                  Active Members Dedicated to Community Change
+                </span>
+                <div className="w-12 h-1 bg-brand-gold mt-2 rounded-full" />
+              </div>
             </div>
+            
+            <div className="absolute -top-10 -left-10 w-40 h-40 border-2 border-brand-azure/10 rounded-full -z-10" />
           </div>
 
-          <div>
-            <span className="text-brand-azure font-bold uppercase tracking-widest text-sm mb-4 block">About Our Club</span>
-            <h2 className="text-4xl md:text-5xl font-heading font-bold mb-8 leading-tight">
-              Service, Fellowship, and <br />
-              <span className="text-brand-blue">Global Leadership.</span>
-            </h2>
-            <div className="space-y-6 text-brand-gray leading-relaxed">
+          {/* Content Side */}
+          <div className="space-y-10 animate-fade-up" style={{ animationDelay: "200ms" }}>
+            <div>
+              <span className="text-[10px] font-black text-brand-azure uppercase tracking-[0.3em] mb-4 block">Our Legacy & Mission</span>
+              <h2 className="text-5xl md:text-7xl font-heading font-black mb-8 leading-[1.1]">
+                Service, Fellowship, and <br />
+                <span className="text-brand-blue font-italic">Global Leadership.</span>
+              </h2>
+            </div>
+            
+            <div className="space-y-6 text-brand-gray/80 text-lg leading-relaxed font-light">
               <p>
-                The Rotaract Club of Swarna Bengaluru is part of a global movement of young professionals and students who are committed to service and leadership. We believe in the power of youth to drive positive change in our community.
+                The Rotaract Club of Swarna Bengaluru is a vibrant community of young professionals and students committed to service above self. We believe in the transformative power of youth to drive positive change.
               </p>
               <p>
-                Our mission is to provide an opportunity for young men and women to enhance the knowledge and skills that will assist them in personal development, to address the physical and social needs of their communities, and to promote better relations between all people worldwide through a framework of friendship and service.
+                Our mission is to empower individuals through skill-sharing, community engagement, and international cooperation—fostering a world of mutual understanding and lasting impact.
               </p>
             </div>
             
-            <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="flex gap-4 items-start">
-                <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-brand-blue shrink-0">
-                  <span className="font-bold text-lg">01</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 pt-4">
+              <div className="space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-brand-light flex items-center justify-center text-brand-blue">
+                  <span className="font-heading font-bold text-xl leading-none">01</span>
                 </div>
                 <div>
-                  <h4 className="font-bold mb-1">Leadership</h4>
-                  <p className="text-sm text-gray-500">Developing next-generation leaders through mentorship and projects.</p>
+                  <h4 className="font-heading font-bold text-xl mb-2">Leadership</h4>
+                  <p className="text-xs text-brand-gray/60 font-medium leading-relaxed uppercase tracking-wider">Mentoring the next generation of changemakers.</p>
                 </div>
               </div>
-              <div className="flex gap-4 items-start">
-                <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-brand-gold shrink-0">
-                  <span className="font-bold text-lg">02</span>
+              <div className="space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center text-brand-gold">
+                  <span className="font-heading font-bold text-xl leading-none">02</span>
                 </div>
                 <div>
-                  <h4 className="font-bold mb-1">Impact</h4>
-                  <p className="text-sm text-gray-500">Executing meaningful service projects that matter to Bengaluru.</p>
+                  <h4 className="font-heading font-bold text-xl mb-2">Impact</h4>
+                  <p className="text-xs text-brand-gray/60 font-medium leading-relaxed uppercase tracking-wider">Executing service projects that matter to Bengaluru.</p>
                 </div>
               </div>
             </div>
-
-            <div className="mt-12">
-               <Link href="/about" className="text-brand-blue font-bold flex items-center gap-2 hover:gap-4 transition-all">
-                  Learn more about our history <span>&rarr;</span>
+            
+            <div className="pt-8">
+               <Link href="/about" className="group inline-flex items-center gap-4 text-brand-blue font-black uppercase tracking-[0.2em] text-xs">
+                  <span className="relative">
+                    Discover our journey
+                    <span className="absolute -bottom-1 left-0 w-full h-[1px] bg-brand-blue/20 group-hover:bg-brand-blue transition-colors" />
+                  </span>
+                  <div className="w-10 h-10 rounded-full border border-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue group-hover:text-white transition-all duration-300">
+                    <span className="text-xl">&rarr;</span>
+                  </div>
                </Link>
             </div>
           </div>
@@ -71,5 +94,3 @@ export default function About() {
     </section>
   );
 }
-
-import Link from "next/link";

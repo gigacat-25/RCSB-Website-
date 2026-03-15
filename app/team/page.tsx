@@ -5,48 +5,75 @@ export const revalidate = 60;
 export default async function TeamPage() {
   let teamMembers = [];
   try {
-    teamMembers = await apiFetch("/api/team");
+    const data = await apiFetch("/api/team");
+    teamMembers = data || [];
   } catch (error) {
     console.error("Failed to fetch team:", error);
   }
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-slate-50 min-h-screen">
       {/* Header */}
-      <section className="bg-brand-blue py-20 text-white">
-        <div className="container-custom">
-          <h1 className="text-4xl md:text-5xl font-heading font-bold mb-4">Our Leadership</h1>
-          <p className="text-blue-100 max-w-2xl text-lg">
-            The dedicated individuals behind our initiatives. Meet the board members of Rotaract Club of Swarna Bengaluru.
-          </p>
+      <section className="relative py-32 overflow-hidden bg-brand-blue border-b border-brand-gold/20">
+        <div className="absolute inset-0 bg-mesh-gradient opacity-40 mix-blend-overlay" />
+        <div className="container-custom relative z-10 text-white">
+          <div className="max-w-4xl animate-fade-up pt-16 md:pt-24">
+            <span className="text-[10px] font-black text-brand-gold uppercase tracking-[0.4em] mb-6 block">Our Leadership</span>
+            <h1 className="text-6xl md:text-8xl font-heading font-black text-white mb-8 leading-[1.1]">
+              The Guiding <br />
+              <span className="text-brand-gold italic">Force.</span>
+            </h1>
+            <p className="text-white/90 text-xl font-light leading-relaxed max-w-2xl">
+              Meet the visionaries behind our impact. A dedicated board of directors committed to steering our club towards sustainable change and community growth.
+            </p>
+          </div>
         </div>
       </section>
 
       {/* Leadership Grid */}
-      <section className="py-20">
+      <section className="py-24">
         <div className="container-custom">
           
-          <div className="mb-16">
-            <h2 className="text-3xl font-heading font-bold text-brand-blue mb-8 pb-2 border-b-2 border-brand-gold inline-block">Board of Directors 2024-25</h2>
+          <div className="mb-24">
+            <div className="flex items-center gap-6 mb-16 animate-fade-up">
+              <h2 className="text-3xl font-heading font-black text-brand-blue italic underline decoration-brand-gold decoration-4 underline-offset-8">
+                Board of Directors 2024-25
+              </h2>
+            </div>
             
             {teamMembers.length === 0 ? (
-              <div className="text-center py-20 text-gray-400 font-bold">
-                Team roster updating soon.
+              <div className="glass p-24 text-center rounded-[4rem] text-slate-400 font-heading font-bold text-3xl italic animate-fade-up">
+                The roster is being curated for the upcoming term.
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-24">
                 {teamMembers.map((member: any, idx: number) => (
-                  <div key={idx} className="group flex flex-col">
-                    <div className="relative aspect-square rounded-2xl overflow-hidden mb-6 shadow-md border border-gray-100">
+                  <div 
+                    key={idx} 
+                    className="group flex flex-col animate-fade-up"
+                    style={{ animationDelay: `${idx * 150}ms` }}
+                  >
+                    <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden mb-10 shadow-premium group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-700">
+                      <div className="absolute inset-0 bg-brand-blue/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
                       <img 
                         src={member.image_url || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"} 
                         alt={member.name} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                       />
+                      {member.bio && (
+                        <div className="absolute inset-x-4 bottom-4 glass p-8 rounded-[1.5rem] opacity-0 group-hover:opacity-100 translate-y-10 group-hover:translate-y-0 transition-all duration-500 z-20">
+                          <p className="text-brand-blue text-[12px] italic font-medium leading-relaxed">"{member.bio}"</p>
+                        </div>
+                      )}
                     </div>
-                    <h3 className="text-xl font-heading font-bold text-brand-blue mb-1">{member.name}</h3>
-                    <p className="text-brand-azure font-bold text-sm uppercase mb-3">{member.role} <span className="text-gray-300 mx-2">|</span> {member.period}</p>
-                    {member.bio && <p className="text-gray-500 text-sm italic">"{member.bio}"</p>}
+                    <div className="px-4">
+                      <h3 className="text-3xl font-heading font-black text-brand-blue mb-2 group-hover:text-brand-azure transition-colors">{member.name}</h3>
+                      <p className="text-brand-gray/40 text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3">
+                        {member.role}
+                        <span className="w-4 h-px bg-slate-200" />
+                        <span className="text-brand-gold">{member.period}</span>
+                      </p>
+                    </div>
                   </div>
                 ))}
               </div>

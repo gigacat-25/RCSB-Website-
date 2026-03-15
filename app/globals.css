@@ -2,24 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --rotary-blue: #0F3B82;
+  --rotary-gold: #F7A81B;
+  --rotary-azure: #01B4E7;
+  --rotary-cranberry: #D91B5C;
+  --bg-light: #F8F9FA;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.2);
+}
 
 html {
   scroll-behavior: smooth;
-  background-color: #F8F9FA;
+  background-color: var(--bg-light);
 }
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  color: #333333;
-  background-color: #F8F9FA;
+  color: #1e293b; /* slate-800 for better readability */
+  background-color: var(--bg-light);
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Poppins', system-ui, sans-serif;
+  font-family: 'Playfair Display', serif;
   font-weight: 700;
-  color: #0F3B82; /* Rotary Blue */
+  color: var(--rotary-blue);
+  letter-spacing: -0.02em;
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-xl;
+  }
+  
+  .glass-dark {
+    @apply bg-slate-900/80 backdrop-blur-lg border border-slate-700/30 shadow-2xl;
+  }
+
+  .premium-card {
+    @apply bg-white rounded-[2.5rem] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-500 overflow-hidden;
+  }
+
+  .text-gradient-blue {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#0F3B82] via-[#01B4E7] to-[#0F3B82];
+  }
 }
 
 @layer utilities {
@@ -29,12 +58,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Custom scrollbar */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: #F8F9FA; }
-::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #0F3B82; }
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { 
+  background: #cbd5e1; 
+  border-radius: 10px;
+  border: 2px solid #f1f5f9;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--rotary-blue); }
 
-/* Constrain content width matching rotary style */
 .container-custom {
-  @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  @apply w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12;
 }

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { isAdmin } from "@/lib/admin";
-import { PlusIcon, PencilIcon, TrashIcon, LinkIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, PencilIcon, TrashIcon, LinkIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function AdminProjectsPage() {
   const router = useRouter();
@@ -13,6 +13,8 @@ export default function AdminProjectsPage() {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("project"); // 'project', 'event'
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Role Protection
   useEffect(() => {
@@ -44,17 +46,22 @@ export default function AdminProjectsPage() {
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this item?")) return;
+    setDeleting(true);
     try {
       const res = await fetch(`/api/admin/projects/${id}`, { method: "DELETE" });
       if (res.ok) {
         setItems(items.filter(item => item.id !== id));
+        setConfirmDeleteId(null);
       } else {
+        setConfirmDeleteId(null);
         alert("Failed to delete item.");
       }
     } catch (error) {
       console.error(error);
+      setConfirmDeleteId(null);
       alert("Error deleting item.");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -152,22 +159,41 @@ export default function AdminProjectsPage() {
                     </span>
                   </td>
                   <td className="p-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Link 
-                        href={`/admin/projects/${item.id}`} 
-                        className="p-2 text-brand-azure hover:bg-blue-50 rounded-lg transition-colors flex items-center justify-center"
-                        title="Edit Entry"
-                      >
-                        <PencilIcon className="w-5 h-5" />
-                      </Link>
-                      <button 
-                        onClick={() => handleDelete(item.id)}
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors flex items-center justify-center cursor-pointer"
-                        title="Delete Entry"
-                      >
-                        <TrashIcon className="w-5 h-5" />
-                      </button>
-                    </div>
+                    {confirmDeleteId === item.id ? (
+                      <div className="flex items-center justify-end gap-2">
+                        <span className="text-sm text-red-600 font-semibold mr-1">Delete?</span>
+                        <button
+                          onClick={() => handleDelete(item.id)}
+                          disabled={deleting}
+                          className="flex items-center gap-1 px-3 py-1.5 bg-red-500 text-white text-sm font-bold rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50"
+                        >
+                          <CheckIcon className="w-4 h-4" /> Yes
+                        </button>
+                        <button
+                          onClick={() => setConfirmDeleteId(null)}
+                          className="flex items-center gap-1 px-3 py-1.5 bg-gray-200 text-gray-700 text-sm font-bold rounded-lg hover:bg-gray-300 transition-colors"
+                        >
+                          <XMarkIcon className="w-4 h-4" /> No
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-end gap-2">
+                        <Link 
+                          href={`/admin/projects/${item.id}`} 
+                          className="p-2 text-brand-azure hover:bg-blue-50 rounded-lg transition-colors flex items-center justify-center"
+                          title="Edit Entry"
+                        >
+                          <PencilIcon className="w-5 h-5" />
+                        </Link>
+                        <button 
+                          onClick={() => setConfirmDeleteId(item.id)}
+                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors flex items-center justify-center cursor-pointer"
+                          title="Delete Entry"
+                        >
+                          <TrashIcon className="w-5 h-5" />
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))

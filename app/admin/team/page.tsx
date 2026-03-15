@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { isAdmin } from "@/lib/admin";
-import { PlusIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, PencilIcon, TrashIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function AdminTeamPage() {
   const router = useRouter();
@@ -13,6 +13,8 @@ export default function AdminTeamPage() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Role Protection
   useEffect(() => {
@@ -41,13 +43,16 @@ export default function AdminTeamPage() {
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this member?")) return;
+    setDeleting(true);
     try {
       const res = await fetch(`/api/admin/team/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete");
       setMembers(members.filter((m: any) => m.id !== id));
+      setConfirmDeleteId(null);
     } catch (err: any) {
       alert(err.message);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -109,20 +114,39 @@ export default function AdminTeamPage() {
                     </td>
                     <td className="p-4 text-gray-600 font-semibold">{member.period}</td>
                     <td className="p-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link 
-                          href={`/admin/team/${member.id}`} 
-                          className="p-2 text-brand-azure hover:bg-blue-50 rounded-lg transition-colors"
-                        >
-                          <PencilIcon className="w-5 h-5" />
-                        </Link>
-                        <button 
-                          onClick={() => handleDelete(member.id)}
-                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                        >
-                          <TrashIcon className="w-5 h-5" />
-                        </button>
-                      </div>
+                      {confirmDeleteId === member.id ? (
+                        <div className="flex items-center justify-end gap-2">
+                          <span className="text-sm text-red-600 font-semibold mr-1">Delete?</span>
+                          <button
+                            onClick={() => handleDelete(member.id)}
+                            disabled={deleting}
+                            className="flex items-center gap-1 px-3 py-1.5 bg-red-500 text-white text-sm font-bold rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50"
+                          >
+                            <CheckIcon className="w-4 h-4" /> Yes
+                          </button>
+                          <button
+                            onClick={() => setConfirmDeleteId(null)}
+                            className="flex items-center gap-1 px-3 py-1.5 bg-gray-200 text-gray-700 text-sm font-bold rounded-lg hover:bg-gray-300 transition-colors"
+                          >
+                            <XMarkIcon className="w-4 h-4" /> No
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-end gap-2">
+                          <Link 
+                            href={`/admin/team/${member.id}`} 
+                            className="p-2 text-brand-azure hover:bg-blue-50 rounded-lg transition-colors"
+                          >
+                            <PencilIcon className="w-5 h-5" />
+                          </Link>
+                          <button 
+                            onClick={() => setConfirmDeleteId(member.id)}
+                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                          >
+                            <TrashIcon className="w-5 h-5" />
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))
@@ -134,3 +158,5 @@ export default function AdminTeamPage() {
     </div>
   );
 }
+
+

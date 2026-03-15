@@ -16,13 +16,13 @@ export default function FeaturedContent() {
         const data = await res.json();
         
         // Get latest 3 blogs
-        const latestBlogs = data
+        const latestBlogs = (data || [])
           .filter((p: any) => p.type === "blog")
           .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
           .slice(0, 3);
           
         // Get latest 2 upcoming events
-        const upcomingEvents = data
+        const upcomingEvents = (data || [])
           .filter((p: any) => p.type === "event" && p.status === "upcoming")
           .slice(0, 2);
           
@@ -41,47 +41,52 @@ export default function FeaturedContent() {
   if (blogs.length === 0 && events.length === 0) return null;
 
   return (
-    <section className="py-24 bg-white relative overflow-hidden">
+    <section className="py-32 bg-white relative overflow-hidden">
       <div className="container-custom relative z-10">
         
         {/* Events Section */}
         {events.length > 0 && (
-          <div className="mb-24">
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-              <div>
-                <h2 className="text-sm font-bold text-brand-azure uppercase tracking-[0.3em] mb-3">Mark Your Calendars</h2>
-                <h3 className="text-3xl md:text-4xl font-heading font-bold text-brand-blue">Upcoming Events</h3>
+          <div className="mb-32">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+              <div className="animate-fade-up">
+                <span className="text-[10px] font-black text-brand-azure uppercase tracking-[0.3em] mb-4 block">Mark Your Calendars</span>
+                <h3 className="text-5xl md:text-6xl font-heading font-black text-brand-blue">Upcoming Events</h3>
               </div>
-              <Link href="/projects" className="group flex items-center gap-2 text-brand-blue font-bold hover:text-brand-azure transition-colors">
-                View All Events <ArrowRightIcon className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <Link href="/projects" className="group flex items-center gap-4 text-brand-blue font-black uppercase tracking-[0.2em] text-[10px] hover:text-brand-azure transition-colors animate-fade-up">
+                View All Events <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
               </Link>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {events.map((event) => (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+              {events.map((event, idx) => (
                 <Link 
                   key={event.id}
                   href={`/projects/${event.slug}`}
-                  className="group relative flex flex-col md:flex-row bg-gray-50 rounded-[32px] overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-100"
+                  className="group relative flex flex-col md:flex-row premium-card animate-fade-up"
+                  style={{ animationDelay: `${idx * 200}ms` }}
                 >
-                  <div className="md:w-1/3 h-48 md:h-auto overflow-hidden">
+                  <div className="md:w-2/5 h-64 md:h-auto overflow-hidden">
+                    <div className="absolute inset-0 bg-brand-blue/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
                     <img 
                       src={event.image_url || "/images/placeholder.jpg"} 
                       alt={event.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                     />
                   </div>
-                  <div className="md:w-2/3 p-8 flex flex-col justify-center">
-                    <div className="flex items-center gap-2 text-brand-azure text-xs font-bold uppercase tracking-wider mb-3">
+                  <div className="md:w-3/5 p-10 flex flex-col justify-center bg-white">
+                    <div className="flex items-center gap-3 text-brand-azure text-[10px] font-black uppercase tracking-[0.2em] mb-4">
                       <CalendarIcon className="w-4 h-4" />
                       {event.year}
                     </div>
-                    <h4 className="text-xl font-heading font-bold text-brand-blue mb-2 group-hover:text-brand-azure transition-colors line-clamp-2">
+                    <h4 className="text-2xl font-heading font-black text-brand-blue mb-4 group-hover:text-brand-azure transition-colors line-clamp-2">
                       {event.title}
                     </h4>
-                    <p className="text-brand-gray text-sm line-clamp-2 italic">
+                    <p className="text-brand-gray/60 text-sm line-clamp-2 italic font-light leading-relaxed">
                       {event.description}
                     </p>
+                    <div className="mt-8 flex items-center gap-2 text-brand-blue font-black text-[10px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                      See Invitation &rarr;
+                    </div>
                   </div>
                 </Link>
               ))}
@@ -92,41 +97,44 @@ export default function FeaturedContent() {
         {/* Blogs Section */}
         {blogs.length > 0 && (
           <div>
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-              <div>
-                <h2 className="text-sm font-bold text-brand-cranberry uppercase tracking-[0.3em] mb-3">Latest Stories</h2>
-                <h3 className="text-3xl md:text-4xl font-heading font-bold text-brand-blue">From Our Blog</h3>
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+              <div className="animate-fade-up">
+                <span className="text-[10px] font-black text-brand-cranberry uppercase tracking-[0.3em] mb-4 block">Latest Stories</span>
+                <h3 className="text-5xl md:text-6xl font-heading font-black text-brand-blue">From Our Blog</h3>
               </div>
-              <Link href="/blogs" className="group flex items-center gap-2 text-brand-blue font-bold hover:text-brand-azure transition-colors">
-                Read All Stories <ArrowRightIcon className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <Link href="/blogs" className="group flex items-center gap-4 text-brand-blue font-black uppercase tracking-[0.2em] text-[10px] hover:text-brand-cranberry transition-colors animate-fade-up">
+                Read All Stories <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {blogs.map((blog) => (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              {blogs.map((blog, idx) => (
                 <Link 
                   key={blog.id} 
                   href={`/projects/${blog.slug}`}
-                  className="group flex flex-col h-full rounded-2xl overflow-hidden hover:shadow-lg transition-all"
+                  className="group flex flex-col animate-fade-up"
+                  style={{ animationDelay: `${idx * 150}ms` }}
                 >
-                  <div className="relative h-56 overflow-hidden rounded-2xl mb-6">
+                  <div className="relative h-72 overflow-hidden rounded-[2.5rem] mb-8 shadow-premium group-hover:shadow-2xl transition-all duration-500">
+                    <div className="absolute inset-0 bg-brand-blue/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
                     <img 
                       src={blog.image_url || "/images/placeholder.jpg"} 
                       alt={blog.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 z-20"></div>
                   </div>
-                  <div className="flex-1 px-2">
-                    <span className="text-brand-azure text-xs font-bold uppercase tracking-widest mb-2 block">
+                  <div className="flex-1 px-4">
+                    <span className="text-brand-azure text-[10px] font-black uppercase tracking-[0.3em] mb-4 block">
                       {blog.category}
                     </span>
-                    <h4 className="text-xl font-heading font-bold text-brand-blue mb-3 group-hover:text-brand-azure transition-colors line-clamp-2">
+                    <h4 className="text-2xl font-heading font-black text-brand-blue mb-4 group-hover:text-brand-azure transition-colors line-clamp-2">
                       {blog.title}
                     </h4>
-                    <p className="text-brand-gray text-sm line-clamp-3">
+                    <p className="text-brand-gray/60 text-sm line-clamp-3 leading-relaxed font-light mb-6">
                       {blog.description}
                     </p>
+                    <div className="w-12 h-1 bg-slate-100 group-hover:w-full group-hover:bg-brand-gold transition-all duration-500" />
                   </div>
                 </Link>
               ))}

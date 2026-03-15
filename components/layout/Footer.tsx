@@ -9,69 +9,105 @@ export default function Footer() {
   if (pathname?.startsWith("/admin")) return null;
 
   return (
-    <footer className="bg-brand-blue text-white pt-16 pb-8 border-t-[6px] border-brand-gold">
-      <div className="container-custom grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-        
-        {/* Brand Column */}
-        <div className="col-span-1 md:col-span-1">
-          <div className="flex items-center mb-6">
-            <img 
-              src="/logo.png" 
-              alt="Rotaract Swarna Bengaluru Logo" 
-              className="h-32 w-auto object-contain brightness-0 invert" 
-            />
+    <footer className="bg-slate-950 text-white pt-24 pb-12 relative overflow-hidden">
+      {/* Decorative background Elements */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-blue via-brand-gold to-brand-azure" />
+      <div className="absolute top-0 right-0 w-96 h-96 bg-brand-blue/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+      
+      <div className="container-custom">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
+          
+          {/* Brand Column */}
+          <div className="space-y-8">
+            <Link href="/" className="inline-block group">
+              <img 
+                src="/logo.png" 
+                alt="Rotaract Swarna Bengaluru Logo" 
+                className="h-24 w-auto object-contain brightness-0 invert group-hover:scale-105 transition-transform duration-500" 
+              />
+            </Link>
+            <p className="text-white/60 text-sm leading-relaxed font-light">
+              A vibrant community of young leaders dedicated to service above self. Together, we are crafting a legacy of impact across Bengaluru and beyond.
+            </p>
           </div>
-          <p className="text-sm text-blue-100 leading-relaxed mb-6">
-            A community of young leaders creating positive, lasting change in our communities and around the world.
-          </p>
+
+          {/* Links Column */}
+          <div>
+            <h3 className="font-heading font-black text-xs uppercase tracking-[0.3em] mb-10 text-brand-gold">Discover</h3>
+            <ul className="flex flex-col gap-5">
+              <li><Link href="/about" className="text-[13px] text-white/60 hover:text-white transition-all hover:translate-x-2 inline-flex items-center gap-2 group">
+                <span className="w-1 h-1 bg-brand-gold rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                Who We Are
+              </Link></li>
+              <li><Link href="/projects" className="text-[13px] text-white/60 hover:text-white transition-all hover:translate-x-2 inline-flex items-center gap-2 group">
+                <span className="w-1 h-1 bg-brand-gold rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                Impact Portfolio
+              </Link></li>
+              <li><Link href="/team" className="text-[13px] text-white/60 hover:text-white transition-all hover:translate-x-2 inline-flex items-center gap-2 group">
+                <span className="w-1 h-1 bg-brand-gold rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                Leadership
+              </Link></li>
+              <li><Link href="/contact" className="text-[13px] text-white/60 hover:text-white transition-all hover:translate-x-2 inline-flex items-center gap-2 group">
+                <span className="w-1 h-1 bg-brand-gold rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                Contact Us
+              </Link></li>
+            </ul>
+          </div>
+
+          {/* Get Involved Column */}
+          <div>
+            <h3 className="font-heading font-black text-xs uppercase tracking-[0.3em] mb-10 text-brand-gold">Action</h3>
+            <ul className="flex flex-col gap-5">
+              <li><Link href="/join" className="text-[13px] text-white/60 hover:text-white transition-all hover:translate-x-2 inline-flex items-center gap-2 group">
+                <span className="w-1 h-1 bg-brand-azure rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                Join the Tribe
+              </Link></li>
+              <li><Link href="/donate" className="text-[13px] text-white/60 hover:text-white transition-all hover:translate-x-2 inline-flex items-center gap-2 group">
+                <span className="w-1 h-1 bg-brand-azure rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                Direct Support
+              </Link></li>
+              <li><Link href="/partner" className="text-[13px] text-white/60 hover:text-white transition-all hover:translate-x-2 inline-flex items-center gap-2 group">
+                <span className="w-1 h-1 bg-brand-azure rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                Collaborate
+              </Link></li>
+            </ul>
+          </div>
+
+          {/* Contact Column */}
+          <div>
+            <h3 className="font-heading font-black text-xs uppercase tracking-[0.3em] mb-10 text-brand-gold">Reach Out</h3>
+            <address className="not-italic space-y-6">
+              <div className="flex flex-col gap-1">
+                <p className="text-white font-bold text-sm">Headquarters</p>
+                <p className="text-white/60 text-xs font-light leading-relaxed">Bengaluru, Karnataka, India</p>
+              </div>
+              <div className="flex flex-col gap-1">
+                <p className="text-white font-bold text-sm">Inquiries</p>
+                <a href="mailto:contact@rcsb.in" className="text-brand-azure text-xs font-black uppercase tracking-widest hover:text-white transition-colors">contact@rcsb.in</a>
+              </div>
+            </address>
+          </div>
+
         </div>
 
-        {/* Links Column */}
-        <div>
-          <h3 className="font-heading font-bold text-lg mb-4 text-brand-gold">Discover</h3>
-          <ul className="flex flex-col gap-3">
-            <li><Link href="/about" className="text-sm text-blue-100 hover:text-white transition-colors">Who We Are</Link></li>
-            <li><Link href="/projects" className="text-sm text-blue-100 hover:text-white transition-colors">Our Projects</Link></li>
-            <li><Link href="/team" className="text-sm text-blue-100 hover:text-white transition-colors">Leadership</Link></li>
-            <li><Link href="/contact" className="text-sm text-blue-100 hover:text-white transition-colors">Contact Us</Link></li>
-          </ul>
-        </div>
-
-        {/* Get Involved Column */}
-        <div>
-          <h3 className="font-heading font-bold text-lg mb-4 text-brand-gold">Get Involved</h3>
-          <ul className="flex flex-col gap-3">
-            <li><Link href="/join" className="text-sm text-blue-100 hover:text-white transition-colors">Join the Club</Link></li>
-            <li><Link href="/donate" className="text-sm text-blue-100 hover:text-white transition-colors">Donate</Link></li>
-            <li><Link href="/partner" className="text-sm text-blue-100 hover:text-white transition-colors">Partner With Us</Link></li>
-          </ul>
-        </div>
-
-        {/* Contact Column */}
-        <div>
-          <h3 className="font-heading font-bold text-lg mb-4 text-brand-gold">Contact</h3>
-          <address className="not-italic flex flex-col gap-3 text-sm text-blue-100">
-            <p>
-              <strong>Rotaract Club of Swarna Bengaluru</strong><br />
-              Bengaluru, Karnataka, India
-            </p>
-            <p>
-              Email: <a href="mailto:contact@rcsb.in" className="hover:text-white transition-colors">contact@rcsb.in</a>
-            </p>
-          </address>
-        </div>
-
-      </div>
-
-      <div className="container-custom pt-8 border-t border-blue-800 flex flex-col md:flex-row items-center justify-between gap-4">
-        <p className="text-xs text-blue-200">
-          &copy; {currentYear} Rotaract Club of Swarna Bengaluru. All rights reserved.
-        </p>
-        <div className="flex gap-4">
-          {/* Placeholder Social Icons */}
-          <a href="#" className="w-8 h-8 rounded-full bg-blue-800 flex items-center justify-center hover:bg-brand-azure transition-colors text-xs">FB</a>
-          <a href="#" className="w-8 h-8 rounded-full bg-blue-800 flex items-center justify-center hover:bg-brand-azure transition-colors text-xs">IG</a>
-          <a href="#" className="w-8 h-8 rounded-full bg-blue-800 flex items-center justify-center hover:bg-brand-azure transition-colors text-xs">LI</a>
+        <div className="pt-12 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="flex flex-col md:flex-row items-center gap-4 text-[11px] font-black uppercase tracking-[0.2em] text-white/30">
+            <span>&copy; {currentYear} Rotaract Club of Swarna Bengaluru</span>
+            <span className="hidden md:block w-1 h-1 bg-white/10 rounded-full" />
+            <span>Service Above Self</span>
+          </div>
+          
+          <div className="flex gap-4">
+            <a href="#" className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-brand-blue hover:border-brand-blue transition-all duration-300 text-xs font-black group">
+              FB
+            </a>
+            <a href="#" className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-brand-azure hover:border-brand-azure transition-all duration-300 text-xs font-black group">
+              IG
+            </a>
+            <a href="#" className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-brand-gold hover:border-brand-gold hover:text-brand-blue transition-all duration-300 text-xs font-black group">
+              LI
+            </a>
+          </div>
         </div>
       </div>
     </footer>

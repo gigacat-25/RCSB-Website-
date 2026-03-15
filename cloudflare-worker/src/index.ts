@@ -204,6 +204,11 @@ export default {
       const matchTeam = url.pathname.match(/^\/api\/team\/(\d+)$/);
       if (matchTeam) {
         const id = matchTeam[1];
+        if (request.method === "GET") {
+          const result = await env.DB.prepare("SELECT * FROM team_members WHERE id=?").bind(id).first();
+          if (!result) return new Response(JSON.stringify({ error: "Not found" }), { status: 404, headers });
+          return new Response(JSON.stringify(result), { headers });
+        }
         if (request.method === "PUT") {
           const body = await request.json() as any;
           await env.DB.prepare(
