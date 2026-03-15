@@ -1,0 +1,21 @@
+name = "rcsb-api-worker"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "rcsb-db"
+database_id = "YOUR_D1_DATABASE_ID"  # Get from: wrangler d1 create rcsb-db
+
+[[r2_buckets]]
+binding = "MEDIA_BUCKET"
+bucket_name = "rcsb-media"
+
+[vars]
+WORKER_SECRET = "replace_with_your_secret"
+R2_PUBLIC_URL = "https://media.rcsb.in"
+
+# For R2 presigned URLs (worker needs R2 credentials)
+# Set these as secrets: wrangler secret put R2_ACCESS_KEY_ID
+# wrangler secret put R2_SECRET_ACCESS_KEY
