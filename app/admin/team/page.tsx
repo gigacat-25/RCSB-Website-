@@ -2,12 +2,27 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
+import { isAdmin } from "@/lib/admin";
 import { PlusIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 export default function AdminTeamPage() {
+  const router = useRouter();
+  const { isLoaded, user } = useUser();
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Role Protection
+  useEffect(() => {
+    if (isLoaded && user) {
+      const email = user.primaryEmailAddress?.emailAddress;
+      if (!isAdmin(email)) {
+        router.push("/admin");
+      }
+    }
+  }, [isLoaded, user, router]);
 
   useEffect(() => {
     const fetchTeam = async () => {

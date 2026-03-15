@@ -1,24 +1,40 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
+import { isAdmin } from "@/lib/admin";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
-export default function AddProjectPage() {
+function AddProjectForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { isLoaded, user } = useUser();
+  const email = user?.primaryEmailAddress?.emailAddress;
+  const userIsAdmin = isAdmin(email);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
-    title: "",
-    slug: "",
-    category: "Community Service",
+    title: searchParams.get("title") || "",
+    slug: (searchParams.get("title") || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, ""),
+    category: searchParams.get("category") || "Community Service",
     year: new Date().getFullYear().toString(),
     description: "",
     image_url: "",
     content: "",
+    type: "project",
+    status: "completed",
   });
+
+  // Role Adjustment: If not admin, force type to blog
+  useEffect(() => {
+    if (isLoaded && !userIsAdmin) {
+      setFormData(prev => ({ ...prev, type: "blog" }));
+    }
+  }, [isLoaded, userIsAdmin]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -58,11 +74,15 @@ export default function AddProjectPage() {
   return (
     <div className="py-6 max-w-4xl">
       <div className="mb-8">
-        <Link href="/admin/projects" className="inline-flex items-center gap-2 text-brand-gray hover:text-brand-blue mb-4 transition-colors font-semibold text-sm">
-          <ArrowLeftIcon className="w-4 h-4" /> Back to Projects
+        <Link href={userIsAdmin ? "/admin/projects" : "/admin"} className="inline-flex items-center gap-2 text-brand-gray hover:text-brand-blue mb-4 transition-colors font-semibold text-sm">
+          <ArrowLeftIcon className="w-4 h-4" /> Back to {userIsAdmin ? "Projects" : "Dashboard"}
         </Link>
-        <h2 className="text-3xl font-heading font-bold text-brand-blue">Add New Project</h2>
-        <p className="text-brand-gray mt-1">Create a new club initiative to showcase on the public website.</p>
+        <h2 className="text-3xl font-heading font-bold text-brand-blue">
+          {userIsAdmin ? (formData.type === 'blog' ? 'Add New Blog Post' : 'Add New Project') : 'Share Your Story'}
+        </h2>
+        <p className="text-brand-gray mt-1">
+          {userIsAdmin ? 'Create a new club initiative or story to showcase.' : 'Inspire others by documenting your experience.'}
+        </p>
       </div>
 
       {error && (
@@ -116,9 +136,43 @@ export default function AddProjectPage() {
               <option>Leadership</option>
             </select>
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {userIsAdmin ? (
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Entry Type *</label>
+              <select
+                name="type"
+                value={formData.type}
+                onChange={handleChange}
+                className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
+              >
+                <option value="project">Project</option>
+                <option value="blog">Blog Post</option>
+                <option value="event">Upcoming Event</option>
+              </select>
+            </div>
+          ) : null}
+
+          {userIsAdmin ? (
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Status *</label>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
+              >
+                <option value="completed">Completed</option>
+                <option value="ongoing">Ongoing</option>
+                <option value="upcoming">Upcoming</option>
+              </select>
+            </div>
+          ) : null}
 
           <div className="space-y-2">
-            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Year / Rotary Term *</label>
+            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Year / Term *</label>
             <input 
               type="text" 
               name="year"
@@ -244,10 +298,18 @@ export default function AddProjectPage() {
             disabled={loading}
             className="px-8 py-3 bg-brand-blue text-white font-bold rounded-full hover:bg-blue-900 transition-colors disabled:opacity-50"
           >
-            {loading ? "Publishing..." : "Publish Project"}
+            {loading ? "Publishing..." : (userIsAdmin ? "Publish Project" : "Share Story")}
           </button>
         </div>
       </form>
     </div>
+  );
+}
+
+export default function AddProjectPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center font-bold text-brand-blue">Loading form...</div>}>
+      <AddProjectForm />
+    </Suspense>
   );
 }

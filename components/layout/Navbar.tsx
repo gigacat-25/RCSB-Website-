@@ -8,6 +8,7 @@ import { isAdmin } from "@/lib/admin";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/projects", label: "Projects" },
+  { href: "/blogs", label: "Blogs" },
   { href: "/team", label: "Leadership" },
   { href: "/contact", label: "Contact Us" },
 ];

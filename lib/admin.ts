@@ -1,6 +1,16 @@
-export const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL || "thejaswinps@gmail.com";
+export const ADMIN_EMAILS = [
+  "thejaswinps@gmail.com",
+  "pabt2024@gmail.com",
+];
 
 export function isAdmin(email?: string | null) {
   if (!email) return false;
-  return email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+  return ADMIN_EMAILS.includes(email.toLowerCase());
+}
+
+export type UserRole = "admin" | "blogger";
+
+export function getUserRole(email?: string | null): UserRole {
+  if (isAdmin(email)) return "admin";
+  return "blogger";
 }

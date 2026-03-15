@@ -2,7 +2,11 @@ export const API_URL = process.env.NEXT_PUBLIC_CLOUDFLARE_API_URL || "https://rc
 export const API_SECRET = process.env.CLOUDFLARE_WORKER_SECRET || "RCSB_Admin_Secure_Key_2026";
 
 /**
- * Helper to fetch data from the Cloudflare Worker API
+ * Helper to fetch data from the Cloudflare Worker API.
+ * Always adds the worker secret for protected endpoints.
+ * NOTE: For admin data fetching in the App Router, use `cache: "no-store"` 
+ * to prevent Next.js from caching the response. This helper is better suited
+ * for form submissions (POST/PUT/DELETE) than for GET requests in server components.
  */
 export async function apiFetch(endpoint: string, options: RequestInit = {}) {
   const headers = new Headers(options.headers || {});

@@ -19,7 +19,15 @@ export async function POST(request: Request) {
     }
 
     const data = await res.json();
-    return NextResponse.json(data);
+    
+    // Normalize URL: always use the worker's /media/ proxy
+    // This fixes any previous URLs stored as media.rcsb.in/*
+    let imageUrl = data.url;
+    if (data.key) {
+      imageUrl = `${API_URL}/media/${data.key}`;
+    }
+    
+    return NextResponse.json({ url: imageUrl, key: data.key });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

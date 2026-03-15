@@ -14,6 +14,12 @@ const nextConfig = {
         hostname: "*.r2.cloudflarestorage.com",
         pathname: "/**",
       },
+      // Cloudflare Worker media proxy
+      {
+        protocol: "https",
+        hostname: "rcsb-api-worker.impact1-iceas.workers.dev",
+        pathname: "/media/**",
+      },
       // Unsplash placeholder images
       {
         protocol: "https",

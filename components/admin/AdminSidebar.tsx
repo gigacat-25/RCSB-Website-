@@ -2,27 +2,45 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
+import { isAdmin } from "@/lib/admin";
+import { DocumentTextIcon, UsersIcon, EnvelopeIcon, Squares2X2Icon, BookOpenIcon } from "@heroicons/react/24/outline";
 
 const navItems = [
-  { name: "Dashboard", href: "/admin", icon: "⊞" },
-  { name: "Projects", href: "/admin/projects", icon: "📂" },
-  { name: "Team Leadership", href: "/admin/team", icon: "👥" },
-  { name: "Messages", href: "/admin/messages", icon: "✉️" },
+  { name: "Dashboard", href: "/admin", icon: Squares2X2Icon },
+  { name: "Projects & Events", href: "/admin/projects", icon: DocumentTextIcon },
+  { name: "Blogs", href: "/admin/blogs", icon: BookOpenIcon },
+  { name: "Team Members", href: "/admin/team", icon: UsersIcon },
+  { name: "Inquiries", href: "/admin/messages", icon: EnvelopeIcon },
 ];
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const { user } = useUser();
+  const email = user?.primaryEmailAddress?.emailAddress;
+  const userIsAdmin = isAdmin(email);
 
   return (
     <aside className="w-64 bg-brand-blue text-white min-h-screen flex flex-col fixed left-0 top-0">
       <div className="p-6">
-        <h2 className="text-2xl font-heading font-bold text-brand-gold">RCSB Admin</h2>
-        <p className="text-xs text-blue-200 mt-1 uppercase tracking-widest">Management Suite</p>
+        <h2 className="text-2xl font-heading font-bold text-brand-gold">
+          {userIsAdmin ? "RCSB Admin" : "RCSB Community"}
+        </h2>
+        <p className="text-xs text-blue-200 mt-1 uppercase tracking-widest">
+          {userIsAdmin ? "Management Suite" : "Contributor Portal"}
+        </p>
       </div>
       
       <nav className="flex-1 mt-6 px-4">
         <ul className="space-y-2">
           {navItems.map((item) => {
+            // RBAC: If not admin, only show Dashboard and Blogs
+            if (!userIsAdmin && item.name !== "Dashboard" && item.name !== "Blogs") {
+              return null;
+            }
+
+            const label = !userIsAdmin && item.name === "Blogs" ? "My Stories" : item.name;
+
             const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== "/admin");
             return (
               <li key={item.name}>
@@ -34,8 +52,8 @@ export default function AdminSidebar() {
                       : "text-blue-100 hover:bg-white/5 hover:text-white"
                   }`}
                 >
-                  <span className="text-lg">{item.icon}</span>
-                  <span>{item.name}</span>
+                  <item.icon className="w-5 h-5" />
+                  <span>{label}</span>
                 </Link>
               </li>
             );
@@ -48,7 +66,7 @@ export default function AdminSidebar() {
           href="/" 
           className="flex items-center justify-center gap-2 w-full py-3 bg-brand-cranberry hover:bg-red-700 text-white font-bold rounded-xl transition-colors"
         >
-          &larr; Exit Admin
+          &larr; Exit {userIsAdmin ? "Admin" : "Portal"}
         </Link>
       </div>
     </aside>

@@ -5,6 +5,18 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
+const API_URL = process.env.NEXT_PUBLIC_CLOUDFLARE_API_URL || "https://rcsb-api-worker.impact1-iceas.workers.dev";
+
+// Fix images stored with media.rcsb.in (old broken domain) by rewriting to the worker's media proxy
+function fixImageUrl(url: string | null | undefined): string {
+  if (!url) return "";
+  if (url.includes("media.rcsb.in/")) {
+    const key = url.split("media.rcsb.in/").pop();
+    return `${API_URL}/media/${key}`;
+  }
+  return url;
+}
+
 export default function EditProjectPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -19,6 +31,8 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
     description: "",
     image_url: "",
     content: "",
+    type: "project",
+    status: "completed",
   });
 
   useEffect(() => {
@@ -35,8 +49,10 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             category: project.category,
             year: project.year,
             description: project.description,
-            image_url: project.image_url || "",
+            image_url: fixImageUrl(project.image_url),
             content: project.content || "",
+            type: project.type || "project",
+            status: project.status || "completed",
           });
         } else {
           setError("Project not found");
@@ -165,9 +181,39 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
               <option>Leadership</option>
             </select>
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Entry Type *</label>
+            <select
+              name="type"
+              value={formData.type}
+              onChange={handleChange}
+              className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
+            >
+              <option value="project">Project</option>
+              <option value="blog">Blog Post</option>
+              <option value="event">Upcoming Event</option>
+            </select>
+          </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Year / Rotary Term *</label>
+            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Status *</label>
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
+            >
+              <option value="completed">Completed</option>
+              <option value="ongoing">Ongoing</option>
+              <option value="upcoming">Upcoming</option>
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Year / Term *</label>
             <input 
               type="text" 
               name="year"
@@ -198,7 +244,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             <div className="w-48 h-32 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl overflow-hidden flex items-center justify-center relative group">
               {formData.image_url ? (
                 <>
-                  <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover" />
+                  <img src={fixImageUrl(formData.image_url)} alt="Preview" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <button 
                       type="button"

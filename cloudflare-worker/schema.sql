@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS contact_submissions (
     created_at TEXT DEFAULT (datetime('now'))
 );
 
--- Projects showcase
+-- Projects showcase (includes Blogs and Events)
 CREATE TABLE IF NOT EXISTS projects (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
@@ -18,8 +18,24 @@ CREATE TABLE IF NOT EXISTS projects (
     description TEXT NOT NULL,
     image_url TEXT,
     content TEXT, -- Markdown content for the details page
+    type TEXT DEFAULT 'project', -- 'project', 'blog', or 'event'
+    status TEXT DEFAULT 'completed', -- 'upcoming', 'ongoing', 'completed'
+    author_email TEXT, -- The email of the person who created this content
+    gallery_urls TEXT DEFAULT '[]', -- JSON array of image URLs
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))
+);
+
+-- Blog Comments
+CREATE TABLE IF NOT EXISTS comments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    project_id INTEGER NOT NULL,
+    user_name TEXT NOT NULL,
+    user_email TEXT NOT NULL,
+    user_image TEXT,
+    content TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
 );
 
 -- Team members / Board of Directors
