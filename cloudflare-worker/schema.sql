@@ -8,6 +8,15 @@ CREATE TABLE IF NOT EXISTS contact_submissions (
     created_at TEXT DEFAULT (datetime('now'))
 );
 
+-- Authorized Admins for Role-Based Access Control
+CREATE TABLE IF NOT EXISTS authorized_admins (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE NOT NULL,
+    role TEXT DEFAULT 'blogger', -- 'admin' or 'blogger'
+    name TEXT,
+    created_at TEXT DEFAULT (datetime('now'))
+);
+
 -- Projects showcase (includes Blogs and Events)
 CREATE TABLE IF NOT EXISTS projects (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -86,20 +86,50 @@ export default {
       // > Projects CRUD
       if (request.method === "POST" && url.pathname === "/api/projects") {
         const body = await request.json() as any;
+        
+        const authorEmail = body.author_email;
+        if (!authorEmail) {
+          return new Response(JSON.stringify({ error: "Unauthorized: author_email is required." }), { status: 401, headers });
+        }
+
+        // [SQL RULES] Verify Authorization from Database
+        const admin = await env.DB.prepare("SELECT role FROM authorized_admins WHERE email = ?")
+          .bind(authorEmail).first() as { role: string } | null;
+        
+        if (!admin) {
+          return new Response(JSON.stringify({ error: "Unauthorized: Email not in authorized_admins table." }), { status: 403, headers });
+        }
+        
+        if (admin.role === 'blogger' && body.type !== 'blog') {
+          return new Response(JSON.stringify({ error: "Forbidden: Bloggers can only create blog posts." }), { status: 403, headers });
+        }
+
+        const slug = body.slug || `post-${Date.now()}`;
+        
+        // [SLUG CHECK] Ensure slug is unique before insert to provide better error
+        const existing = await env.DB.prepare("SELECT id FROM projects WHERE slug = ?").bind(slug).first();
+        if (existing) {
+          return new Response(JSON.stringify({ 
+            error: `Slug collision: The URL slug '${slug}' is already taken.`,
+            details: `A project with slug '${slug}' already exists in the database. Please choose a different title or slug.`,
+            colliding_slug: slug
+          }), { status: 409, headers });
+        }
+
         await env.DB.prepare(
           "INSERT INTO projects (title, slug, category, year, description, image_url, content, type, status, author_email, gallery_urls) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         ).bind(
-          body.title, 
-          body.slug, 
-          body.category, 
-          body.year, 
-          body.description, 
+          body.title || "Untitled", 
+          slug, 
+          body.category || "General", 
+          body.year || new Date().getFullYear().toString(), 
+          body.description || "", 
           body.image_url || null, 
           body.content || "",
           body.type || 'project',
           body.status || 'completed',
           body.author_email || null,
-          body.gallery_urls || null
+          body.gallery_urls || "[]"
         ).run();
         return new Response(JSON.stringify({ success: true }), { headers });
       }
@@ -112,28 +142,53 @@ export default {
           if (!result) return new Response(JSON.stringify({ error: "Not found" }), { status: 404, headers });
           return new Response(JSON.stringify(result), { headers });
         }
-        if (request.method === "PUT") {
-          const body = await request.json() as any;
-          await env.DB.prepare(
-            "UPDATE projects SET title=?, slug=?, category=?, year=?, description=?, image_url=?, content=?, type=?, status=?, gallery_urls=?, updated_at=datetime('now') WHERE id=?"
-          ).bind(
-            body.title, 
-            body.slug, 
-            body.category, 
-            body.year, 
-            body.description, 
-            body.image_url || null, 
-            body.content || "", 
-            body.type || 'project',
-            body.status || 'completed',
-            body.gallery_urls || null,
-            id
-          ).run();
-          return new Response(JSON.stringify({ success: true }), { headers });
-        }
-        if (request.method === "DELETE") {
-          await env.DB.prepare("DELETE FROM projects WHERE id=?").bind(id).run();
-          return new Response(JSON.stringify({ success: true }), { headers });
+        
+        if (request.method === "PUT" || request.method === "DELETE") {
+          const body = await (request.method === "PUT" ? request.clone().json() : {}) as any;
+          const userEmail = body.author_email || url.searchParams.get("user_email");
+          
+          if (!userEmail) {
+            return new Response(JSON.stringify({ error: "user_email is required for this operation." }), { status: 400, headers });
+          }
+
+          const admin = await env.DB.prepare("SELECT role FROM authorized_admins WHERE email = ?")
+            .bind(userEmail).first() as { role: string } | null;
+          
+          if (!admin) {
+            return new Response(JSON.stringify({ error: "Unauthorized: Email not in authorized_admins." }), { status: 403, headers });
+          }
+
+          const project = await env.DB.prepare("SELECT author_email FROM projects WHERE id = ?").bind(id).first() as any;
+          if (!project) return new Response(JSON.stringify({ error: "Project not found" }), { status: 404, headers });
+
+          // Only admins or the original author can edit/delete
+          if (admin.role !== 'admin' && project.author_email !== userEmail) {
+            return new Response(JSON.stringify({ error: "Forbidden: You can only manage your own content." }), { status: 403, headers });
+          }
+
+          if (request.method === "PUT") {
+            await env.DB.prepare(
+              "UPDATE projects SET title=?, slug=?, category=?, year=?, description=?, image_url=?, content=?, type=?, status=?, gallery_urls=?, updated_at=datetime('now') WHERE id=?"
+            ).bind(
+              body.title || "Untitled", 
+              body.slug || "unknown", 
+              body.category || "General", 
+              body.year || "2024", 
+              body.description || "", 
+              body.image_url || null, 
+              body.content || "", 
+              body.type || 'project',
+              body.status || 'completed',
+              body.gallery_urls || "[]",
+              id
+            ).run();
+            return new Response(JSON.stringify({ success: true }), { headers });
+          }
+          
+          if (request.method === "DELETE") {
+            await env.DB.prepare("DELETE FROM projects WHERE id=?").bind(id).run();
+            return new Response(JSON.stringify({ success: true }), { headers });
+          }
         }
       }
 
@@ -213,7 +268,12 @@ export default {
       return new Response(JSON.stringify({ error: "Not found", path: url.pathname }), { status: 404, headers });
 
     } catch (err: any) {
-      return new Response(JSON.stringify({ error: err.message }), { status: 500, headers });
+      console.error("Worker Error:", err.message, err.stack);
+      return new Response(JSON.stringify({ 
+        error: err.message, 
+        stack: err.stack,
+        details: "Check worker logs for more info"
+      }), { status: 500, headers });
     }
   },
 };

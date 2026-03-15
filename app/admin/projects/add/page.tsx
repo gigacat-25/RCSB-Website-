@@ -27,6 +27,7 @@ function AddProjectForm() {
     content: "",
     type: "project",
     status: "completed",
+    gallery_urls: "[]",
   });
 
   // Role Adjustment: If not admin, force type to blog
@@ -37,16 +38,24 @@ function AddProjectForm() {
   }, [isLoaded, userIsAdmin]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    let { name, value } = e.target;
     
-    // Auto-generate slug from title if title is changed
-    if (name === "title") {
-      setFormData((prev) => ({
-        ...prev,
-        slug: value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "")
-      }));
+    if (name === "slug") {
+      value = value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
     }
+
+    setFormData((prev) => {
+      const newState = { ...prev, [name]: value };
+      
+      // Auto-generate slug from title ONLY if name is 'title'
+      if (name === "title") {
+        newState.slug = value.toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)+/g, "");
+      }
+      
+      return newState;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -61,7 +70,10 @@ function AddProjectForm() {
         body: JSON.stringify(formData),
       });
 
-      if (!res.ok) throw new Error("Failed to create project");
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || errorData.details || "Failed to create project");
+      }
       
       router.push("/admin/projects");
       router.refresh();

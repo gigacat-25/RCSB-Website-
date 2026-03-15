@@ -1,0 +1,40 @@
+﻿[
+  {
+    "results": [
+      {
+        "id": 5,
+        "slug": "ryla-2024"
+      },
+      {
+        "id": 1,
+        "slug": "ryla-2026"
+      },
+      {
+        "id": 2,
+        "slug": "sparsha"
+      },
+      {
+        "id": 9,
+        "slug": "t"
+      }
+    ],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "APAC",
+      "served_by_colo": "SIN",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.3097
+      },
+      "duration": 0.3097,
+      "changes": 0,
+      "last_row_id": 0,
+      "changed_db": false,
+      "size_after": 45056,
+      "rows_read": 6,
+      "rows_written": 0,
+      "total_attempts": 1
+    }
+  }
+]

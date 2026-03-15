@@ -1,0 +1,15 @@
+﻿
+{
+  "error": {
+    "text": "A request to the Cloudflare API (/accounts/5cdde2791aa9609fed44884a0064c7bc/d1/database/738c9a5e-0c8a-4d7b-9eb9-95888ee6c8b7/query) failed.",
+    "notes": [
+      {
+        "text": "near \".\": syntax error at offset 0: SQLITE_ERROR [code: 7500]"
+      }
+    ],
+    "kind": "error",
+    "name": "APIError",
+    "code": 7500,
+    "accountTag": "5cdde2791aa9609fed44884a0064c7bc"
+  }
+}

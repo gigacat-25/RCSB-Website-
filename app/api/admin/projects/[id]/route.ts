@@ -27,7 +27,7 @@ export async function PUT(
 
     const result = await apiFetch(`/api/projects/${params.id}`, {
       method: "PUT",
-      body: JSON.stringify(body),
+      body: JSON.stringify({ ...body, author_email: email }),
     });
     return NextResponse.json(result);
   } catch (error: any) {
@@ -42,13 +42,21 @@ export async function DELETE(
   try {
     const user = await currentUser();
     const email = user?.primaryEmailAddress?.emailAddress;
+    const isUserAdmin = isAdmin(email);
 
-    // Safety: Only Admins can delete content for now
-    if (!isAdmin(email)) {
-      return NextResponse.json({ error: "Access Denied: Only administrators can delete content." }, { status: 403 });
+    // 1. Fetch existing project to check ownership
+    const existing = await apiFetch(`/api/projects/${params.id}`);
+    
+    // 2. Permission Check:
+    // - Admin can delete anything.
+    // - Blogger can only delete their own stories.
+    const isOwner = existing && existing.author_email === email;
+
+    if (!isUserAdmin && !isOwner) {
+      return NextResponse.json({ error: "Access Denied: You can only delete your own stories." }, { status: 403 });
     }
 
-    const result = await apiFetch(`/api/projects/${params.id}`, {
+    const result = await apiFetch(`/api/projects/${params.id}?user_email=${encodeURIComponent(email || "")}`, {
       method: "DELETE",
     });
     return NextResponse.json(result);

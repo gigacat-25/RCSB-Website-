@@ -1,6 +1,11 @@
+// NOTE: These are used for UI visibility only. 
+// The Cloudflare Worker SQL database (authorized_admins table) 
+// is the source of truth for authorization.
 export const ADMIN_EMAILS = [
   "thejaswinps@gmail.com",
   "pabt2024@gmail.com",
+  "impact1.iceas@gmail.com",
+  "voldie@google.com",
 ];
 
 export function isAdmin(email?: string | null) {

@@ -1,0 +1,79 @@
+﻿
+> rcsb-temp@0.1.0 build
+> next build
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+node.exe : Failed to 
+compile.
+At C:\Program Files\nod
+ejs\npm.ps1:29 char:3
++   & $NODE_EXE 
+$NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (Failed to com   
+ pile.:String) [],     
+RemoteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+
+./app/admin/login/page.
+tsx
+Module not found: 
+Can't resolve 
+'next-auth/react'
+
+https://nextjs.org/docs
+/messages/module-not-fo
+und
+
+./app/api/upload/route.
+ts
+Module not found: 
+Can't resolve 
+'next-auth'
+
+https://nextjs.org/docs
+/messages/module-not-fo
+und
+
+./app/api/upload/route.
+ts
+Module not found: 
+Can't resolve 
+'@/lib/auth'
+
+https://nextjs.org/docs
+/messages/module-not-fo
+und
+
+./app/api/upload/route.
+ts
+Module not found: 
+Can't resolve 
+'@aws-sdk/client-s3'
+
+https://nextjs.org/docs
+/messages/module-not-fo
+und
+
+./app/api/upload/route.
+ts
+Module not found: 
+Can't resolve '@aws-sdk
+/s3-request-presigner'
+
+https://nextjs.org/docs
+/messages/module-not-fo
+und
+
+
+> Build failed because 
+of webpack errors

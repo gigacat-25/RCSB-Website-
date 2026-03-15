@@ -1,0 +1,54 @@
+﻿[
+  {
+    "results": [
+      {
+        "id": 1,
+        "slug": "ryla-2026",
+        "type": "project"
+      },
+      {
+        "id": 2,
+        "slug": "sparsha",
+        "type": "project"
+      },
+      {
+        "id": 4,
+        "slug": "chess-tournment",
+        "type": "event"
+      },
+      {
+        "id": 5,
+        "slug": "ryla-2024",
+        "type": "blog"
+      },
+      {
+        "id": 9,
+        "slug": "t",
+        "type": "blog"
+      },
+      {
+        "id": 10,
+        "slug": "test-blog-post",
+        "type": "blog"
+      }
+    ],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "APAC",
+      "served_by_colo": "SIN",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1256
+      },
+      "duration": 0.1256,
+      "changes": 0,
+      "last_row_id": 0,
+      "changed_db": false,
+      "size_after": 36864,
+      "rows_read": 6,
+      "rows_written": 0,
+      "total_attempts": 1
+    }
+  }
+]

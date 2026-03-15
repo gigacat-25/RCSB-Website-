@@ -42,7 +42,7 @@ export default function AdminBlogsPage() {
       if (res.ok) {
         setItems(items.filter(item => item.id !== id));
       } else if (res.status === 403) {
-        alert("Action Denied: Only administrators can delete blog posts for security reasons.");
+        alert("Action Denied: You can only delete stories that you have created.");
       } else {
         const data = await res.json();
         alert(data.error || "Failed to delete blog post.");

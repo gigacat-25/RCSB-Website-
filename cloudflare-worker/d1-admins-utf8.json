@@ -1,0 +1,52 @@
+﻿[
+  {
+    "results": [
+      {
+        "id": 1,
+        "email": "thejaswinps@gmail.com",
+        "role": "admin",
+        "name": "Thejaswin",
+        "created_at": "2026-03-15 21:30:12"
+      },
+      {
+        "id": 2,
+        "email": "pabt2024@gmail.com",
+        "role": "admin",
+        "name": "PABT",
+        "created_at": "2026-03-15 21:30:12"
+      },
+      {
+        "id": 3,
+        "email": "impact1.iceas@gmail.com",
+        "role": "admin",
+        "name": "Impact1",
+        "created_at": "2026-03-15 21:30:12"
+      },
+      {
+        "id": 4,
+        "email": "voldie@google.com",
+        "role": "admin",
+        "name": "Voldie",
+        "created_at": "2026-03-15 21:30:12"
+      }
+    ],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "APAC",
+      "served_by_colo": "SIN",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.1226
+      },
+      "duration": 0.1226,
+      "changes": 0,
+      "last_row_id": 0,
+      "changed_db": false,
+      "size_after": 45056,
+      "rows_read": 4,
+      "rows_written": 0,
+      "total_attempts": 1
+    }
+  }
+]

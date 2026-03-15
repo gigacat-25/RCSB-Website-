@@ -30,7 +30,7 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body className="min-h-screen flex flex-col font-sans bg-brand-light">
           <Providers>
             <Navbar />

@@ -1,0 +1,27 @@
+﻿[
+  {
+    "results": [
+      {
+        "sql": "CREATE TABLE projects (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    title TEXT NOT NULL,\n    slug TEXT UNIQUE NOT NULL,\n    category TEXT NOT NULL,\n    year TEXT NOT NULL,\n    description TEXT NOT NULL,\n    image_url TEXT,\n    content TEXT, -- Markdown content for the details page\n    created_at TEXT DEFAULT (datetime('now')),\n    updated_at TEXT DEFAULT (datetime('now'))\n, type TEXT DEFAULT 'project', status TEXT DEFAULT 'completed', gallery_urls TEXT DEFAULT '[]', author_email TEXT)"
+      }
+    ],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "APAC",
+      "served_by_colo": "SIN",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.089
+      },
+      "duration": 0.089,
+      "changes": 0,
+      "last_row_id": 0,
+      "changed_db": false,
+      "size_after": 36864,
+      "rows_read": 7,
+      "rows_written": 0,
+      "total_attempts": 1
+    }
+  }
+]

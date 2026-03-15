@@ -31,18 +31,21 @@ function AddBlogContent() {
     let { name, value } = e.target;
     
     if (name === "slug") {
-      // Clean slug: lowercase, replace spaces/special chars with hyphens, remove double hyphens
       value = value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
     }
 
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    
-    if (name === "title" && !formData.slug) {
-      setFormData((prev) => ({
-        ...prev,
-        slug: value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "")
-      }));
-    }
+    setFormData((prev) => {
+      const newState = { ...prev, [name]: value };
+      
+      // Auto-generate slug from title ONLY if name is 'title'
+      if (name === "title") {
+        newState.slug = value.toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)+/g, "");
+      }
+      
+      return newState;
+    });
   };
 
   const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,7 +98,10 @@ function AddBlogContent() {
         body: JSON.stringify(formData),
       });
 
-      if (!res.ok) throw new Error("Failed to create blog post");
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || errorData.details || "Failed to create blog post");
+      }
       
       router.push("/admin/blogs");
       router.refresh();
@@ -129,7 +135,6 @@ function AddBlogContent() {
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 space-y-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Post Title *</label>
                   <input 
                     type="text" 
                     name="title"
@@ -138,6 +143,22 @@ function AddBlogContent() {
                     required
                     className="text-xl w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all font-bold text-brand-blue"
                     placeholder="e.g. My Experience at the RYLA Camp"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-brand-gray uppercase tracking-widest flex items-center gap-2">
+                    URL Slug
+                    <span className="capitalize font-normal text-gray-400 font-mono">(rcsb.in/blogs/{formData.slug || "..."})</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    name="slug"
+                    value={formData.slug}
+                    onChange={handleChange}
+                    required
+                    className="w-full bg-gray-50 border border-gray-100 focus:border-brand-azure focus:ring-0 rounded-lg px-4 py-2 outline-none transition-all font-mono text-sm text-brand-blue"
+                    placeholder="url-slug-here"
                   />
                 </div>
 
