@@ -12,7 +12,7 @@ export default function Hero() {
           playsInline
           className="w-full h-full object-cover scale-110 blur-[2px]"
         >
-          <source src="/videos/hero-bg.mp4" type="video/mp4" />
+          <source src={`${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/hero-bg.mp4`} type="video/mp4" />
         </video>
         
         {/* Layered Overlays for Depth */}
