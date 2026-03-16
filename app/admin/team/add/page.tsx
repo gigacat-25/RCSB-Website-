@@ -2,15 +2,20 @@
 export const runtime = 'edge';
 
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, PhotoIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function AddTeamMemberPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [dragOver, setDragOver] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -24,6 +29,75 @@ export default function AddTeamMemberPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    // If manually changing image_url, clear the preview
+    if (name === "image_url") {
+      setImagePreview(value || null);
+    }
+  };
+
+  const handleFileUpload = async (file: File) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setError("Please select an image file (JPG, PNG, WebP, etc.)");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image must be smaller than 5MB");
+      return;
+    }
+
+    setUploading(true);
+    setUploadProgress("Uploading photo...");
+    setError(null);
+
+    // Show local preview immediately
+    const reader = new FileReader();
+    reader.onload = (e) => setImagePreview(e.target?.result as string);
+    reader.readAsDataURL(file);
+
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: fd,
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Upload failed");
+      }
+
+      const data = await res.json();
+      setFormData((prev) => ({ ...prev, image_url: data.url }));
+      setImagePreview(data.url);
+      setUploadProgress("Photo uploaded successfully!");
+      setTimeout(() => setUploadProgress(null), 3000);
+    } catch (err: any) {
+      setError(err.message);
+      setImagePreview(null);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleFileUpload(file);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleFileUpload(file);
+  };
+
+  const clearImage = () => {
+    setFormData((prev) => ({ ...prev, image_url: "" }));
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -121,35 +195,97 @@ export default function AddTeamMemberPage() {
           ></textarea>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Profile Image URL</label>
-            <input 
-              type="url" 
-              name="image_url"
-              value={formData.image_url}
-              onChange={handleChange}
-              className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
-              placeholder="https://..."
-            />
-          </div>
+        {/* Photo Upload Section */}
+        <div className="space-y-3">
+          <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Profile Photo</label>
+          
+          <div className="flex gap-4 items-start">
+            {/* Preview */}
+            <div className="relative flex-shrink-0">
+              {imagePreview ? (
+                <div className="relative">
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="w-20 h-20 rounded-full object-cover border-2 border-brand-azure shadow"
+                  />
+                  <button
+                    type="button"
+                    onClick={clearImage}
+                    className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center hover:bg-red-600 transition-colors"
+                  >
+                    <XMarkIcon className="w-3 h-3" />
+                  </button>
+                </div>
+              ) : (
+                <div className="w-20 h-20 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center">
+                  <PhotoIcon className="w-8 h-8 text-gray-400" />
+                </div>
+              )}
+            </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Order Index</label>
-            <input 
-              type="number" 
-              name="order_index"
-              value={formData.order_index}
-              onChange={handleChange}
-              className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
-            />
+            {/* Upload Area */}
+            <div className="flex-1 space-y-2">
+              <div
+                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current?.click()}
+                className={`cursor-pointer border-2 border-dashed rounded-xl px-4 py-4 text-center transition-all ${
+                  dragOver
+                    ? "border-brand-azure bg-blue-50"
+                    : "border-gray-200 bg-gray-50 hover:border-brand-azure hover:bg-blue-50"
+                }`}
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+                {uploading ? (
+                  <p className="text-sm text-brand-azure font-semibold animate-pulse">{uploadProgress}</p>
+                ) : uploadProgress ? (
+                  <p className="text-sm text-green-600 font-semibold">{uploadProgress}</p>
+                ) : (
+                  <>
+                    <p className="text-sm font-semibold text-brand-blue">Click or drag photo here</p>
+                    <p className="text-xs text-gray-400 mt-1">JPG, PNG, WebP — max 5MB</p>
+                  </>
+                )}
+              </div>
+
+              {/* Manual URL fallback */}
+              <div className="relative">
+                <input 
+                  type="url" 
+                  name="image_url"
+                  value={formData.image_url}
+                  onChange={handleChange}
+                  className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-2.5 outline-none transition-all text-sm text-gray-500"
+                  placeholder="Or paste image URL..."
+                />
+              </div>
+            </div>
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Order Index</label>
+          <input 
+            type="number" 
+            name="order_index"
+            value={formData.order_index}
+            onChange={handleChange}
+            className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
+          />
         </div>
 
         <div className="pt-6 border-t border-gray-100 flex justify-end">
           <button 
             type="submit" 
-            disabled={loading}
+            disabled={loading || uploading}
             className="px-8 py-3 bg-brand-blue text-white font-bold rounded-full hover:bg-blue-900 transition-colors disabled:opacity-50"
           >
             {loading ? "Adding Member..." : "Add Member"}
