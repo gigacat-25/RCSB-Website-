@@ -96,11 +96,14 @@ export default {
         const admin = await env.DB.prepare("SELECT role FROM authorized_admins WHERE email = ?")
           .bind(authorEmail).first() as { role: string } | null;
         
+        // Authorization logic:
+        // 1. If in authorized_admins, follow role rules.
+        // 2. If NOT in table, ONLY allow type='blog'.
         if (!admin) {
-          return new Response(JSON.stringify({ error: "Unauthorized: Email not in authorized_admins table." }), { status: 403, headers });
-        }
-        
-        if (admin.role === 'blogger' && body.type !== 'blog') {
+          if (body.type !== 'blog') {
+            return new Response(JSON.stringify({ error: "Unauthorized: Only whitelisted admins can manage projects/events." }), { status: 403, headers });
+          }
+        } else if (admin.role === 'blogger' && body.type !== 'blog') {
           return new Response(JSON.stringify({ error: "Forbidden: Bloggers can only create blog posts." }), { status: 403, headers });
         }
 
