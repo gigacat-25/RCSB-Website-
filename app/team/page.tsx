@@ -1,6 +1,6 @@
 import { apiFetch } from "@/lib/api";
 
-export const revalidate = 60;
+export const revalidate = 0;
 
 export default async function TeamPage() {
   let teamMembers = [];
