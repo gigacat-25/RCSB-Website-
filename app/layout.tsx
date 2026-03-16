@@ -14,6 +14,11 @@ export const metadata: Metadata = {
     "A community of young professionals committed to service above self. Grow your leadership and create impact with Rotaract Swarna Bengaluru.",
   keywords: ["Rotaract", "Bengaluru", "RCSB", "Service", "Youth", "Community", "Rotary"],
   authors: [{ name: "RCSB" }],
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
   openGraph: {
     type: "website",
     locale: "en_IN",
