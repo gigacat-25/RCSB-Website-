@@ -10,10 +10,17 @@ export default function Hero() {
           loop
           muted
           playsInline
+          poster="/images/hero-fallback.png"
           className="w-full h-full object-cover scale-110 blur-[2px]"
         >
           <source src={`${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/hero-bg.mp4`} type="video/mp4" />
         </video>
+        
+        {/* Fallback Static Image if Video fails to load (CSS fallback) */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center -z-10 opacity-60"
+          style={{ backgroundImage: 'url("/images/hero-fallback.png")' }}
+        />
         
         {/* Layered Overlays for Depth */}
         <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm" />
