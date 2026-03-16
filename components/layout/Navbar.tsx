@@ -19,7 +19,12 @@ function AuthSection({ mobile = false }: { mobile?: boolean }) {
   const userEmail = user?.primaryEmailAddress?.emailAddress;
   const isUserAdmin = isAdmin(userEmail);
 
-  if (!isLoaded) return null;
+  if (!isLoaded) return (
+    <div className={`flex items-center gap-2 ${mobile ? "w-full" : ""}`}>
+      <div className="w-4 h-4 border-2 border-brand-gold/30 border-t-brand-gold rounded-full animate-spin" />
+      <span className="text-[10px] font-bold uppercase tracking-widest text-brand-gold/50">Initializing...</span>
+    </div>
+  );
 
   if (isSignedIn) {
     return mobile ? (
@@ -68,10 +73,10 @@ function AuthSection({ mobile = false }: { mobile?: boolean }) {
   return (
     <button 
       onClick={() => openSignIn()}
-      className={`font-semibold rounded-full transition-colors ${
+      className={`font-bold rounded-full transition-all active:scale-95 shadow-[0_10px_30px_rgba(247,168,27,0.2)] hover:shadow-[0_15px_35px_rgba(247,168,27,0.4)] ${
         mobile 
-          ? "w-full py-3 text-brand-white bg-brand-blue hover:bg-brand-blue/90" 
-          : "px-6 py-2.5 text-sm text-brand-white bg-brand-blue hover:bg-brand-blue/90 shadow-md hover:shadow-lg"
+          ? "w-full py-4 text-brand-blue bg-brand-gold hover:bg-white" 
+          : "px-8 py-3 text-sm text-brand-blue bg-brand-gold hover:bg-white border-2 border-brand-gold hover:border-white"
       }`}
     >
       Admin Login
