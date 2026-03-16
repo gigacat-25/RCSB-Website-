@@ -4,13 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { isAdmin } from "@/lib/admin";
-import { DocumentTextIcon, UsersIcon, EnvelopeIcon, Squares2X2Icon, BookOpenIcon } from "@heroicons/react/24/outline";
+import { DocumentTextIcon, UsersIcon, EnvelopeIcon, Squares2X2Icon, BookOpenIcon, PhotoIcon } from "@heroicons/react/24/outline";
 
 const navItems = [
   { name: "Dashboard", href: "/admin", icon: Squares2X2Icon },
   { name: "Projects & Events", href: "/admin/projects", icon: DocumentTextIcon },
   { name: "Blogs", href: "/admin/blogs", icon: BookOpenIcon },
   { name: "Team Members", href: "/admin/team", icon: UsersIcon },
+  { name: "Gallery", href: "/admin/gallery", icon: PhotoIcon },
   { name: "Inquiries", href: "/admin/messages", icon: EnvelopeIcon },
 ];
 
@@ -35,7 +36,7 @@ export default function AdminSidebar() {
         <ul className="space-y-2">
           {navItems.map((item) => {
             // RBAC: If not admin, only show Dashboard and Blogs
-            if (!userIsAdmin && item.name !== "Dashboard" && item.name !== "Blogs") {
+            if (!userIsAdmin && item.name !== "Dashboard" && item.name !== "Blogs" && item.name !== "Gallery") {
               return null;
             }
 

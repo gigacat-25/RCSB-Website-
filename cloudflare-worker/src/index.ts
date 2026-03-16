@@ -4,6 +4,16 @@ export interface Env {
   WORKER_SECRET: string;
 }
 
+// D1 Migration — run once in Cloudflare dashboard > D1 > your DB > Console:
+// CREATE TABLE IF NOT EXISTS gallery_slides (
+//   id INTEGER PRIMARY KEY AUTOINCREMENT,
+//   title TEXT NOT NULL,
+//   caption TEXT,
+//   image_url TEXT NOT NULL,
+//   order_index INTEGER DEFAULT 0,
+//   created_at TEXT DEFAULT (datetime('now'))
+// );
+
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
@@ -40,6 +50,12 @@ export default {
 
       if (request.method === "GET" && url.pathname === "/api/team") {
         const results = await env.DB.prepare("SELECT * FROM team_members ORDER BY order_index ASC").all();
+        return new Response(JSON.stringify(results.results), { headers });
+      }
+
+      // > Public Gallery (for homepage carousel)
+      if (request.method === "GET" && url.pathname === "/api/gallery") {
+        const results = await env.DB.prepare("SELECT * FROM gallery_slides ORDER BY order_index ASC, created_at ASC").all();
         return new Response(JSON.stringify(results.results), { headers });
       }
 
@@ -92,13 +108,9 @@ export default {
           return new Response(JSON.stringify({ error: "Unauthorized: author_email is required." }), { status: 401, headers });
         }
 
-        // [SQL RULES] Verify Authorization from Database
         const admin = await env.DB.prepare("SELECT role FROM authorized_admins WHERE email = ?")
           .bind(authorEmail).first() as { role: string } | null;
         
-        // Authorization logic:
-        // 1. If in authorized_admins, follow role rules.
-        // 2. If NOT in table, ONLY allow type='blog'.
         if (!admin) {
           if (body.type !== 'blog') {
             return new Response(JSON.stringify({ error: "Unauthorized: Only whitelisted admins can manage projects/events." }), { status: 403, headers });
@@ -109,7 +121,6 @@ export default {
 
         const slug = body.slug || `post-${Date.now()}`;
         
-        // [SLUG CHECK] Ensure slug is unique before insert to provide better error
         const existing = await env.DB.prepare("SELECT id FROM projects WHERE slug = ?").bind(slug).first();
         if (existing) {
           return new Response(JSON.stringify({ 
@@ -164,7 +175,6 @@ export default {
           const project = await env.DB.prepare("SELECT author_email FROM projects WHERE id = ?").bind(id).first() as any;
           if (!project) return new Response(JSON.stringify({ error: "Project not found" }), { status: 404, headers });
 
-          // Only admins or the original author can edit/delete
           if (admin.role !== 'admin' && project.author_email !== userEmail) {
             return new Response(JSON.stringify({ error: "Forbidden: You can only manage your own content." }), { status: 403, headers });
           }
@@ -271,6 +281,38 @@ export default {
           "INSERT INTO comments (project_id, user_name, user_email, user_image, content) VALUES (?, ?, ?, ?, ?)"
         ).bind(projectId, body.user_name, body.user_email, body.user_image || null, body.content).run();
         return new Response(JSON.stringify({ success: true }), { headers });
+      }
+
+      // > Gallery CRUD (admin protected)
+      if (request.method === "POST" && url.pathname === "/api/gallery") {
+        const body = await request.json() as any;
+        if (!body.title || !body.image_url) {
+          return new Response(JSON.stringify({ error: "title and image_url are required" }), { status: 400, headers });
+        }
+
+        const countResult = await env.DB.prepare("SELECT COUNT(*) as count FROM gallery_slides").first() as any;
+        const nextOrder = body.order_index ?? (countResult?.count ?? 0);
+
+        await env.DB.prepare(
+          "INSERT INTO gallery_slides (title, caption, image_url, order_index) VALUES (?, ?, ?, ?)"
+        ).bind(body.title, body.caption || "", body.image_url, nextOrder).run();
+        return new Response(JSON.stringify({ success: true }), { headers });
+      }
+
+      const matchGallery = url.pathname.match(/^\/api\/gallery\/(\d+)$/);
+      if (matchGallery) {
+        const id = matchGallery[1];
+        if (request.method === "PUT") {
+          const body = await request.json() as any;
+          await env.DB.prepare(
+            "UPDATE gallery_slides SET title=?, caption=?, image_url=?, order_index=? WHERE id=?"
+          ).bind(body.title, body.caption || "", body.image_url, body.order_index ?? 0, id).run();
+          return new Response(JSON.stringify({ success: true }), { headers });
+        }
+        if (request.method === "DELETE") {
+          await env.DB.prepare("DELETE FROM gallery_slides WHERE id=?").bind(id).run();
+          return new Response(JSON.stringify({ success: true }), { headers });
+        }
       }
 
       return new Response(JSON.stringify({ error: "Not found", path: url.pathname }), { status: 404, headers });
