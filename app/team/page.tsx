@@ -1,5 +1,6 @@
 import { apiFetch } from "@/lib/api";
 
+export const runtime = 'edge';
 export const revalidate = 0;
 
 export default async function TeamPage() {

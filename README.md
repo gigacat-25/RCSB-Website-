@@ -1,36 +1,179 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RCSB Website
+
+Official website for the **Rotaract Club of Seshadripuram Bangalore (RCSB)**.  
+Built with Next.js 14, Clerk authentication, a Cloudflare Worker API, Cloudflare D1 (SQLite), and Cloudflare R2 for media storage.
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js 14 (App Router), React 18, TypeScript |
+| Styling | Tailwind CSS, Framer Motion |
+| Auth | Clerk |
+| API | Cloudflare Worker (TypeScript) |
+| Database | Cloudflare D1 (SQLite) |
+| Media Storage | Cloudflare R2 (served via Worker `/media/` proxy) |
+
+---
+
+## Project Structure
+
+```
+├── app/
+│   ├── page.tsx              # Home page
+│   ├── team/                 # Public leadership page
+│   ├── projects/             # Projects showcase
+│   ├── blogs/                # Blog listing
+│   ├── contact/              # Contact form
+│   ├── admin/                # Admin dashboard (Clerk-protected)
+│   │   ├── team/             # Manage Board of Directors
+│   │   ├── projects/         # Manage projects & events
+│   │   └── blogs/            # Manage blog posts
+│   └── api/
+│       └── admin/            # Next.js API routes (proxies to Cloudflare Worker)
+│           ├── team/
+│           ├── projects/
+│           └── upload/
+├── cloudflare-worker/
+│   ├── src/index.ts          # Worker source (all API + D1 + R2 logic)
+│   └── schema.sql            # D1 database schema
+├── lib/
+│   ├── api.ts                # apiFetch helper + env constants
+│   └── admin.ts              # isAdmin() helper
+└── middleware.ts             # Clerk auth middleware
+```
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### 1. Clone & install
+
+```bash
+git clone <repo-url>
+cd RCSB-Website-
+npm install
+```
+
+### 2. Environment variables
+
+Copy `.env.local` and fill in your values:
+
+```env
+# Clerk
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_...
+CLERK_SECRET_KEY=sk_...
+NEXT_PUBLIC_ADMIN_EMAIL=admin@yourdomain.com
+
+# Cloudflare Worker & D1
+NEXT_PUBLIC_CLOUDFLARE_API_URL=https://your-worker.workers.dev
+CLOUDFLARE_WORKER_SECRET=your_secret_key
+
+# R2 (served via worker /media/ proxy)
+NEXT_PUBLIC_R2_PUBLIC_URL=https://your-worker.workers.dev/media
+```
+
+### 3. Run locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Cloudflare Worker Setup
 
-## Learn More
+The worker handles all data operations and media storage. It is deployed separately.
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+cd cloudflare-worker
+npm install
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Deploy the Worker
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npx wrangler deploy
+```
 
-## Deploy on Vercel
+### Set up D1 database
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+# Create the D1 database
+npx wrangler d1 create rcsb-db
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Apply the schema
+npx wrangler d1 execute rcsb-db --file=./schema.sql
+```
+
+### Set worker secret
+
+```bash
+npx wrangler secret put WORKER_SECRET
+```
+
+---
+
+## Database Schema
+
+Five tables managed in Cloudflare D1:
+
+- **`projects`** — Projects, events, and blog posts (unified, differentiated by `type`)
+- **`team_members`** — Board of Directors with `order_index` for display order
+- **`authorized_admins`** — RBAC table; roles are `admin` or `blogger`
+- **`comments`** — Blog post comments, linked to `projects`
+- **`contact_submissions`** — Public contact form submissions
+
+---
+
+## Admin Panel
+
+The admin dashboard is available at `/admin` and is protected by Clerk.  
+Role-based access is enforced at the Worker level via the `authorized_admins` table.
+
+| Role | Capabilities |
+|---|---|
+| `admin` | Full access — manage team, projects, events, blogs, messages |
+| `blogger` | Can only create and edit blog posts |
+
+---
+
+## API Endpoints (Cloudflare Worker)
+
+All protected endpoints require `Authorization: Bearer <WORKER_SECRET>`.
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/projects` | Public | List all projects |
+| `GET` | `/api/team` | Public | List team members |
+| `POST` | `/api/contact` | Public | Submit contact form |
+| `GET` | `/media/:key` | Public | Serve R2 media |
+| `POST` | `/api/upload` | Protected | Upload image to R2 |
+| `POST` | `/api/projects` | Protected | Create project |
+| `PUT` | `/api/projects/:id` | Protected | Update project |
+| `DELETE` | `/api/projects/:id` | Protected | Delete project |
+| `POST` | `/api/team` | Protected | Add team member |
+| `PUT` | `/api/team/:id` | Protected | Update team member |
+| `DELETE` | `/api/team/:id` | Protected | Delete team member |
+| `GET` | `/api/messages` | Protected | List contact submissions |
+
+---
+
+## Scripts
+
+```bash
+npm run dev       # Start development server
+npm run build     # Production build
+npm run start     # Start production server
+npm run lint      # Run ESLint
+```
+
+---
+
+## License
+
+See [LICENSE](./LICENSE).
