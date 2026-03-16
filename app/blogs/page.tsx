@@ -75,7 +75,7 @@ export default function BlogsPage() {
               <button 
                 onClick={() => {
                   if (!isSignedIn) {
-                    openSignIn({ afterSignInUrl: "/admin/blogs/add" });
+                    openSignIn({ forceRedirectUrl: "/admin/blogs/add" });
                   } else {
                     router.push("/admin/blogs/add");
                   }
