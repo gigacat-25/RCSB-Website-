@@ -3,3 +3,9 @@ name = "rcsb-website"
 compatibility_date = "2024-11-18"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".vercel/output/static"
+
+[vars]
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_Y29oZXJlbnQtYW5jaG92eS01NC5jbGVyay5hY2NvdW50cy5kZXYk"
+NEXT_PUBLIC_ADMIN_EMAIL = "rscbadmin@rotract.com"
+NEXT_PUBLIC_R2_PUBLIC_URL = "https://rcsb-api-worker.impact1-iceas.workers.dev/media"
+NEXT_PUBLIC_CLOUDFLARE_API_URL = "https://rcsb-api-worker.impact1-iceas.workers.dev"
