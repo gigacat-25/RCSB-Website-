@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { BookOpenIcon, UserIcon, MagnifyingGlassIcon, TagIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import { useUser, useClerk } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 export default function BlogsPage() {
   const [blogs, setBlogs] = useState<any[]>([]);
@@ -10,13 +12,17 @@ export default function BlogsPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const { isSignedIn, isLoaded: isUserLoaded } = useUser();
+  const { openSignIn } = useClerk();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const res = await fetch("/api/admin/projects"); // Using the proxy endpoint that actually returns data
+        const res = await fetch("/api/projects"); // Use the public endpoint
         const data = await res.json();
-        const blogsData = data.filter((p: any) => p.type === "blog");
+        // The public endpoint returns all projects/events/blogs
+        const blogsData = Array.isArray(data) ? data.filter((p: any) => p.type === "blog") : [];
         setBlogs(blogsData);
         setFilteredBlogs(blogsData);
       } catch (error) {
@@ -66,13 +72,19 @@ export default function BlogsPage() {
               <p className="text-white/90 text-xl font-light leading-relaxed max-w-xl">
                 Exploring the heart of Rotaract through reports, reflections, and deep-dives into our community impact.
               </p>
-              <Link 
-                href="/admin/blogs/add"
+              <button 
+                onClick={() => {
+                  if (!isSignedIn) {
+                    openSignIn({ afterSignInUrl: "/admin/blogs/add" });
+                  } else {
+                    router.push("/admin/blogs/add");
+                  }
+                }}
                 className="group px-10 py-5 bg-brand-gold text-brand-blue font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl hover:bg-white transition-all shadow-xl hover:-translate-y-1 active:translate-y-0 flex items-center gap-3 whitespace-nowrap"
               >
                 <PencilSquareIcon className="w-4 h-4" />
                 Draft a Story
-              </Link>
+              </button>
             </div>
           </div>
         </div>
