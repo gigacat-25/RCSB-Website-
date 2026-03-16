@@ -30,14 +30,14 @@ function AuthSection({ mobile = false }: { mobile?: boolean }) {
     return mobile ? (
       <div className="flex flex-col gap-2 w-full">
         {isUserAdmin && (
-          <Link 
-            href="/admin" 
+          <Link
+            href="/admin"
             className="w-full text-center py-3 rounded-lg text-sm font-bold bg-brand-gold text-brand-blue hover:bg-white transition-colors border border-brand-gold"
           >
             Admin Dashboard
           </Link>
         )}
-        <button 
+        <button
           onClick={() => openUserProfile()}
           className="w-full flex items-center justify-center gap-3 px-2 py-3 text-brand-blue font-semibold hover:bg-gray-100 rounded-lg transition-colors"
         >
@@ -48,8 +48,8 @@ function AuthSection({ mobile = false }: { mobile?: boolean }) {
     ) : (
       <div className="flex items-center gap-6">
         {isUserAdmin && (
-          <Link 
-            href="/admin" 
+          <Link
+            href="/admin"
             className="text-xs font-bold text-brand-gold uppercase tracking-widest hover:text-brand-azure transition-colors"
           >
             Dashboard
@@ -59,8 +59,8 @@ function AuthSection({ mobile = false }: { mobile?: boolean }) {
           <button onClick={() => openUserProfile()} className="hover:scale-105 transition-transform">
             <img src={user?.imageUrl} alt="Profile" className="w-8 h-8 rounded-full border-2 border-brand-azure" />
           </button>
-          <button 
-            onClick={() => signOut()} 
+          <button
+            onClick={() => signOut()}
             className="text-sm font-medium opacity-60 hover:opacity-100 transition-opacity"
           >
             Sign Out
@@ -71,15 +71,14 @@ function AuthSection({ mobile = false }: { mobile?: boolean }) {
   }
 
   return (
-    <button 
+    <button
       onClick={() => openSignIn()}
-      className={`font-bold rounded-full transition-all active:scale-95 shadow-[0_10px_30px_rgba(247,168,27,0.2)] hover:shadow-[0_15px_35px_rgba(247,168,27,0.4)] ${
-        mobile 
-          ? "w-full py-4 text-brand-blue bg-brand-gold hover:bg-white" 
+      className={`font-bold rounded-full transition-all active:scale-95 shadow-[0_10px_30px_rgba(247,168,27,0.2)] hover:shadow-[0_15px_35px_rgba(247,168,27,0.4)] ${mobile
+          ? "w-full py-4 text-brand-blue bg-brand-gold hover:bg-white"
           : "px-8 py-3 text-sm text-brand-blue bg-brand-gold hover:bg-white border-2 border-brand-gold hover:border-white"
-      }`}
+        }`}
     >
-      Admin Login
+      Login
     </button>
   );
 }
@@ -96,24 +95,23 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => { setOpen(false); }, [pathname]);
-  
+
   // Don't show public navbar on admin routes
   if (pathname?.startsWith("/admin")) return null;
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-      scrolled 
-        ? "bg-white/70 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.05)] py-2 border-b border-white/20" 
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
+        ? "bg-white/70 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.05)] py-2 border-b border-white/20"
         : "bg-transparent py-5"
-    }`}>
+      }`}>
       <div className="container-custom flex items-center justify-between">
-        
+
         {/* Logo */}
         <Link href="/" className="flex items-center group relative">
           <div className="absolute -inset-2 bg-brand-gold/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          <img 
-            src="/logo.png" 
-            alt="Rotaract Swarna Bengaluru Logo" 
+          <img
+            src="/logo.png"
+            alt="Rotaract Swarna Bengaluru Logo"
             className={`h-20 w-auto object-contain transition-all duration-500 ${scrolled ? "scale-90" : "scale-100"}`}
           />
         </Link>
@@ -127,11 +125,10 @@ export default function Navbar() {
                 <li key={href}>
                   <Link
                     href={href}
-                    className={`text-[13px] font-bold uppercase tracking-[0.15em] transition-all duration-300 relative group py-2 ${
-                      isActive 
+                    className={`text-[13px] font-bold uppercase tracking-[0.15em] transition-all duration-300 relative group py-2 ${isActive
                         ? (scrolled ? "text-brand-blue" : "text-white")
                         : (scrolled ? "text-brand-gray/80 hover:text-brand-blue" : "text-white/70 hover:text-white")
-                    }`}
+                      }`}
                   >
                     {label}
                     <span className={`absolute bottom-0 left-0 h-[2px] bg-brand-gold transition-all duration-300 rounded-full ${isActive ? "w-full" : "w-0 group-hover:w-full"}`} />
@@ -140,7 +137,7 @@ export default function Navbar() {
               );
             })}
           </ul>
-          
+
           <div className="pl-6 border-l border-slate-200/50">
             <AuthSection />
           </div>
@@ -161,18 +158,17 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Navigation Dropdown */}
-      <div className={`md:hidden absolute top-0 left-0 right-0 h-screen transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-        open ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"
-      }`}>
+      <div className={`md:hidden absolute top-0 left-0 right-0 h-screen transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${open ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"
+        }`}>
         <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-2xl" />
         <div className="relative h-full flex flex-col items-center justify-center p-8">
-          <button 
+          <button
             onClick={() => setOpen(false)}
             className="absolute top-6 right-6 p-4 text-white hover:rotate-90 transition-transform duration-300"
           >
             <span className="text-4xl leading-none">&times;</span>
           </button>
-          
+
           <nav className="flex flex-col items-center gap-8 w-full max-w-xs">
             {navLinks.map(({ href, label }, idx) => {
               const isActive = pathname === href;
@@ -181,11 +177,10 @@ export default function Navbar() {
                   key={href}
                   href={href}
                   style={{ transitionDelay: `${idx * 50}ms` }}
-                  className={`text-2xl font-heading font-bold transition-all duration-500 ${
-                    isActive
+                  className={`text-2xl font-heading font-bold transition-all duration-500 ${isActive
                       ? "text-brand-gold scale-110"
                       : "text-white/60 hover:text-white"
-                  } ${open ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
+                    } ${open ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
                 >
                   {label}
                 </Link>
