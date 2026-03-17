@@ -1,7 +1,20 @@
 "use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function About() {
+  const [memberCount, setMemberCount] = useState(50);
+
+  useEffect(() => {
+    fetch('/api/team')
+      .then(res => res.json())
+      .then(data => {
+        if (data && Array.isArray(data) && data.length > 0) {
+          setMemberCount(data.length);
+        }
+      })
+      .catch(err => console.error("Could not fetch team count:", err));
+  }, []);
   return (
     <section className="py-20 md:py-32 bg-white relative overflow-hidden">
       {/* Decorative Background Elements */}
@@ -13,23 +26,23 @@ export default function About() {
 
           {/* Visual Side */}
           <div className="relative animate-fade-up">
-            <div className="relative z-10 rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-premium aspect-[4/5] group">
+            <div className="relative z-10 rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-premium group">
               <div className="absolute inset-0 bg-brand-blue/20 group-hover:bg-transparent transition-colors duration-700" />
               <img
-                src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=2070&auto=format&fit=crop"
+                src="/group-photo-2.jpeg"
                 alt="Rotaract Team in Action"
-                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                className="w-full h-auto object-contain transition-transform duration-1000 group-hover:scale-105"
               />
             </div>
 
             {/* Floating Info Card */}
-            <div className="absolute -bottom-6 -right-4 lg:-bottom-10 lg:-right-10 glass p-6 md:p-8 rounded-[2rem] shadow-xl max-w-[240px] md:max-w-[280px] hidden sm:block animate-float z-20">
-              <div className="flex flex-col gap-2">
-                <span className="text-3xl md:text-4xl font-heading font-black text-brand-blue">50+</span>
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-gray/60 leading-tight">
+            <div className="absolute -bottom-6 -right-4 lg:-bottom-10 lg:-right-4 glass p-4 md:p-6 rounded-[2rem] shadow-xl max-w-[200px] md:max-w-[240px] hidden sm:block animate-float z-20 bg-white/80 backdrop-blur-xl border border-white/20">
+              <div className="flex flex-col gap-1">
+                <span className="text-2xl md:text-3xl font-heading font-black text-brand-blue">{memberCount}+</span>
+                <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-brand-gray/60 leading-tight">
                   Active Members Dedicated to Community Change
                 </span>
-                <div className="w-12 h-1 bg-brand-gold mt-2 rounded-full" />
+                <div className="w-10 h-1 bg-brand-gold mt-1.5 rounded-full" />
               </div>
             </div>
 

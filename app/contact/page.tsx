@@ -100,8 +100,8 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-1 md:mb-2">Find Us</h4>
-                      <p className="text-brand-blue font-black text-lg md:text-2xl tracking-tight mb-1 md:mb-2">Bengaluru, KA</p>
-                      <p className="text-[9px] md:text-[11px] font-black text-[#00A1E0] uppercase tracking-widest hidden sm:block">Swarna Bengaluru Community</p>
+                      <p className="text-brand-blue font-black text-lg md:text-2xl tracking-tight mb-1 md:mb-2">Rotary House of Friendship, 11 Lavelle Road, Bengaluru</p>
+                      <p className="text-[9px] md:text-[11px] font-black text-[#00A1E0] uppercase tracking-widest hidden sm:block">Headquarters</p>
                     </div>
                   </div>
 
@@ -111,7 +111,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-1 md:mb-2">Connect</h4>
-                      <div className="flex flex-wrap gap-2 md:gap-3 mt-1">
+                      <div className="flex items-center gap-2 md:gap-3 mt-1">
                         <a href="https://www.instagram.com/rotaract_swarnabengaluru" target="_blank" rel="noopener noreferrer" className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-blue hover:bg-gradient-to-tr hover:from-[#f09433] hover:via-[#e6683c] hover:to-[#bc1888] hover:text-white transition-all duration-300 shadow-sm border border-slate-100 group">
                           <FaInstagram className="w-4 h-4 md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
                         </a>
