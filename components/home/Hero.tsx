@@ -35,14 +35,15 @@ export default function Hero() {
             Together, Change is Possible
           </div>
 
-          <h1 className="text-4xl md:text-8xl font-heading font-black text-white mb-6 md:mb-8 leading-[1.1] animate-fade-up">
-            Grow your <span className="text-brand-gold">leadership</span>, <br />
-            <span className="relative">
+          <h1 className="text-[2.75rem] leading-[1.1] sm:text-5xl md:text-8xl font-heading font-black text-white mb-6 md:mb-8 animate-fade-up">
+            Grow your <span className="text-brand-gold">leadership</span>, <br className="hidden sm:block" />
+            <span className="relative inline-block mt-2 md:mt-0 pr-2 md:pr-4">
               Create impact
               <svg className="absolute -bottom-1 md:-bottom-2 left-0 w-full h-2 md:h-3 text-brand-azure/40" viewBox="0 0 100 10" preserveAspectRatio="none">
                 <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" />
               </svg>
-            </span> with us
+            </span>
+            <span className="inline-block mt-2 md:mt-0">with us</span>
           </h1>
 
           <p className="text-base md:text-2xl text-white/90 mb-8 md:mb-12 max-w-2xl leading-relaxed font-light animate-fade-up" style={{ animationDelay: "200ms" }}>

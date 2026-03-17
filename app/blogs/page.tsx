@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { BookOpenIcon, UserIcon, MagnifyingGlassIcon, TagIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import { BookOpenIcon, UserIcon, MagnifyingGlassIcon, TagIcon, PencilSquareIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
@@ -12,9 +12,25 @@ export default function BlogsPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isMobile, setIsMobile] = useState(false);
+
   const { isSignedIn, isLoaded: isUserLoaded } = useUser();
   const { openSignIn } = useClerk();
   const router = useRouter();
+
+  // Monitor window size
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    // Set initial value
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -43,9 +59,22 @@ export default function BlogsPage() {
       return matchesSearch && matchesCategory;
     });
     setFilteredBlogs(filtered);
+    setCurrentPage(1); // Reset to page 1 when filters change
   }, [searchQuery, activeCategory, blogs]);
 
   const categories = ["All", ...Array.from(new Set(blogs.map((b) => b.category)))];
+
+  const blogsPerPage = isMobile ? 3 : 10;
+  const totalPages = Math.ceil(filteredBlogs.length / blogsPerPage);
+
+  const indexOfLastBlog = currentPage * blogsPerPage;
+  const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
+  const currentBlogs = filteredBlogs.slice(indexOfFirstBlog, indexOfLastBlog);
+
+  const paginate = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const fixImageUrl = (url: string | null | undefined) => {
     if (!url) return "/Images/placeholder.jpg";
@@ -93,23 +122,23 @@ export default function BlogsPage() {
       <div className="container-custom -translate-y-12 relative z-20">
         {/* Search & Filter Bar */}
         <div className="max-w-6xl mx-auto mb-12 md:mb-20 animate-fade-up" style={{ animationDelay: "200ms" }}>
-          <div className="glass p-4 rounded-[2rem] md:rounded-[2.5rem] shadow-premium flex flex-col lg:flex-row gap-4">
+          <div className="glass p-2 md:p-4 rounded-[2rem] md:rounded-[2.5rem] shadow-premium flex flex-col lg:flex-row gap-2 md:gap-4">
             <div className="flex-1 relative">
-              <MagnifyingGlassIcon className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-blue/30" />
+              <MagnifyingGlassIcon className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-brand-blue/30" />
               <input
                 type="text"
-                placeholder="Search stories by title or keywords..."
+                placeholder="Search stories..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-16 pr-6 py-4 bg-white/50 border-transparent focus:bg-white focus:shadow-inner rounded-2xl outline-none transition-all text-brand-blue font-bold text-sm tracking-tight"
+                className="w-full pl-12 md:pl-16 pr-4 md:pr-6 py-3 md:py-4 bg-white/50 border-transparent focus:bg-white focus:shadow-inner rounded-[1.5rem] md:rounded-2xl outline-none transition-all text-brand-blue font-bold text-xs md:text-sm tracking-tight"
               />
             </div>
-            <div className="flex items-center gap-3 overflow-x-auto pb-1 lg:pb-0 px-2 lg:border-l lg:border-slate-100 lg:pl-6">
+            <div className="flex items-center gap-2 md:gap-3 overflow-x-auto pb-2 md:pb-0 px-2 lg:border-l lg:border-slate-100 lg:pl-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               {categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] transition-all whitespace-nowrap ${activeCategory === cat
+                  className={`px-4 py-2 md:px-6 md:py-3 rounded-xl md:rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-[0.1em] transition-all whitespace-nowrap ${activeCategory === cat
                     ? "bg-brand-blue text-white shadow-xl scale-105"
                     : "text-brand-blue/60 hover:bg-brand-blue/5 hover:text-brand-blue"
                     }`}
@@ -130,58 +159,93 @@ export default function BlogsPage() {
               ))}
             </div>
           ) : filteredBlogs.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-16 lg:gap-20">
-              {filteredBlogs.map((blog: any, idx) => (
-                <Link
-                  href={`/blogs/${blog.slug}`}
-                  key={blog.id}
-                  className="premium-card group flex flex-col animate-fade-up"
-                  style={{ animationDelay: `${idx * 100}ms` }}
-                >
-                  <div className="h-72 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-brand-blue/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                    <img
-                      src={fixImageUrl(blog.image_url)}
-                      alt={blog.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
-                    />
-                    <div className="absolute top-6 left-6 z-20">
-                      <span className="glass px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-brand-blue">
-                        {blog.category}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="p-6 md:p-10 flex flex-col flex-1 bg-white">
-                    <div className="flex items-center gap-4 text-brand-blue/30 mb-6 text-[10px] font-black uppercase tracking-[0.2em]">
-                      <div className="flex items-center gap-2">
-                        <UserIcon className="w-3 h-3" />
-                        <span className="truncate max-w-[100px]">{blog.author_email?.split('@')[0] || "Author"}</span>
-                      </div>
-                      <span className="w-1 h-1 bg-brand-gold rounded-full" />
-                      <span>{blog.year}</span>
-                    </div>
-
-                    <h3 className="text-2xl font-heading font-black text-brand-blue mb-4 leading-tight group-hover:text-brand-azure transition-colors line-clamp-2">
-                      {blog.title}
-                    </h3>
-
-                    <p className="text-brand-gray/60 text-sm line-clamp-3 mb-6 md:mb-10 flex-1 font-light leading-relaxed">
-                      {blog.description}
-                    </p>
-
-                    <div className="mt-auto flex items-center justify-between">
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-blue/40 group-hover:text-brand-azure transition-colors">
-                        Read Story
-                      </span>
-                      <div className="w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center group-hover:bg-brand-blue group-hover:text-white transition-all duration-300">
-                        &rarr;
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-16 lg:gap-20">
+                {currentBlogs.map((blog: any, idx: number) => (
+                  <Link
+                    href={`/blogs/${blog.slug}`}
+                    key={blog.id}
+                    className="premium-card group flex flex-col animate-fade-up"
+                    style={{ animationDelay: `${idx * 100}ms` }}
+                  >
+                    <div className="h-72 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-brand-blue/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
+                      <img
+                        src={fixImageUrl(blog.image_url)}
+                        alt={blog.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                      />
+                      <div className="absolute top-6 left-6 z-20">
+                        <span className="glass px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-brand-blue">
+                          {blog.category}
+                        </span>
                       </div>
                     </div>
+
+                    <div className="p-6 md:p-10 flex flex-col flex-1 bg-white">
+                      <div className="flex items-center gap-4 text-brand-blue/30 mb-6 text-[10px] font-black uppercase tracking-[0.2em]">
+                        <div className="flex items-center gap-2">
+                          <UserIcon className="w-3 h-3" />
+                          <span className="truncate max-w-[100px]">{blog.author_email?.split('@')[0] || "Author"}</span>
+                        </div>
+                        <span className="w-1 h-1 bg-brand-gold rounded-full" />
+                        <span>{blog.year}</span>
+                      </div>
+
+                      <h3 className="text-2xl font-heading font-black text-brand-blue mb-4 leading-tight group-hover:text-brand-azure transition-colors line-clamp-2">
+                        {blog.title}
+                      </h3>
+
+                      <p className="text-brand-gray/60 text-sm line-clamp-3 mb-6 md:mb-10 flex-1 font-light leading-relaxed">
+                        {blog.description}
+                      </p>
+
+                      <div className="mt-auto flex items-center justify-between">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-blue/40 group-hover:text-brand-azure transition-colors">
+                          Read Story
+                        </span>
+                        <div className="w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center group-hover:bg-brand-blue group-hover:text-white transition-all duration-300">
+                          &rarr;
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="mt-16 md:mt-24 flex items-center justify-center gap-2 animate-fade-up">
+                  <button
+                    onClick={() => paginate(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${currentPage === 1 ? 'text-slate-300 cursor-not-allowed border border-slate-100' : 'text-brand-blue border border-brand-blue/20 hover:bg-brand-blue hover:text-white hover:border-brand-blue'}`}
+                  >
+                    <ChevronLeftIcon className="w-4 h-4" />
+                  </button>
+
+                  <div className="flex items-center gap-2 mx-4">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(number => (
+                      <button
+                        key={number}
+                        onClick={() => paginate(number)}
+                        className={`w-10 h-10 rounded-full text-xs font-bold transition-all ${currentPage === number ? 'bg-brand-blue text-white shadow-lg' : 'text-brand-blue/60 hover:bg-brand-blue/5 border border-transparent hover:border-slate-200'}`}
+                      >
+                        {number}
+                      </button>
+                    ))}
                   </div>
-                </Link>
-              ))}
-            </div>
+
+                  <button
+                    onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage === totalPages}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${currentPage === totalPages ? 'text-slate-300 cursor-not-allowed border border-slate-100' : 'text-brand-blue border border-brand-blue/20 hover:bg-brand-blue hover:text-white hover:border-brand-blue'}`}
+                  >
+                    <ChevronRightIcon className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
             <div className="glass p-10 md:p-24 text-center rounded-[2rem] md:rounded-[4rem] max-w-2xl mx-auto shadow-premium animate-fade-up">
               <div className="w-20 h-20 md:w-24 md:h-24 bg-brand-blue/5 rounded-full flex items-center justify-center mx-auto mb-6 md:mb-8">
