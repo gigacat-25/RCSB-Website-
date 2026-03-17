@@ -15,13 +15,13 @@ export default function Hero() {
         >
           <source src={`${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/hero-bg.mp4`} type="video/mp4" />
         </video>
-        
+
         {/* Fallback Static Image if Video fails to load (CSS fallback) */}
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center -z-10"
           style={{ backgroundImage: 'url("/images/hero-fallback.png")' }}
         />
-        
+
         {/* Layered Overlays for Depth */}
         <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm" />
         <div className="absolute inset-0 bg-mesh-gradient opacity-40 mix-blend-overlay" />
@@ -34,7 +34,7 @@ export default function Hero() {
             <span className="w-2 h-2 bg-brand-gold rounded-full animate-pulse" />
             Together, Change is Possible
           </div>
-          
+
           <h1 className="text-6xl md:text-8xl font-heading font-black text-white mb-8 leading-[1.1] animate-fade-up">
             Grow your <span className="text-brand-gold">leadership</span>, <br />
             <span className="relative">
@@ -44,20 +44,20 @@ export default function Hero() {
               </svg>
             </span> with us
           </h1>
-          
+
           <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-2xl leading-relaxed font-light animate-fade-up" style={{ animationDelay: "200ms" }}>
-            Rotaract Club of Swarna Bengaluru is a community of young professionals committed to service above self.
+            Working Towards a Brighter Future. Rotaract Club of Swarna Bengaluru (Formerly Rotaract Club of Bangalore Seshadripuram), emerged in the cradle of service dreamt by 15 young friends in Bengaluru in 2014.
           </p>
-          
+
           <div className="flex flex-wrap gap-6 animate-fade-up" style={{ animationDelay: "400ms" }}>
-            <Link 
-              href="/projects" 
+            <Link
+              href="/projects"
               className="group px-10 py-5 bg-brand-gold text-brand-blue font-black rounded-2xl hover:bg-white transition-all shadow-[0_20px_40px_rgba(247,168,27,0.3)] hover:shadow-[0_25px_50px_rgba(255,255,255,0.4)] hover:-translate-y-1 active:translate-y-0"
             >
               Latest Projects
             </Link>
-            <Link 
-              href="/contact" 
+            <Link
+              href="/contact"
               className="group px-10 py-5 bg-white/10 backdrop-blur-md border border-white/30 text-white font-black rounded-2xl hover:bg-white/20 transition-all hover:-translate-y-1 active:translate-y-0"
             >
               Join Our Tribe
