@@ -1,16 +1,27 @@
-import { apiFetch } from "@/lib/api";
+"use client";
 
-export const runtime = 'edge';
-export const revalidate = 0;
+import { useEffect, useState } from "react";
 
-export default async function TeamPage() {
-  let teamMembers = [];
-  try {
-    const data = await apiFetch("/api/team");
-    teamMembers = data || [];
-  } catch (error) {
-    console.error("Failed to fetch team:", error);
-  }
+export default function TeamPage() {
+  const [teamMembers, setTeamMembers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`/api/team?t=${new Date().getTime()}`)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setTeamMembers(data);
+        } else {
+          setTeamMembers([]);
+        }
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch team:", err);
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <div className="bg-slate-50 min-h-screen">
@@ -34,31 +45,35 @@ export default async function TeamPage() {
       {/* Leadership Grid */}
       <section className="py-24">
         <div className="container-custom">
-          
+
           <div className="mb-24">
             <div className="flex items-center gap-6 mb-16 animate-fade-up">
               <h2 className="text-3xl font-heading font-black text-brand-blue italic underline decoration-brand-gold decoration-4 underline-offset-8">
                 Board of Directors 2024-25
               </h2>
             </div>
-            
-            {teamMembers.length === 0 ? (
+
+            {loading ? (
+              <div className="glass p-24 text-center rounded-[4rem] text-slate-400 font-heading font-bold text-3xl italic animate-pulse">
+                Loading leadership team...
+              </div>
+            ) : teamMembers.length === 0 ? (
               <div className="glass p-24 text-center rounded-[4rem] text-slate-400 font-heading font-bold text-3xl italic animate-fade-up">
                 The roster is being curated for the upcoming term.
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-24">
                 {teamMembers.map((member: any, idx: number) => (
-                  <div 
-                    key={idx} 
+                  <div
+                    key={idx}
                     className="group flex flex-col animate-fade-up"
                     style={{ animationDelay: `${idx * 150}ms` }}
                   >
                     <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden mb-10 shadow-premium group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-700">
                       <div className="absolute inset-0 bg-brand-blue/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                      <img 
-                        src={member.image_url || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"} 
-                        alt={member.name} 
+                      <img
+                        src={member.image_url || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"}
+                        alt={member.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                       />
                       {member.bio && (

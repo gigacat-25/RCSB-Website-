@@ -75,12 +75,12 @@ export default {
         const key = matchMedia[1];
         const object = await env.MEDIA_BUCKET.get(key);
         if (!object) return new Response("Not found", { status: 404 });
-        
+
         const mediaHeaders = new Headers();
         object.writeHttpMetadata(mediaHeaders);
         mediaHeaders.set("Access-Control-Allow-Origin", "*");
         mediaHeaders.set("etag", object.httpEtag);
-        
+
         return new Response(object.body, { headers: mediaHeaders });
       }
 
@@ -102,7 +102,7 @@ export default {
       // > Projects CRUD
       if (request.method === "POST" && url.pathname === "/api/projects") {
         const body = await request.json() as any;
-        
+
         const authorEmail = body.author_email;
         if (!authorEmail) {
           return new Response(JSON.stringify({ error: "Unauthorized: author_email is required." }), { status: 401, headers });
@@ -110,7 +110,7 @@ export default {
 
         const admin = await env.DB.prepare("SELECT role FROM authorized_admins WHERE email = ?")
           .bind(authorEmail).first() as { role: string } | null;
-        
+
         if (!admin) {
           if (body.type !== 'blog') {
             return new Response(JSON.stringify({ error: "Unauthorized: Only whitelisted admins can manage projects/events." }), { status: 403, headers });
@@ -120,10 +120,10 @@ export default {
         }
 
         const slug = body.slug || `post-${Date.now()}`;
-        
+
         const existing = await env.DB.prepare("SELECT id FROM projects WHERE slug = ?").bind(slug).first();
         if (existing) {
-          return new Response(JSON.stringify({ 
+          return new Response(JSON.stringify({
             error: `Slug collision: The URL slug '${slug}' is already taken.`,
             details: `A project with slug '${slug}' already exists in the database. Please choose a different title or slug.`,
             colliding_slug: slug
@@ -133,12 +133,12 @@ export default {
         await env.DB.prepare(
           "INSERT INTO projects (title, slug, category, year, description, image_url, content, type, status, author_email, gallery_urls) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         ).bind(
-          body.title || "Untitled", 
-          slug, 
-          body.category || "General", 
-          body.year || new Date().getFullYear().toString(), 
-          body.description || "", 
-          body.image_url || null, 
+          body.title || "Untitled",
+          slug,
+          body.category || "General",
+          body.year || new Date().getFullYear().toString(),
+          body.description || "",
+          body.image_url || null,
           body.content || "",
           body.type || 'project',
           body.status || 'completed',
@@ -156,18 +156,18 @@ export default {
           if (!result) return new Response(JSON.stringify({ error: "Not found" }), { status: 404, headers });
           return new Response(JSON.stringify(result), { headers });
         }
-        
+
         if (request.method === "PUT" || request.method === "DELETE") {
           const body = await (request.method === "PUT" ? request.clone().json() : {}) as any;
           const userEmail = body.author_email || url.searchParams.get("user_email");
-          
+
           if (!userEmail) {
             return new Response(JSON.stringify({ error: "user_email is required for this operation." }), { status: 400, headers });
           }
 
           const admin = await env.DB.prepare("SELECT role FROM authorized_admins WHERE email = ?")
             .bind(userEmail).first() as { role: string } | null;
-          
+
           if (!admin) {
             return new Response(JSON.stringify({ error: "Unauthorized: Email not in authorized_admins." }), { status: 403, headers });
           }
@@ -183,13 +183,13 @@ export default {
             await env.DB.prepare(
               "UPDATE projects SET title=?, slug=?, category=?, year=?, description=?, image_url=?, content=?, type=?, status=?, gallery_urls=?, updated_at=datetime('now') WHERE id=?"
             ).bind(
-              body.title || "Untitled", 
-              body.slug || "unknown", 
-              body.category || "General", 
-              body.year || "2024", 
-              body.description || "", 
-              body.image_url || null, 
-              body.content || "", 
+              body.title || "Untitled",
+              body.slug || "unknown",
+              body.category || "General",
+              body.year || "2024",
+              body.description || "",
+              body.image_url || null,
+              body.content || "",
               body.type || 'project',
               body.status || 'completed',
               body.gallery_urls || "[]",
@@ -197,7 +197,7 @@ export default {
             ).run();
             return new Response(JSON.stringify({ success: true }), { headers });
           }
-          
+
           if (request.method === "DELETE") {
             await env.DB.prepare("DELETE FROM projects WHERE id=?").bind(id).run();
             return new Response(JSON.stringify({ success: true }), { headers });
@@ -240,7 +240,7 @@ export default {
         const results = await env.DB.prepare("SELECT * FROM contact_submissions ORDER BY created_at DESC").all();
         return new Response(JSON.stringify(results.results || []), { headers });
       }
-      
+
       const matchMessage = url.pathname.match(/^\/api\/messages\/(\d+)$/);
       if (matchMessage && request.method === "PUT") {
         const id = matchMessage[1];
@@ -268,7 +268,7 @@ export default {
         });
 
         const baseUrl = new URL(request.url).origin;
-        const publicUrl = `${baseUrl}/media/${key}`; 
+        const publicUrl = `${baseUrl}/media/${key}`;
         return new Response(JSON.stringify({ url: publicUrl, key }), { headers });
       }
 
@@ -319,8 +319,8 @@ export default {
 
     } catch (err: any) {
       console.error("Worker Error:", err.message, err.stack);
-      return new Response(JSON.stringify({ 
-        error: err.message, 
+      return new Response(JSON.stringify({
+        error: err.message,
         stack: err.stack,
         details: "Check worker logs for more info"
       }), { status: 500, headers });

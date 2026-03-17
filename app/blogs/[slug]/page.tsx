@@ -1,4 +1,3 @@
-export const runtime = 'edge';
 import { apiFetch } from "@/lib/api";
 import Link from "next/link";
 import { ArrowLeftIcon, CalendarIcon, UserIcon, ShareIcon } from "@heroicons/react/24/outline";

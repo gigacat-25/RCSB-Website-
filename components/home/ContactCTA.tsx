@@ -33,7 +33,7 @@ export default function ContactCTA() {
                 Send us a Message
               </Link>
               <Link
-                href="/join"
+                href="/contact"
                 className="px-12 py-6 bg-white/10 backdrop-blur-md border border-white/20 text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl hover:bg-white/20 transition-all hover:-translate-y-1 active:translate-y-0 text-center"
               >
                 Become a Member

@@ -54,15 +54,15 @@ export default function Footer() {
           <div>
             <h3 className="font-heading font-black text-xs uppercase tracking-[0.3em] mb-10 text-brand-gold">Action</h3>
             <ul className="flex flex-col gap-5">
-              <li><Link href="/join" className="text-[13px] text-white/60 hover:text-white transition-all hover:translate-x-2 inline-flex items-center gap-2 group">
+              <li><Link href="/contact" className="text-[13px] text-white/60 hover:text-white transition-all hover:translate-x-2 inline-flex items-center gap-2 group">
                 <span className="w-1 h-1 bg-brand-azure rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
                 Join the Tribe
               </Link></li>
-              <li><Link href="/donate" className="text-[13px] text-white/60 hover:text-white transition-all hover:translate-x-2 inline-flex items-center gap-2 group">
+              <li><Link href="/contact" className="text-[13px] text-white/60 hover:text-white transition-all hover:translate-x-2 inline-flex items-center gap-2 group">
                 <span className="w-1 h-1 bg-brand-azure rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
                 Direct Support
               </Link></li>
-              <li><Link href="/partner" className="text-[13px] text-white/60 hover:text-white transition-all hover:translate-x-2 inline-flex items-center gap-2 group">
+              <li><Link href="/contact" className="text-[13px] text-white/60 hover:text-white transition-all hover:translate-x-2 inline-flex items-center gap-2 group">
                 <span className="w-1 h-1 bg-brand-azure rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
                 Collaborate
               </Link></li>
