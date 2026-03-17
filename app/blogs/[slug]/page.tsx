@@ -40,29 +40,32 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
   return (
     <main className="min-h-screen bg-white pb-20">
       {/* Hero Section */}
-      <section className="relative h-[50vh] md:h-[70vh] w-full overflow-hidden">
-        <img
-          src={fixImageUrl(blog.image_url)}
-          alt={blog.title}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-        <div className="absolute inset-0 flex flex-col justify-end pb-8 md:pb-24">
+      <section className="relative w-full overflow-hidden min-h-[50vh] md:h-[70vh] flex flex-col justify-end">
+        <div className="absolute inset-0 z-0">
+          <img
+            src={fixImageUrl(blog.image_url)}
+            alt={blog.title}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20"></div>
+        </div>
+
+        <div className="relative z-10 w-full pt-32 pb-10 md:pt-40 md:pb-24">
           <div className="container mx-auto px-6">
             <Link
               href="/blogs"
-              className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 transition-colors font-bold text-sm uppercase tracking-widest"
+              className="relative z-20 inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 md:mb-8 transition-colors font-bold text-xs md:text-sm uppercase tracking-widest"
             >
               <ArrowLeftIcon className="w-4 h-4" /> Back to Stories
             </Link>
-            <div className="max-w-4xl">
-              <span className="bg-brand-gold text-brand-blue px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-[0.2em] mb-4 inline-block shadow-lg">
+            <div className="max-w-4xl relative z-10">
+              <span className="bg-brand-gold text-brand-blue px-4 py-1.5 rounded-full text-[10px] md:text-xs font-black uppercase tracking-[0.2em] mb-4 inline-block shadow-lg">
                 {blog.category}
               </span>
               <h1 className="text-3xl md:text-6xl font-heading font-black text-white leading-tight mb-4 md:mb-6">
                 {blog.title}
               </h1>
-              <div className="flex flex-wrap items-center gap-6 text-white/80 font-bold uppercase text-[11px] tracking-widest">
+              <div className="flex flex-wrap items-center gap-4 md:gap-6 text-white/80 font-bold uppercase text-[10px] md:text-[11px] tracking-widest">
                 <div className="flex items-center gap-2">
                   <UserIcon className="w-4 h-4 text-brand-gold" />
                   <span>By {blog.author_email || "RCSB Editorial Team"}</span>
