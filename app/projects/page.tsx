@@ -56,19 +56,21 @@ export default function ProjectsPage() {
       <section className="py-16 md:py-24">
         <div className="container-custom">
           {/* Refined Filter */}
-          <div className="flex flex-wrap items-center gap-3 md:gap-4 mb-10 md:mb-16 animate-fade-up">
-            <span className="text-[10px] font-black text-brand-blue/40 uppercase tracking-[0.2em] mr-2 md:mr-4">Filter By</span>
-            {["All", "Leadership", "Community Service", "Club Service", "Environment", "Education"].map((tag) => (
-              <button
-                key={tag}
-                className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.1em] transition-all border ${tag === "All"
-                  ? "bg-brand-blue text-white border-brand-blue shadow-lg"
-                  : "bg-white text-brand-blue border-slate-200 hover:border-brand-blue hover:shadow-md"
-                  }`}
-              >
-                {tag}
-              </button>
-            ))}
+          <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4 mb-10 md:mb-16 animate-fade-up">
+            <span className="text-[10px] font-black text-brand-blue/40 uppercase tracking-[0.2em] md:mr-2">Filter By</span>
+            <div className="flex items-center gap-2 md:gap-3 overflow-x-auto pb-2 md:pb-0 w-full hide-scrollbar px-1 -mx-1 md:px-0 md:mx-0">
+              {["All", "Leadership", "Community Service", "Club Service", "Environment", "Education"].map((tag) => (
+                <button
+                  key={tag}
+                  className={`px-5 py-2 md:px-6 rounded-full text-[9px] md:text-[10px] whitespace-nowrap font-black uppercase tracking-[0.1em] transition-all border ${tag === "All"
+                    ? "bg-brand-blue text-white border-brand-blue shadow-lg"
+                    : "bg-white text-brand-blue border-slate-200 hover:border-brand-blue hover:shadow-md"
+                    }`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-16 lg:gap-20">
