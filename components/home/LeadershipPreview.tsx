@@ -4,7 +4,7 @@ import { apiFetch } from "@/lib/api";
 export default async function LeadershipPreview() {
   let team = [];
   try {
-    const allMembers = await apiFetch("/api/team");
+    const allMembers = await apiFetch("/api/team", { cache: "no-store" });
     team = (allMembers || []).slice(0, 4); // Only show top 4 on home
   } catch (error) {
     console.error("Failed to fetch team preview:", error);
