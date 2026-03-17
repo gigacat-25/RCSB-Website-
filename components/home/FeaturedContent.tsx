@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { CalendarIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
+import { BookOpenIcon, UserIcon, ArrowRightIcon, CalendarIcon } from "@heroicons/react/24/outline";
 
 export default function FeaturedContent() {
   const [blogs, setBlogs] = useState<any[]>([]);
@@ -12,22 +12,11 @@ export default function FeaturedContent() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("/api/projects");
+        const res = await fetch(`/api/projects?t=${new Date().getTime()}`);
         const data = await res.json();
-        
-        // Get latest 3 blogs
-        const latestBlogs = (data || [])
-          .filter((p: any) => p.type === "blog")
-          .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-          .slice(0, 3);
-          
-        // Get latest 2 upcoming events
-        const upcomingEvents = (data || [])
-          .filter((p: any) => p.type === "event" && p.status === "upcoming")
-          .slice(0, 2);
-          
-        setBlogs(latestBlogs);
-        setEvents(upcomingEvents);
+
+        setBlogs((data || []).filter((p: any) => p.type === "blog").slice(0, 3));
+        setEvents((data || []).filter((p: any) => p.type === "event" && p.status === "upcoming").slice(0, 2));
       } catch (err) {
         console.error("Failed to fetch featured content:", err);
       } finally {
@@ -37,13 +26,22 @@ export default function FeaturedContent() {
     fetchData();
   }, []);
 
+  const fixImageUrl = (url: string | null | undefined) => {
+    if (!url) return "/Images/placeholder.jpg";
+    if (url.includes("media.rcsb.in/")) {
+      const key = url.split("media.rcsb.in/").pop();
+      return `https://rcsb-api-worker.impact1-iceas.workers.dev/media/${key}`;
+    }
+    return url;
+  };
+
   if (loading) return null;
   if (blogs.length === 0 && events.length === 0) return null;
 
   return (
     <section className="py-32 bg-white relative overflow-hidden">
       <div className="container-custom relative z-10">
-        
+
         {/* Events Section */}
         {events.length > 0 && (
           <div className="mb-32">
@@ -56,10 +54,10 @@ export default function FeaturedContent() {
                 View All Events <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
               </Link>
             </div>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
               {events.map((event, idx) => (
-                <Link 
+                <Link
                   key={event.id}
                   href={`/projects/${event.slug}`}
                   className="group relative flex flex-col md:flex-row premium-card animate-fade-up"
@@ -67,8 +65,8 @@ export default function FeaturedContent() {
                 >
                   <div className="md:w-2/5 h-64 md:h-auto overflow-hidden">
                     <div className="absolute inset-0 bg-brand-blue/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                    <img 
-                      src={event.image_url || "/images/placeholder.jpg"} 
+                    <img
+                      src={fixImageUrl(event.image_url)}
                       alt={event.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                     />
@@ -109,18 +107,18 @@ export default function FeaturedContent() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
               {blogs.map((blog, idx) => (
-                <Link 
-                  key={blog.id} 
-                  href={`/projects/${blog.slug}`}
+                <Link
+                  key={blog.id}
+                  href={`/blogs/${blog.slug}`}
                   className="group flex flex-col animate-fade-up"
                   style={{ animationDelay: `${idx * 150}ms` }}
                 >
                   <div className="relative h-72 overflow-hidden rounded-[2.5rem] mb-8 shadow-premium group-hover:shadow-2xl transition-all duration-500">
                     <div className="absolute inset-0 bg-brand-blue/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                    <img 
-                      src={blog.image_url || "/images/placeholder.jpg"} 
+                    <img
+                      src={fixImageUrl(blog.image_url)}
                       alt={blog.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 z-20"></div>
                   </div>
@@ -135,6 +133,15 @@ export default function FeaturedContent() {
                       {blog.description}
                     </p>
                     <div className="w-12 h-1 bg-slate-100 group-hover:w-full group-hover:bg-brand-gold transition-all duration-500" />
+                    {/* Read Link */}
+                    <div className="my-auto mt-6 flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-blue/40 group-hover:text-brand-azure transition-colors">
+                        Read Full Story
+                      </span>
+                      <div className="w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center group-hover:bg-brand-blue group-hover:text-white transition-all duration-300 transform group-hover:translate-x-2">
+                        <ArrowRightIcon className="w-4 h-4" />
+                      </div>
+                    </div>
                   </div>
                 </Link>
               ))}

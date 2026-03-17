@@ -37,8 +37,8 @@ export default function BlogsPage() {
   useEffect(() => {
     const query = searchQuery.toLowerCase();
     const filtered = blogs.filter((blog) => {
-      const matchesSearch = blog.title.toLowerCase().includes(query) || 
-                           blog.description.toLowerCase().includes(query);
+      const matchesSearch = blog.title.toLowerCase().includes(query) ||
+        blog.description.toLowerCase().includes(query);
       const matchesCategory = activeCategory === "All" || blog.category === activeCategory;
       return matchesSearch && matchesCategory;
     });
@@ -72,7 +72,7 @@ export default function BlogsPage() {
               <p className="text-white/90 text-xl font-light leading-relaxed max-w-xl">
                 Exploring the heart of Rotaract through reports, reflections, and deep-dives into our community impact.
               </p>
-              <button 
+              <button
                 onClick={() => {
                   if (!isSignedIn) {
                     openSignIn({ forceRedirectUrl: "/admin/blogs/add" });
@@ -96,8 +96,8 @@ export default function BlogsPage() {
           <div className="glass p-4 rounded-[2.5rem] shadow-premium flex flex-col lg:flex-row gap-4">
             <div className="flex-1 relative">
               <MagnifyingGlassIcon className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-blue/30" />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="Search stories by title or keywords..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -109,11 +109,10 @@ export default function BlogsPage() {
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] transition-all whitespace-nowrap ${
-                    activeCategory === cat 
+                  className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] transition-all whitespace-nowrap ${activeCategory === cat
                       ? "bg-brand-blue text-white shadow-xl scale-105"
                       : "text-brand-blue/60 hover:bg-brand-blue/5 hover:text-brand-blue"
-                  }`}
+                    }`}
                 >
                   {cat}
                 </button>
@@ -133,18 +132,18 @@ export default function BlogsPage() {
           ) : filteredBlogs.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-20">
               {filteredBlogs.map((blog: any, idx) => (
-                <Link 
-                  href={`/blogs/${blog.slug}`} 
+                <Link
+                  href={`/blogs/${blog.slug}`}
                   key={blog.id}
                   className="premium-card group flex flex-col animate-fade-up"
                   style={{ animationDelay: `${idx * 100}ms` }}
                 >
                   <div className="h-72 relative overflow-hidden">
                     <div className="absolute inset-0 bg-brand-blue/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                    <img 
-                      src={fixImageUrl(blog.image_url)} 
+                    <img
+                      src={fixImageUrl(blog.image_url)}
                       alt={blog.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                     />
                     <div className="absolute top-6 left-6 z-20">
                       <span className="glass px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-brand-blue">
@@ -152,7 +151,7 @@ export default function BlogsPage() {
                       </span>
                     </div>
                   </div>
-                  
+
                   <div className="p-10 flex flex-col flex-1 bg-white">
                     <div className="flex items-center gap-4 text-brand-blue/30 mb-6 text-[10px] font-black uppercase tracking-[0.2em]">
                       <div className="flex items-center gap-2">
@@ -162,15 +161,15 @@ export default function BlogsPage() {
                       <span className="w-1 h-1 bg-brand-gold rounded-full" />
                       <span>{blog.year}</span>
                     </div>
-                    
+
                     <h3 className="text-2xl font-heading font-black text-brand-blue mb-4 leading-tight group-hover:text-brand-azure transition-colors line-clamp-2">
                       {blog.title}
                     </h3>
-                    
+
                     <p className="text-brand-gray/60 text-sm line-clamp-3 mb-10 flex-1 font-light leading-relaxed">
                       {blog.description}
                     </p>
-                    
+
                     <div className="mt-auto flex items-center justify-between">
                       <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-blue/40 group-hover:text-brand-azure transition-colors">
                         Read Story
@@ -190,7 +189,7 @@ export default function BlogsPage() {
               </div>
               <h3 className="text-3xl font-heading font-black text-brand-blue mb-4 italic">No stories found</h3>
               <p className="text-brand-gray/60 font-light text-lg mb-10">Our archives are deep, but we couldn't find a match. Try broadening your criteria.</p>
-              <button 
+              <button
                 onClick={() => { setSearchQuery(""); setActiveCategory("All"); }}
                 className="px-8 py-3 bg-brand-blue text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl hover:bg-brand-azure transition-all shadow-xl"
               >

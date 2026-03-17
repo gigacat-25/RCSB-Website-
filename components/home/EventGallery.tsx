@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { ChevronLeftIcon, ChevronRightIcon, CameraIcon } from "@heroicons/react/24/outline";
 
 interface GallerySlide {
-  id: number;
+  id: number | string;
   title: string;
   caption: string;
   image_url: string;
@@ -32,21 +32,59 @@ const FALLBACK_SLIDES: Omit<GallerySlide, "id" | "order_index">[] = [
 ];
 
 export default function EventGallery() {
-  const [slides, setSlides] = useState<{ title: string; caption: string; image_url: string }[]>([]);
+  const [slides, setSlides] = useState<GallerySlide[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
 
   useEffect(() => {
-    fetch("/api/admin/gallery")
+    fetch("/api/projects")
       .then((r) => r.json())
-      .then((data: GallerySlide[]) => {
+      .then((data: any[]) => {
         if (Array.isArray(data) && data.length > 0) {
-          setSlides(data);
+          const allSlides: GallerySlide[] = [];
+          data.forEach(item => {
+            const time = new Date(item.created_at || 0).getTime();
+
+            if (item.image_url) {
+              allSlides.push({
+                id: `${item.id}-main`,
+                title: item.title,
+                caption: item.description || item.category,
+                image_url: item.image_url,
+                order_index: time
+              });
+            }
+
+            try {
+              const galleries = JSON.parse(item.gallery_urls || "[]");
+              if (Array.isArray(galleries)) {
+                galleries.forEach((gUrl: string, gIdx: number) => {
+                  allSlides.push({
+                    id: `${item.id}-gallery-${gIdx}`,
+                    title: item.title,
+                    caption: item.description || item.category,
+                    image_url: gUrl,
+                    order_index: time - (gIdx + 1) // slightly offset to keep ordering deterministic
+                  });
+                });
+              }
+            } catch (e) {
+              // ignore JSON parse errors
+            }
+          });
+
+          allSlides.sort((a, b) => b.order_index - a.order_index);
+
+          if (allSlides.length > 0) {
+            setSlides(allSlides.slice(0, 15));
+          } else {
+            setSlides(FALLBACK_SLIDES as GallerySlide[]);
+          }
         } else {
-          setSlides(FALLBACK_SLIDES as any);
+          setSlides(FALLBACK_SLIDES as GallerySlide[]);
         }
       })
-      .catch(() => setSlides(FALLBACK_SLIDES as any));
+      .catch(() => setSlides(FALLBACK_SLIDES as GallerySlide[]));
   }, []);
 
   const slideVariants = {
@@ -178,9 +216,8 @@ export default function EventGallery() {
                       setDirection(idx > currentIndex ? 1 : -1);
                       setCurrentIndex(idx);
                     }}
-                    className={`h-1 rounded-full transition-all duration-500 ${
-                      idx === currentIndex ? "w-12 bg-brand-gold" : "w-4 bg-white/20 hover:bg-white/40"
-                    }`}
+                    className={`h-1 rounded-full transition-all duration-500 ${idx === currentIndex ? "w-12 bg-brand-gold" : "w-4 bg-white/20 hover:bg-white/40"
+                      }`}
                   />
                 ))}
               </div>

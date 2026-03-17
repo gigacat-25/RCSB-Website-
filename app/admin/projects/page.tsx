@@ -31,7 +31,7 @@ export default function AdminProjectsPage() {
   const fetchItems = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/admin/projects");
+      const res = await fetch(`/api/admin/projects?timestamp=${new Date().getTime()}`, { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
       if (res.ok) {
         const data = await res.json();
         setItems(data);
@@ -92,8 +92,8 @@ export default function AdminProjectsPage() {
           <h2 className="text-3xl font-heading font-bold text-brand-blue">Projects & Events</h2>
           <p className="text-brand-gray mt-1">Manage community projects and club events.</p>
         </div>
-        <Link 
-          href="/admin/projects/add" 
+        <Link
+          href="/admin/projects/add"
           className="flex items-center gap-2 px-6 py-2 bg-brand-gold hover:bg-yellow-500 text-brand-blue font-bold rounded-full transition-colors whitespace-nowrap"
         >
           <PlusIcon className="w-5 h-5" />
@@ -106,11 +106,10 @@ export default function AdminProjectsPage() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-6 py-3 font-bold text-sm tracking-wide transition-all border-b-2 whitespace-nowrap ${
-              activeTab === tab 
-                ? 'border-brand-blue text-brand-blue' 
+            className={`px-6 py-3 font-bold text-sm tracking-wide transition-all border-b-2 whitespace-nowrap ${activeTab === tab
+                ? 'border-brand-blue text-brand-blue'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
+              }`}
           >
             {getTabLabel(tab)} ({items.filter(i => (i.type || 'project') === tab).length})
           </button>
@@ -180,14 +179,14 @@ export default function AdminProjectsPage() {
                       </div>
                     ) : (
                       <div className="flex items-center justify-end gap-2">
-                        <Link 
-                          href={`/admin/projects/${item.id}`} 
+                        <Link
+                          href={`/admin/projects/${item.id}`}
                           className="p-2 text-brand-azure hover:bg-blue-50 rounded-lg transition-colors flex items-center justify-center"
                           title="Edit Entry"
                         >
                           <PencilIcon className="w-5 h-5" />
                         </Link>
-                        <button 
+                        <button
                           onClick={() => setConfirmDeleteId(item.id)}
                           className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors flex items-center justify-center cursor-pointer"
                           title="Delete Entry"

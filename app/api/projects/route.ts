@@ -4,9 +4,10 @@ import { apiFetch } from "@/lib/api";
 
 export const revalidate = 0;
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const projects = await apiFetch("/api/projects");
+    const url = new URL(request.url);
+    const projects = await apiFetch(`/api/projects?t=${Date.now()}`, { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
     return NextResponse.json(projects);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

@@ -8,11 +8,10 @@ export const revalidate = 0;
 
 export default async function ProjectDetailPage({ params }: { params: { slug: string } }) {
   let project: any = null;
-  
+
   try {
     const data = await apiFetch("/api/projects");
-    // Show both projects and events here
-    project = data.find((p: any) => p.slug === params.slug && (p.type === "project" || p.type === "event"));
+    project = data.find((p: any) => p.slug === params.slug);
   } catch (error) {
     console.error("Failed to fetch project:", error);
   }
@@ -48,16 +47,16 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
     <main className="min-h-screen bg-white pb-20">
       {/* Hero Section */}
       <section className="relative h-[50vh] md:h-[60vh] w-full overflow-hidden">
-        <img 
-          src={fixImageUrl(project.image_url)} 
+        <img
+          src={fixImageUrl(project.image_url)}
           alt={project.title}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
         <div className="absolute inset-0 flex flex-col justify-end pb-12 md:pb-20">
           <div className="container mx-auto px-6">
-            <Link 
-              href="/projects" 
+            <Link
+              href="/projects"
               className="inline-flex items-center gap-2 text-white/70 hover:text-white mb-6 transition-colors font-bold text-sm uppercase tracking-widest"
             >
               <ArrowLeftIcon className="w-4 h-4" /> Back to All Projects
@@ -82,13 +81,13 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
       {/* Main Content */}
       <div className="container mx-auto px-6 mt-16">
         <div className="flex flex-col lg:flex-row gap-16 max-w-7xl mx-auto">
-          
+
           {/* Article */}
           <article className="flex-1 w-full max-w-3xl">
             <div className="text-brand-gray text-xl md:text-2xl leading-relaxed font-bold mb-12 text-brand-blue/90">
               {project.description}
             </div>
-            
+
             <div className="text-brand-gray text-lg leading-relaxed whitespace-pre-wrap">
               {project.content || "Full project details coming soon..."}
             </div>
@@ -100,8 +99,8 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
                   <h3 className="text-xl font-black text-brand-blue mb-2">Interested in participating?</h3>
                   <p className="text-brand-gray font-medium">Join us as a volunteer or guest for this upcoming event.</p>
                 </div>
-                <Link 
-                  href="/contact" 
+                <Link
+                  href="/contact"
                   className="px-8 py-4 bg-brand-blue text-white font-black rounded-2xl hover:bg-brand-azure transition-all shadow-xl"
                 >
                   Register Interest
@@ -114,7 +113,7 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
                 <div className="relative z-10">
                   <h3 className="text-2xl font-heading font-black mb-2">Were you there?</h3>
                   <p className="text-white/80 font-medium mb-8 max-w-md">Every journey has a story. Share your personal experience at this {project.type} and inspire others!</p>
-                  <Link 
+                  <Link
                     href={`/admin/blogs/add?title=My Experience at ${encodeURIComponent(project.title)}&category=Event Recap`}
                     className="inline-flex items-center gap-3 px-8 py-4 bg-brand-gold text-brand-blue font-black rounded-2xl hover:bg-white transition-all shadow-xl"
                   >
@@ -171,8 +170,8 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
                 <p className="text-sm text-brand-gray font-medium leading-relaxed mb-6">
                   We are constantly looking for partners and volunteers. Support our {project.type} to make a bigger impact.
                 </p>
-                <Link 
-                  href="/contact" 
+                <Link
+                  href="/contact"
                   className="block w-full py-4 bg-brand-blue text-white text-center font-black rounded-2xl hover:shadow-xl transition-all shadow-blue-900/20"
                 >
                   Inquire Now

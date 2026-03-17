@@ -9,10 +9,10 @@ export const revalidate = 0;
 
 export default async function BlogDetailPage({ params }: { params: { slug: string } }) {
   let blog: any = null;
-  
+
   try {
     const data = await apiFetch("/api/projects");
-    blog = data.find((p: any) => p.slug === params.slug && p.type === "blog");
+    blog = data.find((p: any) => p.slug === params.slug);
   } catch (error) {
     console.error("Failed to fetch blog:", error);
   }
@@ -41,16 +41,16 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
     <main className="min-h-screen bg-white pb-20">
       {/* Hero Section */}
       <section className="relative h-[60vh] md:h-[70vh] w-full overflow-hidden">
-        <img 
-          src={fixImageUrl(blog.image_url)} 
+        <img
+          src={fixImageUrl(blog.image_url)}
           alt={blog.title}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
         <div className="absolute inset-0 flex flex-col justify-end pb-12 md:pb-24">
           <div className="container mx-auto px-6">
-            <Link 
-              href="/blogs" 
+            <Link
+              href="/blogs"
               className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 transition-colors font-bold text-sm uppercase tracking-widest"
             >
               <ArrowLeftIcon className="w-4 h-4" /> Back to Stories
@@ -80,13 +80,13 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
       {/* Content Section */}
       <div className="container mx-auto px-6 mt-12 md:mt-20">
         <div className="flex flex-col lg:flex-row gap-16 max-w-7xl mx-auto">
-          
+
           {/* Main Content */}
           <article className="lg:col-span-2 w-full max-w-3xl">
             <div className="text-brand-gray text-lg md:text-xl leading-relaxed space-y-8 font-medium italic mb-12 border-l-4 border-brand-gold pl-6 py-2">
               {blog.description}
             </div>
-            
+
             <div className="blog-content text-brand-gray text-lg leading-relaxed whitespace-pre-wrap">
               {blog.content}
             </div>
@@ -100,14 +100,13 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {gallery.map((url, idx) => (
-                    <div 
-                      key={idx} 
-                      className={`relative overflow-hidden rounded-[32px] group shadow-md transition-all duration-500 hover:shadow-2xl ${
-                        idx % 3 === 0 ? "md:col-span-2 aspect-[16/9]" : "aspect-square"
-                      }`}
+                    <div
+                      key={idx}
+                      className={`relative overflow-hidden rounded-[32px] group shadow-md transition-all duration-500 hover:shadow-2xl ${idx % 3 === 0 ? "md:col-span-2 aspect-[16/9]" : "aspect-square"
+                        }`}
                     >
-                      <img 
-                        src={fixImageUrl(url)} 
+                      <img
+                        src={fixImageUrl(url)}
                         alt={`Gallery ${idx}`}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       />
@@ -139,8 +138,8 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
                 <div className="relative z-10">
                   <h4 className="text-brand-gold font-black uppercase tracking-widest text-[10px] mb-2">Next Journey</h4>
                   <p className="font-heading font-bold text-xl mb-6">Inspired by our work? Join us!</p>
-                  <Link 
-                    href="/contact" 
+                  <Link
+                    href="/contact"
                     className="inline-block w-full py-4 bg-brand-gold text-brand-blue text-center font-black rounded-2xl hover:bg-white transition-all shadow-xl"
                   >
                     Contact Us
