@@ -41,21 +41,21 @@ function AddProjectForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     let { name, value } = e.target;
-    
+
     if (name === "slug") {
       value = value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
     }
 
     setFormData((prev) => {
       const newState = { ...prev, [name]: value };
-      
+
       // Auto-generate slug from title ONLY if name is 'title'
       if (name === "title") {
         newState.slug = value.toLowerCase()
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/(^-|-$)+/g, "");
       }
-      
+
       return newState;
     });
   };
@@ -76,7 +76,7 @@ function AddProjectForm() {
         const errorData = await res.json();
         throw new Error(errorData.error || errorData.details || "Failed to create project");
       }
-      
+
       router.push("/admin/projects");
       router.refresh();
     } catch (err: any) {
@@ -109,8 +109,8 @@ function AddProjectForm() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Project Title *</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               name="title"
               value={formData.title}
               onChange={handleChange}
@@ -122,8 +122,8 @@ function AddProjectForm() {
 
           <div className="space-y-2">
             <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">URL Slug *</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               name="slug"
               value={formData.slug}
               onChange={handleChange}
@@ -187,8 +187,8 @@ function AddProjectForm() {
 
           <div className="space-y-2">
             <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Year / Term *</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               name="year"
               value={formData.year}
               onChange={handleChange}
@@ -201,7 +201,7 @@ function AddProjectForm() {
 
         <div className="space-y-2">
           <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Short Description *</label>
-          <textarea 
+          <textarea
             name="description"
             value={formData.description}
             onChange={handleChange}
@@ -214,14 +214,14 @@ function AddProjectForm() {
 
         <div className="space-y-4">
           <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Cover Image *</label>
-          
+
           <div className="flex items-start gap-6">
             <div className="w-48 h-32 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl overflow-hidden flex items-center justify-center relative group">
               {formData.image_url ? (
                 <>
                   <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <button 
+                    <button
                       type="button"
                       onClick={() => setFormData(prev => ({ ...prev, image_url: "" }))}
                       className="text-white text-xs font-bold bg-red-500 px-3 py-1 rounded-full shadow-lg"
@@ -240,25 +240,25 @@ function AddProjectForm() {
 
             <div className="flex-1 space-y-3">
               <div className="relative">
-                <input 
-                  type="file" 
+                <input
+                  type="file"
                   accept="image/*"
                   onChange={async (e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
-                    
+
                     setLoading(true);
                     setError(null);
-                    
+
                     const uploadData = new FormData();
                     uploadData.append("file", file);
-                    
+
                     try {
                       const res = await fetch("/api/admin/upload", {
                         method: "POST",
                         body: uploadData,
                       });
-                      
+
                       if (!res.ok) throw new Error("Upload failed");
                       const data = await res.json();
                       setFormData(prev => ({ ...prev, image_url: data.url }));
@@ -270,7 +270,7 @@ function AddProjectForm() {
                   }}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                 />
-                <button 
+                <button
                   type="button"
                   className="w-full py-3 bg-gray-50 border-2 border-gray-100 text-brand-blue font-bold rounded-xl hover:bg-white hover:border-brand-azure transition-all text-sm"
                 >
@@ -282,8 +282,8 @@ function AddProjectForm() {
                 <span className="text-[10px] font-bold text-gray-400 uppercase">OR</span>
                 <div className="h-px bg-gray-200 flex-1"></div>
               </div>
-              <input 
-                type="url" 
+              <input
+                type="url"
                 name="image_url"
                 value={formData.image_url}
                 onChange={handleChange}
@@ -294,9 +294,84 @@ function AddProjectForm() {
           </div>
         </div>
 
+        {/* Gallery Images Section */}
+        <div className="space-y-4">
+          <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Gallery Images (Optional)</label>
+          <div className="flex flex-wrap gap-4">
+            {JSON.parse(formData.gallery_urls || "[]").map((url: string, index: number) => (
+              <div key={index} className="w-32 h-24 bg-gray-50 border-2 border-gray-200 rounded-xl overflow-hidden relative group">
+                <img src={url} alt={`Gallery ${index}`} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const current = JSON.parse(formData.gallery_urls || "[]");
+                      current.splice(index, 1);
+                      setFormData(prev => ({ ...prev, gallery_urls: JSON.stringify(current) }));
+                    }}
+                    className="text-white text-[10px] font-bold bg-red-500 px-2 py-1 rounded-full shadow-lg"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            <div className="w-32 h-24 bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl overflow-hidden flex items-center justify-center relative hover:border-brand-azure transition-colors">
+              <span className="text-xs font-bold text-brand-blue">Add Image</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+
+                  setLoading(true);
+                  setError(null);
+
+                  const uploadData = new FormData();
+                  uploadData.append("file", file);
+
+                  try {
+                    const res = await fetch("/api/admin/upload", {
+                      method: "POST",
+                      body: uploadData,
+                    });
+
+                    if (!res.ok) throw new Error("Upload failed");
+                    const data = await res.json();
+
+                    const current = JSON.parse(formData.gallery_urls || "[]");
+                    current.push(data.url);
+                    setFormData(prev => ({ ...prev, gallery_urls: JSON.stringify(current) }));
+                  } catch (err: any) {
+                    setError("Failed to upload gallery image: " + err.message);
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* RSVP Link */}
+        <div className="space-y-2">
+          <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">RSVP / Ticket Link (Optional)</label>
+          <input
+            type="url"
+            name="rsvp_link"
+            value={(formData as any).rsvp_link || ""}
+            onChange={handleChange}
+            className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
+            placeholder="e.g. https://forms.gle/..."
+          />
+        </div>
+
         <div className="space-y-2">
           <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Full Article Content (Markdown)</label>
-          <textarea 
+          <textarea
             name="content"
             value={formData.content}
             onChange={handleChange}
@@ -307,8 +382,8 @@ function AddProjectForm() {
         </div>
 
         <div className="pt-6 border-t border-gray-100 flex justify-end">
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading}
             className="px-8 py-3 bg-brand-blue text-white font-bold rounded-full hover:bg-blue-900 transition-colors disabled:opacity-50"
           >

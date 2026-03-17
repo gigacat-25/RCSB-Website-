@@ -131,7 +131,7 @@ export default {
         }
 
         await env.DB.prepare(
-          "INSERT INTO projects (title, slug, category, year, description, image_url, content, type, status, author_email, gallery_urls) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+          "INSERT INTO projects (title, slug, category, year, description, image_url, content, type, status, author_email, gallery_urls, rsvp_link) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         ).bind(
           body.title || "Untitled",
           slug,
@@ -143,7 +143,8 @@ export default {
           body.type || 'project',
           body.status || 'completed',
           body.author_email || null,
-          body.gallery_urls || "[]"
+          body.gallery_urls || "[]",
+          body.rsvp_link || null
         ).run();
         return new Response(JSON.stringify({ success: true }), { headers });
       }
@@ -165,23 +166,23 @@ export default {
             return new Response(JSON.stringify({ error: "user_email is required for this operation." }), { status: 400, headers });
           }
 
-          const admin = await env.DB.prepare("SELECT role FROM authorized_admins WHERE email = ?")
-            .bind(userEmail).first() as { role: string } | null;
-
-          if (!admin) {
-            return new Response(JSON.stringify({ error: "Unauthorized: Email not in authorized_admins." }), { status: 403, headers });
-          }
-
           const project = await env.DB.prepare("SELECT author_email FROM projects WHERE id = ?").bind(id).first() as any;
           if (!project) return new Response(JSON.stringify({ error: "Project not found" }), { status: 404, headers });
 
-          if (admin.role !== 'admin' && project.author_email !== userEmail) {
+          const admin = await env.DB.prepare("SELECT role FROM authorized_admins WHERE email = ?")
+            .bind(userEmail).first() as { role: string } | null;
+
+          if (!admin && project.author_email !== userEmail) {
+            return new Response(JSON.stringify({ error: "Unauthorized: Email not in authorized_admins." }), { status: 403, headers });
+          }
+
+          if (admin && admin.role !== 'admin' && project.author_email !== userEmail) {
             return new Response(JSON.stringify({ error: "Forbidden: You can only manage your own content." }), { status: 403, headers });
           }
 
           if (request.method === "PUT") {
             await env.DB.prepare(
-              "UPDATE projects SET title=?, slug=?, category=?, year=?, description=?, image_url=?, content=?, type=?, status=?, gallery_urls=?, updated_at=datetime('now') WHERE id=?"
+              "UPDATE projects SET title=?, slug=?, category=?, year=?, description=?, image_url=?, content=?, type=?, status=?, gallery_urls=?, rsvp_link=?, updated_at=datetime('now') WHERE id=?"
             ).bind(
               body.title || "Untitled",
               body.slug || "unknown",
@@ -193,6 +194,7 @@ export default {
               body.type || 'project',
               body.status || 'completed',
               body.gallery_urls || "[]",
+              body.rsvp_link || null,
               id
             ).run();
             return new Response(JSON.stringify({ success: true }), { headers });

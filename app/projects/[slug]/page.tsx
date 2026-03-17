@@ -93,20 +93,22 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
             </div>
 
             {/* If it's an event, maybe show a "Register" call to action */}
-            {project.type === "event" && project.status === "upcoming" && (
+            {(project.type === "event" && project.status === "upcoming") || project.rsvp_link ? (
               <div className="mt-16 p-8 bg-brand-gold/10 border-2 border-brand-gold rounded-[40px] flex flex-col md:flex-row items-center justify-between gap-6">
                 <div>
                   <h3 className="text-xl font-black text-brand-blue mb-2">Interested in participating?</h3>
                   <p className="text-brand-gray font-medium">Join us as a volunteer or guest for this upcoming event.</p>
                 </div>
                 <Link
-                  href="/contact"
-                  className="px-8 py-4 bg-brand-blue text-white font-black rounded-2xl hover:bg-brand-azure transition-all shadow-xl"
+                  href={project.rsvp_link || "/contact"}
+                  target={project.rsvp_link ? "_blank" : undefined}
+                  rel={project.rsvp_link ? "noopener noreferrer" : undefined}
+                  className="px-8 py-4 bg-brand-blue text-white font-black rounded-2xl hover:bg-brand-azure transition-all shadow-xl text-center"
                 >
-                  Register Interest
+                  {project.rsvp_link ? "RSVP Now" : "Register Interest"}
                 </Link>
               </div>
-            )}
+            ) : null}
             {/* Share Experience CTA */}
             {project.status !== "upcoming" && (
               <div className="mt-16 p-8 bg-brand-blue text-white rounded-[40px] shadow-2xl relative overflow-hidden group">
@@ -123,6 +125,23 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
                 </div>
                 {/* Decorative Pattern */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3 blur-3xl group-hover:scale-110 transition-transform duration-700"></div>
+              </div>
+            )}
+
+            {/* Dynamic Project Gallery */}
+            {project.gallery_urls && project.gallery_urls !== "[]" && JSON.parse(project.gallery_urls).length > 0 && (
+              <div className="mt-16">
+                <h3 className="text-2xl font-black text-brand-blue mb-8 flex items-center gap-4">
+                  <span className="w-8 h-1 bg-brand-gold rounded-full"></span>
+                  Project Gallery
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                  {JSON.parse(project.gallery_urls).map((url: string, idx: number) => (
+                    <div key={idx} className="aspect-square rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100 group">
+                      <img src={fixImageUrl(url)} alt={`${project.title} Gallery ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </article>

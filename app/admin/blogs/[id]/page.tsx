@@ -36,7 +36,7 @@ export default function EditBlogPage() {
         const res = await fetch("/api/admin/projects");
         const data = await res.json();
         const blog = data.find((p: any) => p.id === Number(id));
-        
+
         if (blog) {
           setFormData({
             title: blog.title || "",
@@ -50,7 +50,7 @@ export default function EditBlogPage() {
             status: blog.status || "completed",
             gallery_urls: blog.gallery_urls || "[]",
           });
-          
+
           try {
             const parsedGallery = JSON.parse(blog.gallery_urls || "[]");
             setGallery(Array.isArray(parsedGallery) ? parsedGallery : []);
@@ -69,7 +69,7 @@ export default function EditBlogPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     let { name, value } = e.target;
-    
+
     if (name === "slug") {
       // Clean slug: lowercase, replace spaces/special chars with hyphens, remove double hyphens
       value = value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
@@ -129,7 +129,7 @@ export default function EditBlogPage() {
       });
 
       if (!res.ok) throw new Error("Failed to update blog post");
-      
+
       router.push("/admin/blogs");
       router.refresh();
     } catch (err: any) {
@@ -158,15 +158,15 @@ export default function EditBlogPage() {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           {/* Main Info */}
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 space-y-6">
               <div className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Post Title *</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     name="title"
                     value={formData.title}
                     onChange={handleChange}
@@ -193,8 +193,8 @@ export default function EditBlogPage() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Year / Date Label *</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       name="year"
                       value={formData.year}
                       onChange={handleChange}
@@ -206,7 +206,7 @@ export default function EditBlogPage() {
 
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Short Excerpt *</label>
-                  <textarea 
+                  <textarea
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
@@ -221,7 +221,7 @@ export default function EditBlogPage() {
             {/* Main Content */}
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
               <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block mb-4">Blog Content (Markdown)</label>
-              <textarea 
+              <textarea
                 name="content"
                 value={formData.content}
                 onChange={handleChange}
@@ -245,8 +245,8 @@ export default function EditBlogPage() {
                     <span className="text-xs font-bold uppercase">No Image Selected</span>
                   </div>
                 )}
-                <input 
-                  type="file" 
+                <input
+                  type="file"
                   accept="image/*"
                   onChange={async (e) => {
                     const file = e.target.files?.[0];
@@ -268,8 +268,8 @@ export default function EditBlogPage() {
                 />
               </div>
               <p className="text-[10px] text-gray-400 font-bold uppercase mb-2">Or Paste URL</p>
-              <input 
-                type="url" 
+              <input
+                type="url"
                 name="image_url"
                 value={formData.image_url}
                 onChange={handleChange}
@@ -283,12 +283,12 @@ export default function EditBlogPage() {
                 <label className="text-sm font-bold text-brand-blue uppercase tracking-wider">Gallery Photos</label>
                 <span className="text-[10px] font-bold text-brand-gray bg-gray-100 px-2 py-0.5 rounded-full">{gallery.length} Images</span>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-3 mb-4">
                 {gallery.map((url, idx) => (
                   <div key={idx} className="relative aspect-square rounded-xl overflow-hidden group border border-gray-100 shadow-sm">
                     <img src={url} alt={`Gallery ${idx}`} className="w-full h-full object-cover" />
-                    <button 
+                    <button
                       type="button"
                       onClick={() => removeGalleryImage(idx)}
                       className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
@@ -297,7 +297,7 @@ export default function EditBlogPage() {
                     </button>
                   </div>
                 ))}
-                
+
                 <div className="relative aspect-square bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center hover:border-brand-azure hover:bg-white transition-all group overflow-hidden">
                   {uploadingGallery ? (
                     <div className="text-[10px] font-bold text-brand-azure animate-pulse">Uploading...</div>
@@ -305,9 +305,9 @@ export default function EditBlogPage() {
                     <>
                       <PlusIcon className="w-6 h-6 text-gray-300 group-hover:text-brand-azure transition-colors" />
                       <span className="text-[10px] font-bold text-gray-400 group-hover:text-brand-azure transition-colors mt-1">Add Photos</span>
-                      <input 
-                        type="file" 
-                        multiple 
+                      <input
+                        type="file"
+                        multiple
                         accept="image/*"
                         onChange={handleGalleryUpload}
                         className="absolute inset-0 opacity-0 cursor-pointer"
@@ -321,15 +321,15 @@ export default function EditBlogPage() {
 
             {/* Save Actions */}
             <div className="bg-brand-blue p-6 rounded-3xl shadow-lg border border-blue-900 sticky top-6 space-y-3">
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={saving || uploadingGallery}
                 className="w-full py-4 bg-brand-gold hover:bg-yellow-500 text-brand-blue font-black rounded-2xl transition-all shadow-xl hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:hover:translate-y-0"
               >
                 {saving ? "Saving Changes..." : "Update Blog Post"}
               </button>
-              
-              <button 
+
+              <button
                 type="button"
                 onClick={async () => {
                   if (!confirm("Are you sure you want to permanently delete this story? This action cannot be undone.")) return;
@@ -343,8 +343,8 @@ export default function EditBlogPage() {
                       const data = await res.json();
                       alert(data.error || "Failed to delete blog post.");
                     }
-                  } catch (err) {
-                    alert("An error occurred while deleting the post.");
+                  } catch (err: any) {
+                    alert(err.message || "An error occurred while deleting the post.");
                   } finally {
                     setSaving(false);
                   }

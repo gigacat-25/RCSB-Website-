@@ -29,14 +29,12 @@ function AuthSection({ mobile = false }: { mobile?: boolean }) {
   if (isSignedIn) {
     return mobile ? (
       <div className="flex flex-col gap-2 w-full">
-        {isUserAdmin && (
-          <Link
-            href="/admin"
-            className="w-full text-center py-3 rounded-lg text-sm font-bold bg-brand-gold text-brand-blue hover:bg-white transition-colors border border-brand-gold"
-          >
-            Admin Dashboard
-          </Link>
-        )}
+        <Link
+          href="/admin"
+          className="w-full text-center py-3 rounded-lg text-sm font-bold bg-brand-gold text-brand-blue hover:bg-white transition-colors border border-brand-gold"
+        >
+          {isUserAdmin ? "Admin Dashboard" : "My Dashboard"}
+        </Link>
         <button
           onClick={() => openUserProfile()}
           className="w-full flex items-center justify-center gap-3 px-2 py-3 text-brand-blue font-semibold hover:bg-gray-100 rounded-lg transition-colors"
@@ -47,14 +45,12 @@ function AuthSection({ mobile = false }: { mobile?: boolean }) {
       </div>
     ) : (
       <div className="flex items-center gap-6">
-        {isUserAdmin && (
-          <Link
-            href="/admin"
-            className="text-xs font-bold text-brand-gold uppercase tracking-widest hover:text-brand-azure transition-colors"
-          >
-            Dashboard
-          </Link>
-        )}
+        <Link
+          href="/admin"
+          className="text-xs font-bold text-brand-gold uppercase tracking-widest hover:text-brand-azure transition-colors"
+        >
+          {isUserAdmin ? "Admin Dashboard" : "My Dashboard"}
+        </Link>
         <div className="flex items-center gap-4">
           <button onClick={() => openUserProfile()} className="hover:scale-105 transition-transform">
             <img src={user?.imageUrl} alt="Profile" className="w-8 h-8 rounded-full border-2 border-brand-azure" />
@@ -74,8 +70,8 @@ function AuthSection({ mobile = false }: { mobile?: boolean }) {
     <button
       onClick={() => openSignIn()}
       className={`font-bold rounded-full transition-all active:scale-95 shadow-[0_10px_30px_rgba(247,168,27,0.2)] hover:shadow-[0_15px_35px_rgba(247,168,27,0.4)] ${mobile
-          ? "w-full py-4 text-brand-blue bg-brand-gold hover:bg-white"
-          : "px-8 py-3 text-sm text-brand-blue bg-brand-gold hover:bg-white border-2 border-brand-gold hover:border-white"
+        ? "w-full py-4 text-brand-blue bg-brand-gold hover:bg-white"
+        : "px-8 py-3 text-sm text-brand-blue bg-brand-gold hover:bg-white border-2 border-brand-gold hover:border-white"
         }`}
     >
       Login
@@ -101,8 +97,8 @@ export default function Navbar() {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
-        ? "bg-white/70 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.05)] py-2 border-b border-white/20"
-        : "bg-transparent py-5"
+      ? "bg-white/70 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.05)] py-2 border-b border-white/20"
+      : "bg-transparent py-5"
       }`}>
       <div className="container-custom flex items-center justify-between">
 
@@ -126,8 +122,8 @@ export default function Navbar() {
                   <Link
                     href={href}
                     className={`text-[13px] font-bold uppercase tracking-[0.15em] transition-all duration-300 relative group py-2 ${isActive
-                        ? (scrolled ? "text-brand-blue" : "text-white")
-                        : (scrolled ? "text-brand-gray/80 hover:text-brand-blue" : "text-white/70 hover:text-white")
+                      ? (scrolled ? "text-brand-blue" : "text-white")
+                      : (scrolled ? "text-brand-gray/80 hover:text-brand-blue" : "text-white/70 hover:text-white")
                       }`}
                   >
                     {label}
@@ -178,8 +174,8 @@ export default function Navbar() {
                   href={href}
                   style={{ transitionDelay: `${idx * 50}ms` }}
                   className={`text-2xl font-heading font-bold transition-all duration-500 ${isActive
-                      ? "text-brand-gold scale-110"
-                      : "text-white/60 hover:text-white"
+                    ? "text-brand-gold scale-110"
+                    : "text-white/60 hover:text-white"
                     } ${open ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
                 >
                   {label}
