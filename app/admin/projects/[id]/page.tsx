@@ -348,38 +348,48 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
               </div>
             ))}
 
-            <div className="w-32 h-24 bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl overflow-hidden flex items-center justify-center relative hover:border-brand-azure transition-colors">
-              <span className="text-xs font-bold text-brand-blue">Add Image</span>
+            <div className="w-32 h-24 bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl overflow-hidden flex flex-col items-center justify-center relative hover:border-brand-azure transition-colors group">
+              <span className="text-[10px] font-bold text-gray-400 group-hover:text-brand-azure">Select Multiple</span>
+              <span className="text-xs font-black text-brand-blue group-hover:text-brand-azure mt-1">Add Photos</span>
               <input
                 type="file"
+                multiple
                 accept="image/*"
                 onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
+                  const files = e.target.files;
+                  if (!files || files.length === 0) return;
 
                   setSaving(true);
                   setError(null);
 
-                  const uploadData = new FormData();
-                  uploadData.append("file", file);
+                  const newUrls: string[] = [];
 
-                  try {
-                    const res = await fetch("/api/admin/upload", {
-                      method: "POST",
-                      body: uploadData,
-                    });
+                  for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const uploadData = new FormData();
+                    uploadData.append("file", file);
 
-                    if (!res.ok) throw new Error("Upload failed");
-                    const data = await res.json();
+                    try {
+                      const res = await fetch("/api/admin/upload", {
+                        method: "POST",
+                        body: uploadData,
+                      });
 
-                    const current = JSON.parse(formData.gallery_urls || "[]");
-                    current.push(data.url);
-                    setFormData(prev => ({ ...prev, gallery_urls: JSON.stringify(current) }));
-                  } catch (err: any) {
-                    setError("Failed to upload gallery image: " + err.message);
-                  } finally {
-                    setSaving(false);
+                      if (!res.ok) throw new Error(`Upload failed for ${file.name}`);
+                      const data = await res.json();
+                      newUrls.push(data.url);
+                    } catch (err: any) {
+                      setError("Partial upload failure: " + err.message);
+                    }
                   }
+
+                  if (newUrls.length > 0) {
+                    const current = JSON.parse(formData.gallery_urls || "[]");
+                    const updated = [...current, ...newUrls];
+                    setFormData(prev => ({ ...prev, gallery_urls: JSON.stringify(updated) }));
+                  }
+
+                  setSaving(false);
                 }}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
               />

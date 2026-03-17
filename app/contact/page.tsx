@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { EnvelopeIcon, MapPinIcon, GlobeAltIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 export default function ContactPage() {
   const [loading, setLoading] = useState(false);
@@ -87,7 +89,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-1 md:mb-2">Email Us</h4>
-                      <p className="text-brand-blue font-black text-lg md:text-2xl tracking-tight mb-1 md:mb-2 break-all">contact@rcsb.in</p>
+                      <p className="text-brand-blue font-black text-lg md:text-2xl tracking-tight mb-1 md:mb-2 break-all">rota.rcbs@gmail.com</p>
                       <p className="text-[9px] md:text-[11px] font-black text-[#00A1E0] uppercase tracking-widest hidden sm:block">Typical response: 24h</p>
                     </div>
                   </div>
@@ -109,9 +111,22 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-1 md:mb-2">Connect</h4>
-                      <div className="flex gap-4 md:gap-6 mt-1">
-                        <a href="https://instagram.com/rotaract_swarna_bengaluru" target="_blank" className="font-black text-brand-blue uppercase tracking-widest text-[9px] md:text-[11px] hover:text-[#00A1E0] transition-colors">Instagram</a>
-                        <a href="#" className="font-black text-brand-blue uppercase tracking-widest text-[9px] md:text-[11px] hover:text-[#00A1E0] transition-colors">LinkedIn</a>
+                      <div className="flex flex-wrap gap-2 md:gap-3 mt-1">
+                        <a href="https://www.instagram.com/rotaract_swarnabengaluru" target="_blank" rel="noopener noreferrer" className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-blue hover:bg-gradient-to-tr hover:from-[#f09433] hover:via-[#e6683c] hover:to-[#bc1888] hover:text-white transition-all duration-300 shadow-sm border border-slate-100 group">
+                          <FaInstagram className="w-4 h-4 md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
+                        </a>
+                        <a href="https://www.facebook.com/rotaractswarnabengaluru/" target="_blank" rel="noopener noreferrer" className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-blue hover:bg-[#1877F2] hover:border-[#1877F2] hover:text-white transition-all duration-300 shadow-sm border border-slate-100 group">
+                          <FaFacebookF className="w-4 h-4 md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
+                        </a>
+                        <a href="https://www.linkedin.com/company/rotaract-club-of-swarna-bengaluru/" target="_blank" rel="noopener noreferrer" className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-blue hover:bg-[#0077b5] hover:border-[#0077b5] hover:text-white transition-all duration-300 shadow-sm border border-slate-100 group">
+                          <FaLinkedinIn className="w-4 h-4 md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
+                        </a>
+                        <a href="https://www.youtube.com/channel/UCE4XQBKSjPs8rj5xyH6FOxA" target="_blank" rel="noopener noreferrer" className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-blue hover:bg-[#FF0000] hover:border-[#FF0000] hover:text-white transition-all duration-300 shadow-sm border border-slate-100 group">
+                          <FaYoutube className="w-4 h-4 md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
+                        </a>
+                        <a href="https://x.com/RCSwarnaB" target="_blank" rel="noopener noreferrer" className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-blue hover:bg-black hover:border-black hover:text-white transition-all duration-300 shadow-sm border border-slate-100 group">
+                          <FaXTwitter className="w-4 h-4 md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
+                        </a>
                       </div>
                     </div>
                   </div>
