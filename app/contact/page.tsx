@@ -69,45 +69,45 @@ export default function ContactPage() {
       <section className="py-24">
         <div className="container-custom">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
-            
+
             {/* Contact Info */}
             <div className="space-y-12 animate-fade-up">
               <div>
                 <h2 className="text-3xl font-heading font-black text-brand-blue italic mb-10 underline decoration-brand-gold decoration-4 underline-offset-8">
                   Get Information
                 </h2>
-                <div className="grid gap-8">
-                  <div className="glass p-8 rounded-[2rem] flex items-start gap-6 group hover:translate-x-2 transition-all duration-300">
-                    <div className="w-14 h-14 rounded-2xl bg-brand-blue/5 flex items-center justify-center text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-all">
-                      <EnvelopeIcon className="w-6 h-6" />
+                <div className="grid gap-6">
+                  <div className="bg-white p-8 md:p-10 rounded-[3rem] shadow-xl shadow-slate-200/50 flex items-center gap-8">
+                    <div className="w-20 h-20 flex-shrink-0 rounded-3xl bg-slate-100 flex items-center justify-center text-brand-blue">
+                      <EnvelopeIcon className="w-8 h-8 stroke-2" />
                     </div>
                     <div>
-                      <h4 className="text-[10px] font-black uppercase tracking-widest text-brand-blue/40 mb-2">Email Us</h4>
-                      <p className="text-brand-blue font-bold text-lg mb-1">contact@rcsb.in</p>
-                      <p className="text-[10px] text-brand-azure font-black uppercase tracking-widest">Typical response: 24h</p>
+                      <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-2">Email Us</h4>
+                      <p className="text-brand-blue font-black text-2xl tracking-tight mb-2">contact@rcsb.in</p>
+                      <p className="text-[11px] font-black text-[#00A1E0] uppercase tracking-widest">Typical response: 24h</p>
                     </div>
                   </div>
 
-                  <div className="glass p-8 rounded-[2rem] flex items-start gap-6 group hover:translate-x-2 transition-all duration-300">
-                    <div className="w-14 h-14 rounded-2xl bg-brand-gold/5 flex items-center justify-center text-brand-gold group-hover:bg-brand-gold group-hover:text-brand-blue transition-all">
-                      <MapPinIcon className="w-6 h-6" />
+                  <div className="bg-white p-8 md:p-10 rounded-[3rem] shadow-xl shadow-slate-200/50 flex items-center gap-8">
+                    <div className="w-20 h-20 flex-shrink-0 rounded-3xl bg-[#F5C767] flex items-center justify-center text-brand-blue">
+                      <MapPinIcon className="w-8 h-8 stroke-2" />
                     </div>
                     <div>
-                      <h4 className="text-[10px] font-black uppercase tracking-widest text-brand-blue/40 mb-2">Find Us</h4>
-                      <p className="text-brand-blue font-bold text-lg mb-1">Bengaluru, KA, India</p>
-                      <p className="text-[10px] text-brand-azure font-black uppercase tracking-widest">Swarna Bengaluru Community</p>
+                      <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-2">Find Us</h4>
+                      <p className="text-brand-blue font-black text-2xl tracking-tight mb-2">Bengaluru, KA, India</p>
+                      <p className="text-[11px] font-black text-[#00A1E0] uppercase tracking-widest">Swarna Bengaluru Community</p>
                     </div>
                   </div>
 
-                  <div className="glass p-8 rounded-[2rem] flex items-start gap-6 group hover:translate-x-2 transition-all duration-300">
-                    <div className="w-14 h-14 rounded-2xl bg-brand-azure/5 flex items-center justify-center text-brand-azure group-hover:bg-brand-azure group-hover:text-white transition-all">
-                      <GlobeAltIcon className="w-6 h-6" />
+                  <div className="bg-white p-8 md:p-10 rounded-[3rem] shadow-xl shadow-slate-200/50 flex items-center gap-8">
+                    <div className="w-20 h-20 flex-shrink-0 rounded-3xl bg-[#EDFAFD] flex items-center justify-center text-[#00A1E0]">
+                      <GlobeAltIcon className="w-8 h-8 stroke-2" />
                     </div>
                     <div>
-                      <h4 className="text-[10px] font-black uppercase tracking-widest text-brand-blue/40 mb-2">Connect</h4>
-                      <div className="flex gap-6 mt-3">
-                        <a href="#" className="text-[10px] font-black text-brand-blue uppercase tracking-widest hover:text-brand-azure transition-colors">Instagram</a>
-                        <a href="#" className="text-[10px] font-black text-brand-blue uppercase tracking-widest hover:text-brand-azure transition-colors">LinkedIn</a>
+                      <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-2">Connect</h4>
+                      <div className="flex gap-6 mt-1">
+                        <a href="https://instagram.com/rotaract_swarna_bengaluru" target="_blank" className="font-black text-brand-blue uppercase tracking-widest text-[11px] hover:text-[#00A1E0] transition-colors">Instagram</a>
+                        <a href="#" className="font-black text-brand-blue uppercase tracking-widest text-[11px] hover:text-[#00A1E0] transition-colors">LinkedIn</a>
                       </div>
                     </div>
                   </div>
@@ -133,7 +133,7 @@ export default function ContactPage() {
             <div className="animate-fade-up" style={{ animationDelay: "200ms" }}>
               <div className="glass p-10 md:p-16 rounded-[3rem] shadow-premium relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-brand-blue/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
-                
+
                 {success ? (
                   <div className="text-center py-16 relative z-10">
                     <div className="w-24 h-24 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
@@ -141,7 +141,7 @@ export default function ContactPage() {
                     </div>
                     <h3 className="text-4xl font-heading font-black text-brand-blue mb-4">Message Received.</h3>
                     <p className="text-brand-gray/60 font-light text-lg mb-10 max-w-sm mx-auto">Thank you for reaching out. A club representative will contact you shortly.</p>
-                    <button 
+                    <button
                       onClick={() => setSuccess(false)}
                       className="px-10 py-5 bg-brand-blue text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl hover:bg-brand-azure transition-all shadow-xl"
                     >
@@ -162,54 +162,54 @@ export default function ContactPage() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                         <div className="space-y-3">
                           <label className="text-[10px] font-black uppercase tracking-widest text-brand-blue/40 ml-2">First Name</label>
-                          <input 
-                            type="text" 
+                          <input
+                            type="text"
                             name="firstName"
                             value={formData.firstName}
                             onChange={handleChange}
                             required
-                            className="w-full px-6 py-4 bg-white/50 border border-slate-100 rounded-2xl focus:outline-none focus:bg-white focus:shadow-inner transition-all text-brand-blue font-bold tracking-tight" 
-                            placeholder="John" 
+                            className="w-full px-6 py-4 bg-white/50 border border-slate-100 rounded-2xl focus:outline-none focus:bg-white focus:shadow-inner transition-all text-brand-blue font-bold tracking-tight"
+                            placeholder="John"
                           />
                         </div>
                         <div className="space-y-3">
                           <label className="text-[10px] font-black uppercase tracking-widest text-brand-blue/40 ml-2">Last Name</label>
-                          <input 
-                            type="text" 
+                          <input
+                            type="text"
                             name="lastName"
                             value={formData.lastName}
                             onChange={handleChange}
                             required
-                            className="w-full px-6 py-4 bg-white/50 border border-slate-100 rounded-2xl focus:outline-none focus:bg-white focus:shadow-inner transition-all text-brand-blue font-bold tracking-tight" 
-                            placeholder="Doe" 
+                            className="w-full px-6 py-4 bg-white/50 border border-slate-100 rounded-2xl focus:outline-none focus:bg-white focus:shadow-inner transition-all text-brand-blue font-bold tracking-tight"
+                            placeholder="Doe"
                           />
                         </div>
                       </div>
                       <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase tracking-widest text-brand-blue/40 ml-2">Email Address</label>
-                        <input 
-                          type="email" 
+                        <input
+                          type="email"
                           name="email"
                           value={formData.email}
                           onChange={handleChange}
                           required
-                          className="w-full px-6 py-4 bg-white/50 border border-slate-100 rounded-2xl focus:outline-none focus:bg-white focus:shadow-inner transition-all text-brand-blue font-bold tracking-tight" 
-                          placeholder="john@example.com" 
+                          className="w-full px-6 py-4 bg-white/50 border border-slate-100 rounded-2xl focus:outline-none focus:bg-white focus:shadow-inner transition-all text-brand-blue font-bold tracking-tight"
+                          placeholder="john@example.com"
                         />
                       </div>
                       <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase tracking-widest text-brand-blue/40 ml-2">Your Message</label>
-                        <textarea 
+                        <textarea
                           name="message"
                           value={formData.message}
                           onChange={handleChange}
                           required
-                          rows={6} 
-                          className="w-full px-6 py-4 bg-white/50 border border-slate-100 rounded-2xl focus:outline-none focus:bg-white focus:shadow-inner transition-all text-brand-blue font-bold tracking-tight resize-none" 
+                          rows={6}
+                          className="w-full px-6 py-4 bg-white/50 border border-slate-100 rounded-2xl focus:outline-none focus:bg-white focus:shadow-inner transition-all text-brand-blue font-bold tracking-tight resize-none"
                           placeholder="How can we help?"
                         ></textarea>
                       </div>
-                      <button 
+                      <button
                         type="submit"
                         disabled={loading}
                         className="w-full py-6 bg-brand-blue text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl hover:bg-brand-azure transition-all shadow-xl disabled:opacity-50 hover:-translate-y-1 active:translate-y-0"

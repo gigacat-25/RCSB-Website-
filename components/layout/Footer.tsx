@@ -91,6 +91,10 @@ export default function Footer() {
             <span>&copy; {currentYear} Rotaract Club of Swarna Bengaluru</span>
             <span className="hidden md:block w-1 h-1 bg-white/10 rounded-full" />
             <span>Service Above Self</span>
+            <span className="hidden md:block w-1 h-1 bg-white/10 rounded-full" />
+            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <span className="hidden md:block w-1 h-1 bg-white/10 rounded-full" />
+            <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
           </div>
 
           <div className="flex gap-4">
