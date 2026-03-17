@@ -37,15 +37,15 @@ export default function ProjectsPage() {
   return (
     <div className="bg-slate-50 min-h-screen">
       {/* Header */}
-      <section className="relative py-32 overflow-hidden bg-brand-blue">
+      <section className="relative py-20 md:py-32 overflow-hidden bg-brand-blue">
         <div className="absolute inset-0 bg-mesh-gradient opacity-40 mix-blend-overlay" />
         <div className="container-custom relative z-10 text-white">
           <div className="max-w-3xl animate-fade-up pt-16 md:pt-24">
-            <span className="text-[10px] font-black text-brand-gold uppercase tracking-[0.4em] mb-6 block">Our Portfolio</span>
-            <h1 className="text-6xl md:text-8xl font-heading font-black text-white mb-8 leading-[1.1]">
+            <span className="text-[10px] font-black text-brand-gold uppercase tracking-[0.4em] mb-4 md:mb-6 block">Our Portfolio</span>
+            <h1 className="text-5xl md:text-8xl font-heading font-black text-white mb-6 md:mb-8 leading-[1.1]">
               Crafting <span className="text-brand-gold italic">Change.</span>
             </h1>
-            <p className="text-white/90 text-xl font-light leading-relaxed max-w-2xl">
+            <p className="text-white/90 text-lg md:text-xl font-light leading-relaxed max-w-2xl">
               Discover our legacy of impact. From deep-rooted community service to high-reach leadership initiatives, these are the milestones of our journey.
             </p>
           </div>
@@ -53,11 +53,11 @@ export default function ProjectsPage() {
       </section>
 
       {/* Projects Grid */}
-      <section className="py-24">
+      <section className="py-16 md:py-24">
         <div className="container-custom">
           {/* Refined Filter */}
-          <div className="flex flex-wrap items-center gap-4 mb-16 animate-fade-up">
-            <span className="text-[10px] font-black text-brand-blue/40 uppercase tracking-[0.2em] mr-4">Filter By</span>
+          <div className="flex flex-wrap items-center gap-3 md:gap-4 mb-10 md:mb-16 animate-fade-up">
+            <span className="text-[10px] font-black text-brand-blue/40 uppercase tracking-[0.2em] mr-2 md:mr-4">Filter By</span>
             {["All", "Leadership", "Community Service", "Club Service", "Environment", "Education"].map((tag) => (
               <button
                 key={tag}
@@ -71,13 +71,13 @@ export default function ProjectsPage() {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-16 lg:gap-20">
             {loading ? (
-              <div className="col-span-full glass p-24 text-center rounded-[4rem] text-slate-400 font-heading font-bold text-3xl italic animate-pulse">
+              <div className="col-span-full glass p-10 md:p-24 text-center rounded-[2rem] md:rounded-[4rem] text-slate-400 font-heading font-bold text-xl md:text-3xl italic animate-pulse">
                 Loading projects...
               </div>
             ) : projects.length === 0 ? (
-              <div className="col-span-full glass p-24 text-center rounded-[4rem] text-slate-400 font-heading font-bold text-3xl italic">
+              <div className="col-span-full glass p-10 md:p-24 text-center rounded-[2rem] md:rounded-[4rem] text-slate-400 font-heading font-bold text-xl md:text-3xl italic">
                 Our portfolio is evolving. New stories coming soon.
               </div>
             ) : (
@@ -112,12 +112,12 @@ export default function ProjectsPage() {
                     </div>
                   </div>
 
-                  <div className="p-10 flex flex-col flex-1 bg-white">
+                  <div className="p-6 md:p-10 flex flex-col flex-1 bg-white">
                     <div className="text-brand-blue/40 text-[10px] font-black uppercase tracking-[0.2em] mb-4">{project.year}</div>
                     <h3 className="text-2xl font-heading font-black text-brand-blue mb-4 group-hover:text-brand-azure transition-colors line-clamp-2">
                       {project.title}
                     </h3>
-                    <p className="text-brand-gray/60 text-sm mb-10 line-clamp-3 leading-relaxed font-light">
+                    <p className="text-brand-gray/60 text-sm mb-6 md:mb-10 line-clamp-3 leading-relaxed font-light">
                       {project.description}
                     </p>
                     <div className="mt-auto flex items-center justify-between">

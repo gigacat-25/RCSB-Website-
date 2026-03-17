@@ -3,17 +3,17 @@ import Link from "next/link";
 
 export default function About() {
   return (
-    <section className="py-32 bg-white relative overflow-hidden">
+    <section className="py-20 md:py-32 bg-white relative overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-0 right-0 w-1/3 h-full bg-brand-light/50 -skew-x-12 translate-x-1/2 -z-10" />
       <div className="absolute bottom-20 left-10 w-64 h-64 bg-brand-gold opacity-5 blur-[100px] -z-10" />
 
       <div className="container-custom">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
           {/* Visual Side */}
           <div className="relative animate-fade-up">
-            <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-premium aspect-[4/5] group">
+            <div className="relative z-10 rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-premium aspect-[4/5] group">
               <div className="absolute inset-0 bg-brand-blue/20 group-hover:bg-transparent transition-colors duration-700" />
               <img
                 src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=2070&auto=format&fit=crop"
@@ -23,9 +23,9 @@ export default function About() {
             </div>
 
             {/* Floating Info Card */}
-            <div className="absolute -bottom-10 -right-10 glass p-8 rounded-[2rem] shadow-xl max-w-[280px] hidden md:block animate-float">
+            <div className="absolute -bottom-6 -right-4 lg:-bottom-10 lg:-right-10 glass p-6 md:p-8 rounded-[2rem] shadow-xl max-w-[240px] md:max-w-[280px] hidden sm:block animate-float z-20">
               <div className="flex flex-col gap-2">
-                <span className="text-4xl font-heading font-black text-brand-blue">50+</span>
+                <span className="text-3xl md:text-4xl font-heading font-black text-brand-blue">50+</span>
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-gray/60 leading-tight">
                   Active Members Dedicated to Community Change
                 </span>
@@ -37,10 +37,10 @@ export default function About() {
           </div>
 
           {/* Content Side */}
-          <div className="space-y-10 animate-fade-up" style={{ animationDelay: "200ms" }}>
+          <div className="space-y-8 md:space-y-10 animate-fade-up mt-8 lg:mt-0" style={{ animationDelay: "200ms" }}>
             <div>
-              <span className="text-[10px] font-black text-brand-azure uppercase tracking-[0.3em] mb-4 block">Who We Are</span>
-              <h2 className="text-5xl md:text-7xl font-heading font-black mb-8 leading-[1.1]">
+              <span className="text-[10px] font-black text-brand-azure uppercase tracking-[0.3em] mb-4 md:mb-6 block">Who We Are</span>
+              <h2 className="text-4xl md:text-7xl font-heading font-black mb-6 md:mb-8 leading-[1.1]">
                 Together, <br />
                 <span className="text-brand-blue italic">Change is Possible!</span>
               </h2>

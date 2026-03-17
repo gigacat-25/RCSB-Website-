@@ -40,14 +40,14 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
   return (
     <main className="min-h-screen bg-white pb-20">
       {/* Hero Section */}
-      <section className="relative h-[60vh] md:h-[70vh] w-full overflow-hidden">
+      <section className="relative h-[50vh] md:h-[70vh] w-full overflow-hidden">
         <img
           src={fixImageUrl(blog.image_url)}
           alt={blog.title}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-        <div className="absolute inset-0 flex flex-col justify-end pb-12 md:pb-24">
+        <div className="absolute inset-0 flex flex-col justify-end pb-8 md:pb-24">
           <div className="container mx-auto px-6">
             <Link
               href="/blogs"
@@ -59,7 +59,7 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
               <span className="bg-brand-gold text-brand-blue px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-[0.2em] mb-4 inline-block shadow-lg">
                 {blog.category}
               </span>
-              <h1 className="text-4xl md:text-6xl font-heading font-black text-white leading-tight mb-6">
+              <h1 className="text-3xl md:text-6xl font-heading font-black text-white leading-tight mb-4 md:mb-6">
                 {blog.title}
               </h1>
               <div className="flex flex-wrap items-center gap-6 text-white/80 font-bold uppercase text-[11px] tracking-widest">
@@ -78,8 +78,8 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
       </section>
 
       {/* Content Section */}
-      <div className="container mx-auto px-6 mt-12 md:mt-20">
-        <div className="flex flex-col lg:flex-row gap-16 max-w-7xl mx-auto">
+      <div className="container mx-auto px-6 mt-8 md:mt-20">
+        <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 max-w-7xl mx-auto">
 
           {/* Main Content */}
           <article className="lg:col-span-2 w-full max-w-3xl">
@@ -122,9 +122,9 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
           </article>
 
           {/* Sticky Sidebar */}
-          <aside className="lg:w-80 flex-shrink-0">
-            <div className="sticky top-32 space-y-8">
-              <div className="bg-gray-50 p-8 rounded-[40px] border border-gray-100">
+          <aside className="w-full lg:w-80 flex-shrink-0">
+            <div className="sticky top-24 md:top-32 space-y-8">
+              <div className="bg-gray-50 p-6 md:p-8 rounded-[2.5rem] md:rounded-[40px] border border-gray-100">
                 <h4 className="text-brand-blue font-black uppercase tracking-widest text-xs mb-6">Share this story</h4>
                 <div className="flex gap-4">
                   <button className="w-12 h-12 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-brand-azure hover:text-white transition-all shadow-sm">
@@ -134,7 +134,7 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
                 </div>
               </div>
 
-              <div className="bg-brand-blue p-8 rounded-[40px] text-white overflow-hidden relative group">
+              <div className="bg-brand-blue p-6 md:p-8 rounded-[2.5rem] md:rounded-[40px] text-white overflow-hidden relative group">
                 <div className="relative z-10">
                   <h4 className="text-brand-gold font-black uppercase tracking-widest text-[10px] mb-2">Next Journey</h4>
                   <p className="font-heading font-bold text-xl mb-6">Inspired by our work? Join us!</p>

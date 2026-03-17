@@ -70,7 +70,7 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
                   {project.status || 'completed'}
                 </span>
               </div>
-              <h1 className="text-4xl md:text-6xl font-heading font-black text-white leading-tight mb-6">
+              <h1 className="text-3xl md:text-6xl font-heading font-black text-white leading-tight mb-6">
                 {project.title}
               </h1>
             </div>
@@ -84,7 +84,7 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
 
           {/* Article */}
           <article className="flex-1 w-full max-w-3xl">
-            <div className="text-brand-gray text-xl md:text-2xl leading-relaxed font-bold mb-12 text-brand-blue/90">
+            <div className="text-brand-gray text-lg md:text-2xl leading-relaxed font-bold mb-8 md:mb-12 text-brand-blue/90">
               {project.description}
             </div>
 
@@ -94,7 +94,7 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
 
             {/* If it's an event, maybe show a "Register" call to action */}
             {(project.type === "event" && project.status === "upcoming") || project.rsvp_link ? (
-              <div className="mt-16 p-8 bg-brand-gold/10 border-2 border-brand-gold rounded-[40px] flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="mt-12 md:mt-16 p-6 md:p-8 bg-brand-gold/10 border-2 border-brand-gold rounded-[2rem] md:rounded-[40px] flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
                 <div>
                   <h3 className="text-xl font-black text-brand-blue mb-2">Interested in participating?</h3>
                   <p className="text-brand-gray font-medium">Join us as a volunteer or guest for this upcoming event.</p>
@@ -103,7 +103,7 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
                   href={project.rsvp_link || "/contact"}
                   target={project.rsvp_link ? "_blank" : undefined}
                   rel={project.rsvp_link ? "noopener noreferrer" : undefined}
-                  className="px-8 py-4 bg-brand-blue text-white font-black rounded-2xl hover:bg-brand-azure transition-all shadow-xl text-center"
+                  className="w-full md:w-auto px-6 py-3 md:px-8 md:py-4 bg-brand-blue text-white font-black rounded-2xl hover:bg-brand-azure transition-all shadow-xl text-center"
                 >
                   {project.rsvp_link ? "RSVP Now" : "Register Interest"}
                 </Link>
@@ -111,15 +111,15 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
             ) : null}
             {/* Share Experience CTA */}
             {project.status !== "upcoming" && (
-              <div className="mt-16 p-8 bg-brand-blue text-white rounded-[40px] shadow-2xl relative overflow-hidden group">
+              <div className="mt-12 md:mt-16 p-6 md:p-8 bg-brand-blue text-white rounded-[2rem] md:rounded-[40px] shadow-2xl relative overflow-hidden group">
                 <div className="relative z-10">
                   <h3 className="text-2xl font-heading font-black mb-2">Were you there?</h3>
-                  <p className="text-white/80 font-medium mb-8 max-w-md">Every journey has a story. Share your personal experience at this {project.type} and inspire others!</p>
+                  <p className="text-white/80 font-medium mb-6 md:mb-8 max-w-md">Every journey has a story. Share your personal experience at this {project.type} and inspire others!</p>
                   <Link
                     href={`/admin/blogs/add?title=My Experience at ${encodeURIComponent(project.title)}&category=Event Recap`}
-                    className="inline-flex items-center gap-3 px-8 py-4 bg-brand-gold text-brand-blue font-black rounded-2xl hover:bg-white transition-all shadow-xl"
+                    className="inline-flex justify-center w-full md:w-auto items-center gap-3 px-6 py-3 md:px-8 md:py-4 bg-brand-gold text-brand-blue font-black rounded-2xl hover:bg-white transition-all shadow-xl text-sm"
                   >
-                    <PencilSquareIcon className="w-5 h-5" />
+                    <PencilSquareIcon className="w-5 h-5 flex-shrink-0" />
                     Share Your Story
                   </Link>
                 </div>
@@ -147,8 +147,8 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
           </article>
 
           {/* Quick Info Sidebar */}
-          <aside className="lg:w-96 flex-shrink-0">
-            <div className="sticky top-32 bg-gray-50 rounded-[48px] p-10 border border-gray-100 shadow-sm space-y-10">
+          <aside className="w-full lg:w-96 flex-shrink-0">
+            <div className="sticky top-24 md:top-32 bg-gray-50 rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 border border-gray-100 shadow-sm space-y-8 md:space-y-10">
               <div>
                 <h4 className="text-[11px] font-black text-brand-gray uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-brand-gold rounded-full"></span>

@@ -26,16 +26,16 @@ export default function TeamPage() {
   return (
     <div className="bg-slate-50 min-h-screen">
       {/* Header */}
-      <section className="relative py-32 overflow-hidden bg-brand-blue border-b border-brand-gold/20">
+      <section className="relative py-20 md:py-32 overflow-hidden bg-brand-blue border-b border-brand-gold/20">
         <div className="absolute inset-0 bg-mesh-gradient opacity-40 mix-blend-overlay" />
         <div className="container-custom relative z-10 text-white">
           <div className="max-w-4xl animate-fade-up pt-16 md:pt-24">
-            <span className="text-[10px] font-black text-brand-gold uppercase tracking-[0.4em] mb-6 block">Our Leadership</span>
-            <h1 className="text-6xl md:text-8xl font-heading font-black text-white mb-8 leading-[1.1]">
+            <span className="text-[10px] font-black text-brand-gold uppercase tracking-[0.4em] mb-4 md:mb-6 block">Our Leadership</span>
+            <h1 className="text-5xl md:text-8xl font-heading font-black text-white mb-6 md:mb-8 leading-[1.1]">
               The Guiding <br />
               <span className="text-brand-gold italic">Force.</span>
             </h1>
-            <p className="text-white/90 text-xl font-light leading-relaxed max-w-2xl">
+            <p className="text-white/90 text-lg md:text-xl font-light leading-relaxed max-w-2xl">
               Meet the visionaries behind our impact. A dedicated board of directors committed to steering our club towards sustainable change and community growth.
             </p>
           </div>
@@ -43,26 +43,26 @@ export default function TeamPage() {
       </section>
 
       {/* Leadership Grid */}
-      <section className="py-24">
+      <section className="py-16 md:py-24">
         <div className="container-custom">
 
-          <div className="mb-24">
-            <div className="flex items-center gap-6 mb-16 animate-fade-up">
-              <h2 className="text-3xl font-heading font-black text-brand-blue italic underline decoration-brand-gold decoration-4 underline-offset-8">
+          <div className="mb-12 md:mb-24">
+            <div className="flex items-center gap-6 mb-10 md:mb-16 animate-fade-up">
+              <h2 className="text-2xl md:text-3xl font-heading font-black text-brand-blue italic underline decoration-brand-gold decoration-4 underline-offset-8">
                 Board of Directors 2024-25
               </h2>
             </div>
 
             {loading ? (
-              <div className="glass p-24 text-center rounded-[4rem] text-slate-400 font-heading font-bold text-3xl italic animate-pulse">
+              <div className="glass p-10 md:p-24 text-center rounded-[2rem] md:rounded-[4rem] text-slate-400 font-heading font-bold text-xl md:text-3xl italic animate-pulse">
                 Loading leadership team...
               </div>
             ) : teamMembers.length === 0 ? (
-              <div className="glass p-24 text-center rounded-[4rem] text-slate-400 font-heading font-bold text-3xl italic animate-fade-up">
+              <div className="glass p-10 md:p-24 text-center rounded-[2rem] md:rounded-[4rem] text-slate-400 font-heading font-bold text-xl md:text-3xl italic animate-fade-up">
                 The roster is being curated for the upcoming term.
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-24">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-24">
                 {teamMembers.map((member: any, idx: number) => (
                   <div
                     key={idx}
@@ -83,7 +83,7 @@ export default function TeamPage() {
                       )}
                     </div>
                     <div className="px-4">
-                      <h3 className="text-3xl font-heading font-black text-brand-blue mb-2 group-hover:text-brand-azure transition-colors">{member.name}</h3>
+                      <h3 className="text-2xl md:text-3xl font-heading font-black text-brand-blue mb-2 group-hover:text-brand-azure transition-colors">{member.name}</h3>
                       <p className="text-brand-gray/40 text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3">
                         {member.role}
                         <span className="w-4 h-px bg-slate-200" />

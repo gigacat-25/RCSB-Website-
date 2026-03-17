@@ -122,25 +122,25 @@ export default function EventGallery() {
   const current = slides[currentIndex];
 
   return (
-    <section className="py-32 bg-slate-900 border-y border-white/5 relative overflow-hidden">
+    <section className="py-20 md:py-32 bg-slate-900 border-y border-white/5 relative overflow-hidden">
       {/* Mesh Background */}
       <div className="absolute inset-0 bg-mesh-gradient opacity-20 pointer-events-none" />
 
       <div className="container-custom relative z-10">
-        <div className="text-center mb-20 animate-fade-up">
+        <div className="text-center mb-16 md:mb-20 animate-fade-up">
           <span className="text-[10px] font-black text-brand-gold uppercase tracking-[0.5em] mb-4 block">
             Event Gallery
           </span>
-          <h2 className="text-5xl md:text-7xl font-heading font-black text-white italic">
+          <h2 className="text-4xl md:text-7xl font-heading font-black text-white italic">
             Moments of <span className="text-brand-gold">Fellowship.</span>
           </h2>
         </div>
 
         {slides.length === 0 ? (
           // Skeleton while loading
-          <div className="relative h-[600px] w-full max-w-6xl mx-auto rounded-[3rem] bg-slate-800 animate-pulse" />
+          <div className="relative h-[400px] md:h-[600px] w-full max-w-6xl mx-auto rounded-[2rem] md:rounded-[3rem] bg-slate-800 animate-pulse" />
         ) : (
-          <div className="relative h-[600px] w-full max-w-6xl mx-auto group">
+          <div className="relative h-[400px] md:h-[600px] w-full max-w-6xl mx-auto group">
             <AnimatePresence initial={false} custom={direction}>
               <motion.div
                 key={currentIndex}
@@ -156,7 +156,7 @@ export default function EventGallery() {
                 }}
                 className="absolute inset-0 cursor-grab active:cursor-grabbing"
               >
-                <div className="relative h-full w-full rounded-[3rem] overflow-hidden shadow-2xl border border-white/10 group/card">
+                <div className="relative h-full w-full rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl border border-white/10 group/card">
                   <img
                     src={current.image_url}
                     alt={current.title}
@@ -164,34 +164,34 @@ export default function EventGallery() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/20 to-transparent" />
 
-                  <div className="absolute bottom-16 left-16 right-16">
+                  <div className="absolute bottom-8 left-6 right-6 md:bottom-16 md:left-16 md:right-16">
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 }}
                       className="max-w-2xl"
                     >
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-8 h-[1px] bg-brand-gold" />
-                        <span className="text-[10px] font-black text-brand-gold uppercase tracking-[0.3em] font-sans">
+                      <div className="flex items-center gap-3 mb-2 md:mb-4">
+                        <div className="w-6 md:w-8 h-[1px] bg-brand-gold" />
+                        <span className="text-[9px] md:text-[10px] font-black text-brand-gold uppercase tracking-[0.3em] font-sans">
                           Feature Story
                         </span>
                       </div>
-                      <h3 className="text-4xl md:text-5xl font-heading font-black text-white mb-6">
+                      <h3 className="text-2xl md:text-5xl font-heading font-black text-white mb-3 md:mb-6 leading-tight">
                         {current.title}
                       </h3>
                       {current.caption && (
-                        <p className="text-lg text-white/60 font-light leading-relaxed">
+                        <p className="text-sm md:text-lg text-white/60 font-light leading-relaxed line-clamp-3 md:line-clamp-none">
                           {current.caption}
                         </p>
                       )}
                     </motion.div>
                   </div>
 
-                  <div className="absolute top-10 right-10">
-                    <div className="px-6 py-3 glass rounded-full flex items-center gap-3">
+                  <div className="absolute top-6 right-6 md:top-10 md:right-10">
+                    <div className="px-4 py-2 md:px-6 md:py-3 glass rounded-full flex items-center gap-2 md:gap-3">
                       <CameraIcon className="w-4 h-4 text-brand-gold" />
-                      <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none">
+                      <span className="text-[9px] md:text-[10px] font-black text-white uppercase tracking-widest leading-none">
                         RCSB Archives
                       </span>
                     </div>
@@ -201,12 +201,12 @@ export default function EventGallery() {
             </AnimatePresence>
 
             {/* Navigation Controls */}
-            <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-8">
+            <div className="absolute -bottom-10 md:-bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-4 md:gap-8">
               <button
                 onClick={() => paginate(-1)}
-                className="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-brand-gold hover:text-slate-950 hover:border-brand-gold transition-all group/nav"
+                className="w-10 h-10 md:w-14 md:h-14 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-brand-gold hover:text-slate-950 hover:border-brand-gold transition-all group/nav"
               >
-                <ChevronLeftIcon className="w-6 h-6 group-hover/nav:-translate-x-1 transition-transform" />
+                <ChevronLeftIcon className="w-5 h-5 md:w-6 md:h-6 group-hover/nav:-translate-x-1 transition-transform" />
               </button>
               <div className="flex items-center gap-4">
                 {slides.map((_, idx) => (
@@ -216,16 +216,16 @@ export default function EventGallery() {
                       setDirection(idx > currentIndex ? 1 : -1);
                       setCurrentIndex(idx);
                     }}
-                    className={`h-1 rounded-full transition-all duration-500 ${idx === currentIndex ? "w-12 bg-brand-gold" : "w-4 bg-white/20 hover:bg-white/40"
+                    className={`h-1 rounded-full transition-all duration-500 ${idx === currentIndex ? "w-8 md:w-12 bg-brand-gold" : "w-3 md:w-4 bg-white/20 hover:bg-white/40"
                       }`}
                   />
                 ))}
               </div>
               <button
                 onClick={() => paginate(1)}
-                className="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-brand-gold hover:text-slate-950 hover:border-brand-gold transition-all group/nav"
+                className="w-10 h-10 md:w-14 md:h-14 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-brand-gold hover:text-slate-950 hover:border-brand-gold transition-all group/nav"
               >
-                <ChevronRightIcon className="w-6 h-6 group-hover/nav:translate-x-1 transition-transform" />
+                <ChevronRightIcon className="w-5 h-5 md:w-6 md:h-6 group-hover/nav:translate-x-1 transition-transform" />
               </button>
             </div>
           </div>

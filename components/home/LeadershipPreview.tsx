@@ -11,19 +11,19 @@ export default async function LeadershipPreview() {
   }
 
   return (
-    <section className="py-32 bg-white relative overflow-hidden">
+    <section className="py-20 md:py-32 bg-white relative overflow-hidden">
       {/* Decorative background element */}
       <div className="absolute top-0 right-0 w-1/3 h-full bg-brand-light/40 -skew-x-12 translate-x-1/2 -z-10"></div>
-      
+
       <div className="container-custom">
-        <div className="mb-20 animate-fade-up">
+        <div className="mb-12 md:mb-20 animate-fade-up">
           <span className="text-[10px] font-black text-brand-azure uppercase tracking-[0.3em] mb-4 block">Our Guiding Force</span>
-          <h2 className="text-5xl md:text-6xl font-heading font-black text-brand-blue">Meet Our Leadership</h2>
+          <h2 className="text-4xl md:text-6xl font-heading font-black text-brand-blue">Meet Our Leadership</h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {team.length === 0 ? (
-            <div className="col-span-full glass p-20 text-center rounded-[3rem] text-slate-400 font-heading font-bold text-2xl italic">
+            <div className="col-span-full glass p-10 md:p-20 text-center rounded-[2rem] md:rounded-[3rem] text-slate-400 font-heading font-bold text-xl md:text-2xl italic">
               Updating our leadership roster...
             </div>
           ) : (
@@ -31,9 +31,9 @@ export default async function LeadershipPreview() {
               <div key={idx} className="group animate-fade-up" style={{ animationDelay: `${idx * 150}ms` }}>
                 <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden mb-8 shadow-premium group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-700">
                   <div className="absolute inset-0 bg-brand-blue/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                  <img 
-                    src={member.image_url || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"} 
-                    alt={member.name} 
+                  <img
+                    src={member.image_url || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"}
+                    alt={member.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                   />
                   <div className="absolute inset-x-4 bottom-4 glass p-6 rounded-[1.5rem] opacity-0 group-hover:opacity-100 translate-y-10 group-hover:translate-y-0 transition-all duration-500 z-20">
@@ -49,12 +49,12 @@ export default async function LeadershipPreview() {
           )}
         </div>
 
-        <div className="mt-20 text-center animate-fade-up" style={{ animationDelay: "600ms" }}>
-          <Link 
-            href="/team" 
+        <div className="mt-12 md:mt-20 text-center animate-fade-up" style={{ animationDelay: "600ms" }}>
+          <Link
+            href="/team"
             className="group inline-flex items-center gap-4 text-brand-blue font-black uppercase tracking-[0.2em] text-[10px]"
           >
-            Meet the 2024-25 Board 
+            Meet the 2024-25 Board
             <div className="w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center group-hover:bg-brand-gold group-hover:text-brand-blue transition-all duration-300">
               &rarr;
             </div>
