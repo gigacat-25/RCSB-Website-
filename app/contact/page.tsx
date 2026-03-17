@@ -12,10 +12,12 @@ export default function ContactPage() {
     firstName: "",
     lastName: "",
     email: "",
+    phone: "",
+    reason: "General Inquiry",
     message: ""
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -31,6 +33,8 @@ export default function ContactPage() {
         body: JSON.stringify({
           name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
+          phone: formData.phone,
+          reason: formData.reason,
           message: formData.message
         }),
       });
@@ -38,7 +42,7 @@ export default function ContactPage() {
       if (!res.ok) throw new Error("Failed to send message. Please try again.");
 
       setSuccess(true);
-      setFormData({ firstName: "", lastName: "", email: "", message: "" });
+      setFormData({ firstName: "", lastName: "", email: "", phone: "", reason: "General Inquiry", message: "" });
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -196,6 +200,40 @@ export default function ContactPage() {
                           className="w-full px-6 py-4 bg-white/50 border border-slate-100 rounded-2xl focus:outline-none focus:bg-white focus:shadow-inner transition-all text-brand-blue font-bold tracking-tight"
                           placeholder="john@example.com"
                         />
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-brand-blue/40 ml-2">Phone Number</label>
+                          <input
+                            type="tel"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            className="w-full px-6 py-4 bg-white/50 border border-slate-100 rounded-2xl focus:outline-none focus:bg-white focus:shadow-inner transition-all text-brand-blue font-bold tracking-tight"
+                            placeholder="+91 98765 43210"
+                          />
+                        </div>
+                        <div className="space-y-3">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-brand-blue/40 ml-2">Reason</label>
+                          <div className="relative">
+                            <select
+                              name="reason"
+                              value={formData.reason}
+                              onChange={handleChange}
+                              required
+                              className="w-full px-6 py-4 bg-white/50 border border-slate-100 rounded-2xl focus:outline-none focus:bg-white focus:shadow-inner transition-all text-brand-blue font-bold tracking-tight appearance-none cursor-pointer"
+                            >
+                              <option value="General Inquiry">General Inquiry</option>
+                              <option value="Membership">Membership</option>
+                              <option value="Partnership">Partnership</option>
+                              <option value="Host a Project">Host a Project</option>
+                              <option value="Other">Other</option>
+                            </select>
+                            <div className="pointer-events-none absolute inset-y-0 right-6 flex items-center text-brand-blue/40">
+                              <svg className="fill-current w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                       <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase tracking-widest text-brand-blue/40 ml-2">Your Message</label>
