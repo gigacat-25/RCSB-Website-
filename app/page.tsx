@@ -1,4 +1,4 @@
-
+export const runtime = 'edge';
 
 import Hero from "@/components/home/Hero";
 import About from "@/components/home/About";
