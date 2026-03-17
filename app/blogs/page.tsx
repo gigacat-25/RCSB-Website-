@@ -64,7 +64,7 @@ export default function BlogsPage() {
 
   const categories = ["All", ...Array.from(new Set(blogs.map((b) => b.category)))];
 
-  const blogsPerPage = isMobile ? 3 : 10;
+  const blogsPerPage = isMobile ? 3 : 9;
   const totalPages = Math.ceil(filteredBlogs.length / blogsPerPage);
 
   const indexOfLastBlog = currentPage * blogsPerPage;
@@ -119,9 +119,9 @@ export default function BlogsPage() {
         </div>
       </section>
 
-      <div className="container-custom -translate-y-12 relative z-20">
+      <div className="container-custom py-8 md:py-12 relative z-20">
         {/* Search & Filter Bar */}
-        <div className="max-w-6xl mx-auto mb-12 md:mb-20 animate-fade-up" style={{ animationDelay: "200ms" }}>
+        <div className="max-w-6xl mx-auto mb-10 md:mb-16 animate-fade-up" style={{ animationDelay: "200ms" }}>
           <div className="glass p-2 md:p-4 rounded-[2rem] md:rounded-[2.5rem] shadow-premium flex flex-col lg:flex-row gap-2 md:gap-4">
             <div className="flex-1 relative">
               <MagnifyingGlassIcon className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-brand-blue/30" />

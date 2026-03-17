@@ -1,4 +1,7 @@
 export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 import { NextResponse } from "next/server";
 import { apiFetch } from "@/lib/api";
 
@@ -36,8 +39,8 @@ export async function POST(request: Request) {
       email
     });
     // Return a more descriptive error so the UI can show it
-    return NextResponse.json({ 
-      error: `Server Error: ${error.message}`, 
+    return NextResponse.json({
+      error: `Server Error: ${error.message}`,
       details: error.message,
       email
     }, { status: 500 });
@@ -51,8 +54,9 @@ export async function GET() {
     const isUserAdmin = isAdmin(email);
 
     // If not admin, only fetch their own stories
-    const endpoint = isUserAdmin ? "/api/projects" : `/api/projects?author=${encodeURIComponent(email || "")}`;
-    let projects = await apiFetch(endpoint);
+    const baseEndpoint = isUserAdmin ? "/api/projects" : `/api/projects?author=${encodeURIComponent(email || "")}`;
+    const endpoint = `${baseEndpoint}${baseEndpoint.includes('?') ? '&' : '?'}t=${Date.now()}`;
+    let projects = await apiFetch(endpoint, { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
 
     // [SECURITY SAFEGUARD] 
     // Double-check filtering in the Next.js layer in case the Worker isn't upgraded yet
@@ -63,9 +67,9 @@ export async function GET() {
     return NextResponse.json(projects);
   } catch (error: any) {
     console.error("Internal API Error [GET /api/admin/projects]:", error);
-    return NextResponse.json({ 
-      error: "Internal Server Error during projects fetch.", 
-      details: error.message 
+    return NextResponse.json({
+      error: "Internal Server Error during projects fetch.",
+      details: error.message
     }, { status: 500 });
   }
 }
