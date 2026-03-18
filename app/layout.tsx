@@ -6,6 +6,10 @@ import { ClerkProvider } from "@clerk/nextjs";
 import Providers from "./providers";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://rcsb.in"),
+  alternates: {
+    canonical: "/",
+  },
   title: {
     template: "%s | Rotaract Swarna Bengaluru",
     default: "Rotaract Club of Swarna Bengaluru — Together, Change is Possible!",
@@ -37,6 +41,25 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <body className="min-h-screen flex flex-col font-sans bg-brand-light">
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "NGO",
+                "name": "Rotaract Club of Swarna Bengaluru",
+                "url": "https://rcsb.in",
+                "logo": "https://rcsb.in/logo.png",
+                "sameAs": [
+                  "https://www.facebook.com/rotaractswarnabengaluru/",
+                  "https://www.instagram.com/rotaract_swarnabengaluru",
+                  "https://www.linkedin.com/company/rotaract-club-of-swarna-bengaluru/",
+                  "https://www.youtube.com/channel/UCE4XQBKSjPs8rj5xyH6FOxA",
+                  "https://x.com/RCSwarnaB"
+                ]
+              })
+            }}
+          />
           <Providers>
             <Navbar />
             <main className="flex-1">{children}</main>

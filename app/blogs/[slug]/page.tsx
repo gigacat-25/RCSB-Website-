@@ -4,8 +4,40 @@ import Link from "next/link";
 import { ArrowLeftIcon, CalendarIcon, UserIcon, ShareIcon } from "@heroicons/react/24/outline";
 import { notFound } from "next/navigation";
 import CommentsSection from "@/components/blog/CommentsSection";
+import { Metadata } from "next";
 
 export const revalidate = 0;
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  try {
+    const data = await apiFetch("/api/projects");
+    const blog = data.find((p: any) => p.slug === params.slug);
+    if (!blog) return {};
+
+    const fixImageUrl = (url: string | null | undefined) => {
+      if (!url) return "https://rcsb.in/Images/placeholder.jpg";
+      if (url.includes("media.rcsb.in/")) {
+        const key = url.split("media.rcsb.in/").pop();
+        return `https://rcsb-api-worker.impact1-iceas.workers.dev/media/${key}`;
+      }
+      return url.startsWith("/") ? `https://rcsb.in${url}` : url;
+    };
+
+    return {
+      title: blog.title,
+      description: blog.description?.substring(0, 160),
+      openGraph: {
+        title: blog.title,
+        description: blog.description?.substring(0, 160),
+        type: 'article',
+        url: `https://rcsb.in/blogs/${blog.slug}`,
+        images: [{ url: fixImageUrl(blog.image_url) }],
+      },
+    };
+  } catch (e) {
+    return {};
+  }
+}
 
 export default async function BlogDetailPage({ params }: { params: { slug: string } }) {
   let blog: any = null;

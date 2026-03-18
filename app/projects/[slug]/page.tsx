@@ -3,8 +3,40 @@ import { apiFetch } from "@/lib/api";
 import Link from "next/link";
 import { ArrowLeftIcon, CalendarIcon, MapPinIcon, RocketLaunchIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 
 export const revalidate = 0;
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  try {
+    const data = await apiFetch("/api/projects");
+    const project = data.find((p: any) => p.slug === params.slug);
+    if (!project) return {};
+
+    const fixImageUrl = (url: string | null | undefined) => {
+      if (!url) return "https://rcsb.in/Images/placeholder.jpg";
+      if (url.includes("media.rcsb.in/")) {
+        const key = url.split("media.rcsb.in/").pop();
+        return `https://rcsb-api-worker.impact1-iceas.workers.dev/media/${key}`;
+      }
+      return url.startsWith("/") ? `https://rcsb.in${url}` : url;
+    };
+
+    return {
+      title: project.title,
+      description: project.description?.substring(0, 160),
+      openGraph: {
+        title: project.title,
+        description: project.description?.substring(0, 160),
+        type: 'article',
+        url: `https://rcsb.in/projects/${project.slug}`,
+        images: [{ url: fixImageUrl(project.image_url) }],
+      },
+    };
+  } catch (e) {
+    return {};
+  }
+}
 
 export default async function ProjectDetailPage({ params }: { params: { slug: string } }) {
   let project: any = null;
