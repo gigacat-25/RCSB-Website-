@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export const runtime = 'edge';
 
@@ -32,64 +33,92 @@ export default function AboutPage() {
                 {/* Section 1: About Rotaract */}
                 <section className="mb-20 animate-fade-up" style={{ animationDelay: '100ms' }}>
                     <h2 className="text-3xl font-heading font-bold text-brand-blue mb-6 border-b-2 border-brand-azure/20 pb-4">About Rotaract</h2>
-                    <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-                        <p className="text-lg text-brand-gray/80 mb-6 leading-relaxed">
-                            Rotaract brings together young people (18+) to take action through service, develop leadership skills, and build friendships across the world.
-                        </p>
-                        <p className="text-lg text-brand-gray/80 mb-6 leading-relaxed">
-                            In 2019, Rotary's Council on Legislation elevated Rotaract to a distinct type of Rotary membership &mdash; strengthening its voice and impact globally.
-                        </p>
-                        <ul className="space-y-4 text-lg text-brand-gray/80 pl-2">
-                            <li className="flex items-start gap-4">
-                                <span className="w-2 h-2 rounded-full bg-brand-azure mt-2"></span>
-                                <span>Leadership through hands-on projects and club roles</span>
-                            </li>
-                            <li className="flex items-start gap-4">
-                                <span className="w-2 h-2 rounded-full bg-brand-azure mt-2"></span>
-                                <span>Global network within the Rotary family of programs</span>
-                            </li>
-                            <li className="flex items-start gap-4">
-                                <span className="w-2 h-2 rounded-full bg-brand-azure mt-2"></span>
-                                <span>Service that creates lasting change locally and globally</span>
-                            </li>
-                        </ul>
+                    <div className="flex flex-col md:flex-row gap-8 items-center bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                        <div className="flex-1">
+                            <p className="text-lg text-brand-gray/80 mb-6 leading-relaxed">
+                                Rotaract brings together young people (18+) to take action through service, develop leadership skills, and build friendships across the world.
+                            </p>
+                            <p className="text-lg text-brand-gray/80 mb-6 leading-relaxed">
+                                In 2019, Rotary's Council on Legislation elevated Rotaract to a distinct type of Rotary membership &mdash; strengthening its voice and impact globally.
+                            </p>
+                            <ul className="space-y-4 text-lg text-brand-gray/80 pl-2">
+                                <li className="flex items-start gap-4">
+                                    <span className="w-2 h-2 rounded-full bg-brand-azure mt-2"></span>
+                                    <span>Leadership through hands-on projects and club roles</span>
+                                </li>
+                                <li className="flex items-start gap-4">
+                                    <span className="w-2 h-2 rounded-full bg-brand-azure mt-2"></span>
+                                    <span>Global network within the Rotary family of programs</span>
+                                </li>
+                                <li className="flex items-start gap-4">
+                                    <span className="w-2 h-2 rounded-full bg-brand-azure mt-2"></span>
+                                    <span>Service that creates lasting change locally and globally</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="flex-shrink-0 w-full md:w-5/12 lg:w-1/3 flex justify-center relative">
+                            <div className="absolute inset-0 bg-brand-azure/5 rounded-full blur-3xl -z-10" />
+                            <Image
+                                src="/images/rotaract-3192-logo.png"
+                                alt="Rotaract District 3192 Logo"
+                                width={500}
+                                height={200}
+                                className="w-full max-w-[320px] object-contain drop-shadow-md hover:scale-105 transition-transform duration-500"
+                            />
+                        </div>
                     </div>
                 </section>
 
                 {/* Section 2: About RCSB */}
                 <section className="mb-20 animate-fade-up" style={{ animationDelay: '200ms' }}>
                     <h2 className="text-3xl font-heading font-bold text-brand-blue mb-6 border-b-2 border-brand-azure/20 pb-4">About Rotaract Club of Swarna Bengaluru</h2>
-                    <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group">
+                    <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group flex flex-col md:flex-row-reverse gap-8 items-center">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/10 rounded-full blur-[80px] -z-10 group-hover:bg-brand-azure/10 transition-colors duration-700" />
 
-                        <p className="text-xl text-brand-blue font-medium mb-6 leading-relaxed">
-                            We're a youth-led club in South Bengaluru. We learn by doing&mdash;serving our neighbourhoods, building leadership, and making friendships that last.
-                        </p>
+                        <div className="flex-shrink-0 w-full md:w-5/12 lg:w-1/3 flex justify-center mb-6 md:mb-0 relative z-10">
+                            <div className="absolute inset-0 bg-brand-gold/10 rounded-full blur-3xl -z-10" />
+                            <Image
+                                src="/logo.png"
+                                alt="Rotaract Club of Swarna Bengaluru Logo"
+                                width={500}
+                                height={200}
+                                className="w-full max-w-[320px] object-contain drop-shadow-xl hover:scale-105 transition-transform duration-500"
+                            />
+                        </div>
 
-                        <ul className="space-y-5 text-lg text-brand-gray/80 mb-8 pl-2">
-                            <li className="flex items-start gap-4">
-                                <span className="w-2 h-2 rounded-full bg-brand-gold mt-2"></span>
-                                <span><strong>Community service</strong> responding to local needs in education, health, environment, and social well-being.</span>
-                            </li>
-                            <li className="flex items-start gap-4">
-                                <span className="w-2 h-2 rounded-full bg-brand-gold mt-2"></span>
-                                <span><strong>Leadership & professional growth</strong> through project ownership and mentorship of the next generation of changemakers.</span>
-                            </li>
-                            <li className="flex items-start gap-4">
-                                <span className="w-2 h-2 rounded-full bg-brand-gold mt-2"></span>
-                                <span><strong>Inclusive, welcoming culture</strong>&mdash;students and young professionals (18+) are all invited.</span>
-                            </li>
-                        </ul>
+                        <div className="flex-1 relative z-10">
+                            <p className="text-xl text-brand-blue font-medium mb-6 leading-relaxed">
+                                We're a youth-led club in South Bengaluru. We learn by doing&mdash;serving our neighbourhoods, building leadership, and making friendships that last.
+                            </p>
 
-                        <p className="text-lg text-brand-gray/80 leading-relaxed">
-                            Rotaract Club of Swarna Bengaluru (Formerly Rotaract Club of Bangalore Seshadripuram), emerged in the cradle of service dreamt by 15 young friends in Bengaluru in 2014. Since inception, the team has grown bigger, serving the society. Based across Bengaluru, we run regular service drives, skill-building workshops, and fellowship events.
-                        </p>
-                        <p className="text-lg mt-6 text-brand-gray/80 leading-relaxed">
-                            If you want to create visible, measurable change&mdash;this is your place. As a part of Rotary International, RCSB strives hard to Connect the World and also shouts out:
-                        </p>
-                        <p className="text-2xl mt-8 font-heading font-black italic text-brand-blue text-center">
-                            "Together, Change is Possible!"
-                        </p>
+                            <ul className="space-y-5 text-lg text-brand-gray/80 mb-8 pl-2">
+                                <li className="flex items-start gap-4">
+                                    <span className="w-2 h-2 rounded-full bg-brand-gold mt-2"></span>
+                                    <span><strong>Community service</strong> responding to local needs in education, health, environment, and social well-being.</span>
+                                </li>
+                                <li className="flex items-start gap-4">
+                                    <span className="w-2 h-2 rounded-full bg-brand-gold mt-2"></span>
+                                    <span><strong>Leadership & professional growth</strong> through project ownership and mentorship of the next generation of changemakers.</span>
+                                </li>
+                                <li className="flex items-start gap-4">
+                                    <span className="w-2 h-2 rounded-full bg-brand-gold mt-2"></span>
+                                    <span><strong>Inclusive, welcoming culture</strong>&mdash;students and young professionals (18+) are all invited.</span>
+                                </li>
+                            </ul>
+
+                            <p className="text-lg text-brand-gray/80 leading-relaxed">
+                                Rotaract Club of Swarna Bengaluru (Formerly Rotaract Club of Bangalore Seshadripuram), emerged in the cradle of service dreamt by 15 young friends in Bengaluru in 2014. Since inception, the team has grown bigger, serving the society. Based across Bengaluru, we run regular service drives, skill-building workshops, and fellowship events.
+                            </p>
+                            <p className="text-lg mt-6 text-brand-gray/80 leading-relaxed">
+                                If you want to create visible, measurable change&mdash;this is your place. As a part of Rotary International, RCSB strives hard to Connect the World and also shouts out:
+                            </p>
+                            <blockquote className="mt-8 p-6 md:p-8 bg-brand-light/30 rounded-2xl border-l-4 border-brand-gold relative shadow-sm hover:shadow-md transition-shadow duration-300">
+                                <div className="absolute top-2 right-4 text-brand-gold/20 text-6xl font-serif font-black">"</div>
+                                <p className="text-2xl md:text-3xl font-heading font-black italic text-brand-blue text-center relative z-10">
+                                    "Together, Change is Possible!"
+                                </p>
+                            </blockquote>
+                        </div>
                     </div>
                 </section>
 
