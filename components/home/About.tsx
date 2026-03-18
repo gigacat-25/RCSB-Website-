@@ -22,10 +22,10 @@ export default function About() {
       <div className="absolute bottom-20 left-10 w-64 h-64 bg-brand-gold opacity-5 blur-[100px] -z-10" />
 
       <div className="container-custom">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 xl:gap-20 items-center">
 
           {/* Visual Side */}
-          <div className="relative animate-fade-up">
+          <div className="relative animate-fade-up lg:col-span-7">
             <div className="relative z-10 rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-premium group">
               <div className="absolute inset-0 bg-brand-blue/20 group-hover:bg-transparent transition-colors duration-700" />
               <img
@@ -50,7 +50,7 @@ export default function About() {
           </div>
 
           {/* Content Side */}
-          <div className="space-y-8 md:space-y-10 animate-fade-up mt-8 lg:mt-0" style={{ animationDelay: "200ms" }}>
+          <div className="space-y-8 md:space-y-10 animate-fade-up mt-8 lg:mt-0 lg:col-span-5" style={{ animationDelay: "200ms" }}>
             <div>
               <span className="text-[10px] font-black text-brand-azure uppercase tracking-[0.3em] mb-4 md:mb-6 block">Who We Are</span>
               <h2 className="text-4xl md:text-7xl font-heading font-black mb-6 md:mb-8 leading-[1.1]">
