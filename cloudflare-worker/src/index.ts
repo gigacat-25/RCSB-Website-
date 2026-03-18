@@ -59,6 +59,12 @@ export default {
         return new Response(JSON.stringify(results.results), { headers });
       }
 
+      // > Public Partners
+      if (request.method === "GET" && url.pathname === "/api/partners") {
+        const results = await env.DB.prepare("SELECT * FROM partners ORDER BY order_index ASC, created_at ASC").all();
+        return new Response(JSON.stringify(results.results), { headers });
+      }
+
       if (request.method === "POST" && url.pathname === "/api/contact") {
         const body = await request.json() as any;
         if (!body.name || !body.email || !body.message) {
@@ -315,6 +321,38 @@ export default {
         }
         if (request.method === "DELETE") {
           await env.DB.prepare("DELETE FROM gallery_slides WHERE id=?").bind(id).run();
+          return new Response(JSON.stringify({ success: true }), { headers });
+        }
+      }
+
+      // > Partners CRUD (admin protected)
+      if (request.method === "POST" && url.pathname === "/api/partners") {
+        const body = await request.json() as any;
+        if (!body.name || !body.image_url) {
+          return new Response(JSON.stringify({ error: "name and image_url are required" }), { status: 400, headers });
+        }
+
+        const countResult = await env.DB.prepare("SELECT COUNT(*) as count FROM partners").first() as any;
+        const nextOrder = body.order_index ?? (countResult?.count ?? 0);
+
+        await env.DB.prepare(
+          "INSERT INTO partners (name, image_url, order_index) VALUES (?, ?, ?)"
+        ).bind(body.name, body.image_url, nextOrder).run();
+        return new Response(JSON.stringify({ success: true }), { headers });
+      }
+
+      const matchPartner = url.pathname.match(/^\/api\/partners\/(\d+)$/);
+      if (matchPartner) {
+        const id = matchPartner[1];
+        if (request.method === "PUT") {
+          const body = await request.json() as any;
+          await env.DB.prepare(
+            "UPDATE partners SET name=?, image_url=?, order_index=? WHERE id=?"
+          ).bind(body.name, body.image_url, body.order_index ?? 0, id).run();
+          return new Response(JSON.stringify({ success: true }), { headers });
+        }
+        if (request.method === "DELETE") {
+          await env.DB.prepare("DELETE FROM partners WHERE id=?").bind(id).run();
           return new Response(JSON.stringify({ success: true }), { headers });
         }
       }

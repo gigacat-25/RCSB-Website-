@@ -61,6 +61,15 @@ CREATE TABLE IF NOT EXISTS team_members (
     created_at TEXT DEFAULT (datetime('now'))
 );
 
+-- Partners/collaborators
+CREATE TABLE IF NOT EXISTS partners (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    image_url TEXT NOT NULL,
+    order_index INTEGER DEFAULT 0,
+    created_at TEXT DEFAULT (datetime('now'))
+);
+
 -- Initial Mock Projects Data
 INSERT OR IGNORE INTO projects (title, slug, category, year, description, image_url) VALUES 
 ('RYLA 2026 – Rotary Youth Leadership Awards', 'ryla-2026', 'Leadership', '2026', 'Empowering young scouts and guides with leadership skills.', 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80'),

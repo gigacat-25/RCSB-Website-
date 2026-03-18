@@ -6,6 +6,7 @@ import EventGallery from "@/components/home/EventGallery";
 import RecentProjects from "@/components/home/RecentProjects";
 import FeaturedContent from "@/components/home/FeaturedContent";
 import LeadershipPreview from "@/components/home/LeadershipPreview";
+import PartnersCarousel from "@/components/home/PartnersCarousel";
 import ContactCTA from "@/components/home/ContactCTA";
 
 export default function Home() {
@@ -17,6 +18,7 @@ export default function Home() {
       <RecentProjects />
       <FeaturedContent />
       <LeadershipPreview />
+      <PartnersCarousel />
       <ContactCTA />
     </div>
   );
