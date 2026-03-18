@@ -1,0 +1,21 @@
+G‹Ìn+≈ @cloudflare/next-on-pages CLI v.1.13.16
+System.Management.Automation.RemoteException
+G‹Ìn+≈ Warning: It seems like you're on a Windows system, the Vercel CLI (run by @cloudflare/next-on-pages
+G‹Ìn+≈ to build your application) seems not to work reliably on Windows so if you experience issues during
+G‹Ìn+≈ the build process please try switching to a different operating system or running
+G‹Ìn+≈ @cloudflare/next-on-pages under the Windows Subsystem for Linux
+System.Management.Automation.RemoteException
+EXIT WHEN NOT EXPECTED
+
+SHELLAC COMMAND FAILED!
+Executing: npm --version in C:\Users\pabt2\Desktop\RCSB-Website-
+
+STDOUT:
+
+
+
+STDERR:
+
+
+
+G‹Ìn+≈ Unexpected error: {"cmd":"npm --version","stdout":"","stderr":""}
