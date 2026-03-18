@@ -192,9 +192,9 @@ export default function EditBlogPage() {
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Year / Date Label *</label>
+                    <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Publish Date *</label>
                     <input
-                      type="text"
+                      type="date"
                       name="year"
                       value={formData.year}
                       onChange={handleChange}

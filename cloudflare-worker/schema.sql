@@ -31,6 +31,8 @@ CREATE TABLE IF NOT EXISTS projects (
     status TEXT DEFAULT 'completed', -- 'upcoming', 'ongoing', 'completed'
     author_email TEXT, -- The email of the person who created this content
     gallery_urls TEXT DEFAULT '[]', -- JSON array of image URLs
+    rsvp_link TEXT, -- Optional RSVP or ticket link
+    event_date TEXT, -- Optional date of the event
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))
 );

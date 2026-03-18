@@ -37,7 +37,7 @@ export default function Footer() {
           <div>
             <h3 className="font-heading font-black text-xs uppercase tracking-[0.3em] mb-10 text-brand-gold">Discover</h3>
             <ul className="flex flex-col gap-5">
-              <li><Link href="/team" className="text-[13px] text-white/60 hover:text-white transition-all hover:translate-x-2 inline-flex items-center gap-2 group">
+              <li><Link href="/about" className="text-[13px] text-white/60 hover:text-white transition-all hover:translate-x-2 inline-flex items-center gap-2 group">
                 <span className="w-1 h-1 bg-brand-gold rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
                 Who We Are
               </Link></li>

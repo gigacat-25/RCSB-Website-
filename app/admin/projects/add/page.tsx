@@ -23,13 +23,14 @@ function AddProjectForm() {
     title: searchParams.get("title") || "",
     slug: (searchParams.get("title") || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, ""),
     category: searchParams.get("category") || "Community Service",
-    year: new Date().getFullYear().toString(),
+    year: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
     description: "",
     image_url: "",
     content: "",
     type: "project",
     status: "completed",
     gallery_urls: "[]",
+    event_date: "",
   });
 
   // Role Adjustment: If not admin, force type to blog
@@ -163,7 +164,6 @@ function AddProjectForm() {
                 className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
               >
                 <option value="project">Project</option>
-                <option value="blog">Blog Post</option>
                 <option value="event">Upcoming Event</option>
               </select>
             </div>
@@ -186,7 +186,7 @@ function AddProjectForm() {
           ) : null}
 
           <div className="space-y-2">
-            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Year / Term *</label>
+            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Year / Date Label *</label>
             <input
               type="text"
               name="year"
@@ -194,7 +194,7 @@ function AddProjectForm() {
               onChange={handleChange}
               required
               className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
-              placeholder="e.g. 2024-25"
+              placeholder="e.g. March 18, 2026"
             />
           </div>
         </div>
@@ -366,17 +366,30 @@ function AddProjectForm() {
           </div>
         </div>
 
-        {/* RSVP Link */}
-        <div className="space-y-2">
-          <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">RSVP / Ticket Link (Optional)</label>
-          <input
-            type="url"
-            name="rsvp_link"
-            value={(formData as any).rsvp_link || ""}
-            onChange={handleChange}
-            className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
-            placeholder="e.g. https://forms.gle/..."
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* RSVP Link */}
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">RSVP / Ticket Link (Optional)</label>
+            <input
+              type="url"
+              name="rsvp_link"
+              value={(formData as any).rsvp_link || ""}
+              onChange={handleChange}
+              className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
+              placeholder="e.g. https://forms.gle/..."
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Event Date (Optional)</label>
+            <input
+              type="date"
+              name="event_date"
+              value={(formData as any).event_date || ""}
+              onChange={handleChange}
+              className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
+            />
+          </div>
         </div>
 
         <div className="space-y-2">

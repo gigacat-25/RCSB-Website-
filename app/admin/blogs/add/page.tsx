@@ -18,7 +18,7 @@ function AddBlogContent() {
     title: searchParams.get("title") || "",
     slug: "",
     category: searchParams.get("category") || "Club Stories",
-    year: new Date().getFullYear().toString(),
+    year: new Date().toISOString().split('T')[0],
     description: "",
     image_url: "",
     content: "",
@@ -31,21 +31,21 @@ function AddBlogContent() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     let { name, value } = e.target;
-    
+
     if (name === "slug") {
       value = value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
     }
 
     setFormData((prev) => {
       const newState = { ...prev, [name]: value };
-      
+
       // Auto-generate slug from title ONLY if name is 'title'
       if (name === "title") {
         newState.slug = value.toLowerCase()
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/(^-|-$)+/g, "");
       }
-      
+
       return newState;
     });
   };
@@ -104,7 +104,7 @@ function AddBlogContent() {
         const errorData = await res.json();
         throw new Error(errorData.error || errorData.details || "Failed to create blog post");
       }
-      
+
       router.push("/admin/blogs");
       router.refresh();
     } catch (err: any) {
@@ -131,14 +131,14 @@ function AddBlogContent() {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           {/* Main Info */}
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 space-y-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     name="title"
                     value={formData.title}
                     onChange={handleChange}
@@ -153,8 +153,8 @@ function AddBlogContent() {
                     URL Slug
                     <span className="capitalize font-normal text-gray-400 font-mono">(rcsb.in/blogs/{formData.slug || "..."})</span>
                   </label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     name="slug"
                     value={formData.slug}
                     onChange={handleChange}
@@ -181,22 +181,21 @@ function AddBlogContent() {
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Year / Date Label *</label>
-                    <input 
-                      type="text" 
+                    <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Publish Date *</label>
+                    <input
+                      type="date"
                       name="year"
                       value={formData.year}
                       onChange={handleChange}
                       required
                       className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
-                      placeholder="e.g. March 2024"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Short Excerpt *</label>
-                  <textarea 
+                  <textarea
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
@@ -212,7 +211,7 @@ function AddBlogContent() {
             {/* Main Content */}
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
               <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block mb-4">Blog Content (Markdown)</label>
-              <textarea 
+              <textarea
                 name="content"
                 value={formData.content}
                 onChange={handleChange}
@@ -237,8 +236,8 @@ function AddBlogContent() {
                     <span className="text-xs font-bold uppercase">No Image Selected</span>
                   </div>
                 )}
-                <input 
-                  type="file" 
+                <input
+                  type="file"
                   accept="image/*"
                   onChange={async (e) => {
                     const file = e.target.files?.[0];
@@ -260,8 +259,8 @@ function AddBlogContent() {
                 />
               </div>
               <p className="text-[10px] text-gray-400 font-bold uppercase mb-2">Or Paste URL</p>
-              <input 
-                type="url" 
+              <input
+                type="url"
                 name="image_url"
                 value={formData.image_url}
                 onChange={handleChange}
@@ -276,12 +275,12 @@ function AddBlogContent() {
                 <label className="text-sm font-bold text-brand-blue uppercase tracking-wider">Gallery Photos</label>
                 <span className="text-[10px] font-bold text-brand-gray bg-gray-100 px-2 py-0.5 rounded-full">{gallery.length} Images</span>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-3 mb-4">
                 {gallery.map((url, idx) => (
                   <div key={idx} className="relative aspect-square rounded-xl overflow-hidden group border border-gray-100 shadow-sm">
                     <img src={url} alt={`Gallery ${idx}`} className="w-full h-full object-cover" />
-                    <button 
+                    <button
                       type="button"
                       onClick={() => removeGalleryImage(idx)}
                       className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
@@ -290,7 +289,7 @@ function AddBlogContent() {
                     </button>
                   </div>
                 ))}
-                
+
                 <div className="relative aspect-square bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center hover:border-brand-azure hover:bg-white transition-all group overflow-hidden">
                   {uploadingGallery ? (
                     <div className="text-[10px] font-bold text-brand-azure animate-pulse">Uploading...</div>
@@ -298,9 +297,9 @@ function AddBlogContent() {
                     <>
                       <PlusIcon className="w-6 h-6 text-gray-300 group-hover:text-brand-azure transition-colors" />
                       <span className="text-[10px] font-bold text-gray-400 group-hover:text-brand-azure transition-colors mt-1">Add Photos</span>
-                      <input 
-                        type="file" 
-                        multiple 
+                      <input
+                        type="file"
+                        multiple
                         accept="image/*"
                         onChange={handleGalleryUpload}
                         className="absolute inset-0 opacity-0 cursor-pointer"
@@ -318,8 +317,8 @@ function AddBlogContent() {
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                 Ready to publish?
               </h4>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={loading || uploadingGallery}
                 className="w-full py-4 bg-brand-gold hover:bg-yellow-500 text-brand-blue font-black rounded-2xl transition-all shadow-xl hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:hover:translate-y-0"
               >
