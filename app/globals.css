@@ -21,12 +21,18 @@ html {
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  color: #1e293b; /* slate-800 for better readability */
+  color: #1e293b;
+  /* slate-800 for better readability */
   background-color: var(--bg-light);
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: 'Playfair Display', serif;
   font-weight: 700;
   color: var(--rotary-blue);
@@ -37,13 +43,13 @@ h1, h2, h3, h4, h5, h6 {
   .glass {
     @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-xl;
   }
-  
+
   .glass-dark {
     @apply bg-slate-900/80 backdrop-blur-lg border border-slate-700/30 shadow-2xl;
   }
 
   .premium-card {
-    @apply bg-white rounded-[2.5rem] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-500 overflow-hidden;
+    @apply bg-white rounded-[2.5rem] border border-slate-100 shadow-[0_8px_30px_#0000000a] hover:shadow-[0_20px_40px_#00000014] transition-all duration-500 overflow-hidden;
   }
 
   .text-gradient-blue {
@@ -58,14 +64,23 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Custom scrollbar */
-::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: #f1f5f9; }
-::-webkit-scrollbar-thumb { 
-  background: #cbd5e1; 
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
   border-radius: 10px;
   border: 2px solid #f1f5f9;
 }
-::-webkit-scrollbar-thumb:hover { background: var(--rotary-blue); }
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--rotary-blue);
+}
 
 .container-custom {
   @apply w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12;

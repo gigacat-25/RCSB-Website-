@@ -1,9 +1,10 @@
 export const runtime = 'edge';
 import { apiFetch } from "@/lib/api";
 import Link from "next/link";
-import { ArrowLeftIcon, CalendarIcon, UserIcon, ShareIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, CalendarIcon, UserIcon } from "@heroicons/react/24/outline";
 import { notFound } from "next/navigation";
 import CommentsSection from "@/components/blog/CommentsSection";
+import ShareButton from "@/components/blog/ShareButton";
 import { Metadata } from "next";
 
 export const revalidate = 0;
@@ -162,9 +163,7 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
               <div className="bg-gray-50 p-6 md:p-8 rounded-[2.5rem] md:rounded-[40px] border border-gray-100">
                 <h4 className="text-brand-blue font-black uppercase tracking-widest text-xs mb-6">Share this story</h4>
                 <div className="flex gap-4">
-                  <button className="w-12 h-12 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-brand-azure hover:text-white transition-all shadow-sm">
-                    <ShareIcon className="w-5 h-5" />
-                  </button>
+                  <ShareButton title={blog.title} description={blog.description} />
                   {/* Add more share buttons as needed */}
                 </div>
               </div>
