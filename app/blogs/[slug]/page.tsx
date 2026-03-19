@@ -5,6 +5,7 @@ import { ArrowLeftIcon, CalendarIcon, UserIcon } from "@heroicons/react/24/outli
 import { notFound } from "next/navigation";
 import CommentsSection from "@/components/blog/CommentsSection";
 import ShareButton from "@/components/blog/ShareButton";
+import LikeButton from "@/components/blog/LikeButton";
 import { Metadata } from "next";
 import ImageGallery from "@/components/projects/ImageGallery";
 
@@ -150,8 +151,10 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
                 <h4 className="text-brand-blue font-black uppercase tracking-widest text-xs mb-6">Share this story</h4>
                 <div className="flex gap-4">
                   <ShareButton title={blog.title} description={blog.description} />
-                  {/* Add more share buttons as needed */}
                 </div>
+
+                <h4 className="text-brand-blue font-black uppercase tracking-widest text-xs mb-6 mt-8 pt-8 border-t border-gray-200">Show some love</h4>
+                <LikeButton projectId={blog.id} initialLikes={blog.likes || 0} />
               </div>
 
               <div className="bg-brand-blue p-6 md:p-8 rounded-[2.5rem] md:rounded-[40px] text-white overflow-hidden relative group">

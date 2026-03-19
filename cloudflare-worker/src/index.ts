@@ -40,11 +40,11 @@ export default {
       if (request.method === "GET" && url.pathname === "/api/projects") {
         const author = url.searchParams.get("author");
         if (author) {
-          const results = await env.DB.prepare("SELECT * FROM projects WHERE author_email = ? ORDER BY created_at DESC")
+          const results = await env.DB.prepare("SELECT p.*, (SELECT COUNT(*) FROM comments c WHERE c.project_id = p.id) as comment_count FROM projects p WHERE p.author_email = ? ORDER BY p.created_at DESC")
             .bind(author).all();
           return new Response(JSON.stringify(results.results), { headers });
         }
-        const results = await env.DB.prepare("SELECT * FROM projects ORDER BY created_at DESC").all();
+        const results = await env.DB.prepare("SELECT p.*, (SELECT COUNT(*) FROM comments c WHERE c.project_id = p.id) as comment_count FROM projects p ORDER BY p.created_at DESC").all();
         return new Response(JSON.stringify(results.results), { headers });
       }
 
@@ -97,6 +97,15 @@ export default {
         const comments = await env.DB.prepare("SELECT * FROM comments WHERE project_id = ? ORDER BY created_at DESC")
           .bind(projectId).all();
         return new Response(JSON.stringify(comments.results), { headers });
+      }
+
+      // > Public Like Project
+      const matchLike = url.pathname.match(/^\/api\/projects\/(\d+)\/like$/);
+      if (matchLike && request.method === "POST") {
+        const projectId = matchLike[1];
+        await env.DB.prepare("UPDATE projects SET likes = coalesce(likes, 0) + 1 WHERE id = ?").bind(projectId).run();
+        const updated = await env.DB.prepare("SELECT likes FROM projects WHERE id = ?").bind(projectId).first();
+        return new Response(JSON.stringify(updated), { headers });
       }
 
       // --- PROTECTED ENDPOINTS ---
@@ -160,7 +169,7 @@ export default {
       if (matchProject) {
         const id = matchProject[1];
         if (request.method === "GET") {
-          const result = await env.DB.prepare("SELECT * FROM projects WHERE id=?").bind(id).first();
+          const result = await env.DB.prepare("SELECT p.*, (SELECT COUNT(*) FROM comments c WHERE c.project_id = p.id) as comment_count FROM projects p WHERE p.id=?").bind(id).first();
           if (!result) return new Response(JSON.stringify({ error: "Not found" }), { status: 404, headers });
           return new Response(JSON.stringify(result), { headers });
         }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { BookOpenIcon, UserIcon, MagnifyingGlassIcon, TagIcon, PencilSquareIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { BookOpenIcon, UserIcon, MagnifyingGlassIcon, TagIcon, PencilSquareIcon, ChevronLeftIcon, ChevronRightIcon, HeartIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
@@ -200,12 +200,24 @@ export default function BlogsPage() {
                         {blog.description}
                       </p>
 
-                      <div className="mt-auto flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-blue/40 group-hover:text-brand-azure transition-colors">
-                          Read Story
-                        </span>
-                        <div className="w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center group-hover:bg-brand-blue group-hover:text-white transition-all duration-300">
-                          &rarr;
+                      <div className="mt-auto flex flex-col gap-4">
+                        <div className="flex items-center gap-4 text-brand-gray/50">
+                          <div className="flex items-center gap-1.5 text-[11px] font-bold">
+                            <HeartIcon className="w-4 h-4 text-red-400" />
+                            {blog.likes || 0}
+                          </div>
+                          <div className="flex items-center gap-1.5 text-[11px] font-bold">
+                            <ChatBubbleLeftIcon className="w-4 h-4" />
+                            {blog.comment_count || 0}
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-blue/40 group-hover:text-brand-azure transition-colors">
+                            Read Story
+                          </span>
+                          <div className="w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center group-hover:bg-brand-blue group-hover:text-white transition-all duration-300">
+                            &rarr;
+                          </div>
                         </div>
                       </div>
                     </div>
