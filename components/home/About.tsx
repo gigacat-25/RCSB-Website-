@@ -90,7 +90,7 @@ export default function About() {
             </div>
 
             <div className="pt-8">
-              <Link href="/team" className="group inline-flex items-center gap-4 text-brand-blue font-black uppercase tracking-[0.2em] text-xs">
+              <Link href="/about" className="group inline-flex items-center gap-4 text-brand-blue font-black uppercase tracking-[0.2em] text-xs">
                 <span className="relative">
                   Discover our journey
                   <span className="absolute -bottom-1 left-0 w-full h-[1px] bg-brand-blue/20 group-hover:bg-brand-blue transition-colors" />
