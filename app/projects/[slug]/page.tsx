@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeftIcon, CalendarIcon, MapPinIcon, RocketLaunchIcon, PencilSquareIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import ImageGallery from "@/components/projects/ImageGallery";
 
 export const revalidate = 0;
 
@@ -167,13 +168,7 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
                   <span className="w-8 h-1 bg-brand-gold rounded-full"></span>
                   Project Gallery
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                  {JSON.parse(project.gallery_urls).map((url: string, idx: number) => (
-                    <div key={idx} className="aspect-square rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100 group">
-                      <img src={fixImageUrl(url)} alt={`${project.title} Gallery ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
-                    </div>
-                  ))}
-                </div>
+                <ImageGallery images={JSON.parse(project.gallery_urls)} title={project.title} />
               </div>
             )}
           </article>

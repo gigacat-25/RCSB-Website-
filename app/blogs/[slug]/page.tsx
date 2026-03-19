@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import CommentsSection from "@/components/blog/CommentsSection";
 import ShareButton from "@/components/blog/ShareButton";
 import { Metadata } from "next";
+import ImageGallery from "@/components/projects/ImageGallery";
 
 export const revalidate = 0;
 
@@ -134,22 +135,7 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
                   <span className="w-8 h-1 bg-brand-gold rounded-full"></span>
                   Captured Moments
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {gallery.map((url, idx) => (
-                    <div
-                      key={idx}
-                      className={`relative overflow-hidden rounded-[32px] group shadow-md transition-all duration-500 hover:shadow-2xl ${idx % 3 === 0 ? "md:col-span-2 aspect-[16/9]" : "aspect-square"
-                        }`}
-                    >
-                      <img
-                        src={fixImageUrl(url)}
-                        alt={`Gallery ${idx}`}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    </div>
-                  ))}
-                </div>
+                <ImageGallery images={gallery} title={blog.title} isBlogLayout />
               </div>
             )}
 
