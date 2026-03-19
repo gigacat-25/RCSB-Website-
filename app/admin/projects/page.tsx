@@ -107,8 +107,8 @@ export default function AdminProjectsPage() {
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-6 py-3 font-bold text-sm tracking-wide transition-all border-b-2 whitespace-nowrap ${activeTab === tab
-                ? 'border-brand-blue text-brand-blue'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              ? 'border-brand-blue text-brand-blue'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
           >
             {getTabLabel(tab)} ({items.filter(i => (i.type || 'project') === tab).length})

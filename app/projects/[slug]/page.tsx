@@ -1,7 +1,7 @@
 export const runtime = 'edge';
 import { apiFetch } from "@/lib/api";
 import Link from "next/link";
-import { ArrowLeftIcon, CalendarIcon, MapPinIcon, RocketLaunchIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, CalendarIcon, MapPinIcon, RocketLaunchIcon, PencilSquareIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 
@@ -196,6 +196,17 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
                       <div className="text-brand-blue font-bold">{project.year}</div>
                     </div>
                   </div>
+                  {project.event_date && (
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 bg-white rounded-2xl border border-gray-100 flex items-center justify-center shadow-sm">
+                        <ClockIcon className="w-6 h-6 text-brand-gold" />
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Event Date</div>
+                        <div className="text-brand-blue font-bold">{new Date(project.event_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}</div>
+                      </div>
+                    </div>
+                  )}
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-white rounded-2xl border border-gray-100 flex items-center justify-center shadow-sm">
                       <RocketLaunchIcon className="w-6 h-6 text-brand-gold" />
