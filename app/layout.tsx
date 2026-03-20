@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import LoadingScreen from "@/components/layout/LoadingScreen";
 import { ClerkProvider } from "@clerk/nextjs";
 import Providers from "./providers";
 
@@ -60,6 +61,7 @@ export default function RootLayout({
               })
             }}
           />
+          <LoadingScreen />
           <Providers>
             <Navbar />
             <main className="flex-1">{children}</main>
