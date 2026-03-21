@@ -14,7 +14,7 @@ function AddProjectForm() {
   const searchParams = useSearchParams();
   const { isLoaded, user } = useUser();
   const email = user?.primaryEmailAddress?.emailAddress;
-  const userIsAdmin = isAdmin(email);
+  const userIsAdmin = isAdmin(email, user?.publicMetadata?.role);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

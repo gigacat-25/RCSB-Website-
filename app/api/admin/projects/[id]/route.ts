@@ -2,7 +2,7 @@ export const runtime = 'edge';
 import { NextResponse } from "next/server";
 import { apiFetch } from "@/lib/api";
 import { currentUser } from "@clerk/nextjs/server";
-import { isAdmin } from "@/lib/admin";
+import { isAdmin, getUserRole } from "@/lib/admin";
 
 export async function PUT(
   request: Request,
@@ -11,17 +11,18 @@ export async function PUT(
   try {
     const user = await currentUser();
     const email = user?.primaryEmailAddress?.emailAddress;
-    const isUserAdmin = isAdmin(email);
+    const isUserAdmin = isAdmin(email, user?.publicMetadata?.role);
+    const userRole = getUserRole(email, user?.publicMetadata?.role);
     const body = await request.json();
 
     // 1. Fetch existing project to check ownership
     const existing = await apiFetch(`/api/projects/${params.id}`);
-    
+
     // 2. Permission Check:
     // - Admin can edit anything.
     // - Blogger can only edit their own 'blog' posts.
     const isOwner = existing.author_email === email;
-    
+
     if (!isUserAdmin && !isOwner) {
       return NextResponse.json({ error: "Unauthorized: You can only edit your own stories." }, { status: 403 });
     }
@@ -47,7 +48,7 @@ export async function DELETE(
 
     // 1. Fetch existing project to check ownership
     const existing = await apiFetch(`/api/projects/${params.id}`);
-    
+
     // 2. Permission Check:
     // - Admin can delete anything.
     // - Blogger can only delete their own stories.

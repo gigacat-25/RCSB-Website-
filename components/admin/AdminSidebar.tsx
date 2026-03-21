@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { isAdmin } from "@/lib/admin";
-import { DocumentTextIcon, UsersIcon, EnvelopeIcon, Squares2X2Icon, BookOpenIcon, HandRaisedIcon, ClockIcon } from "@heroicons/react/24/outline";
+import { isAdmin, isSuperAdmin } from "@/lib/admin";
+import { DocumentTextIcon, UsersIcon, EnvelopeIcon, Squares2X2Icon, BookOpenIcon, HandRaisedIcon, ClockIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
 
 const navItems = [
   { name: "Dashboard", href: "/admin", icon: Squares2X2Icon },
@@ -20,7 +20,8 @@ export default function AdminSidebar() {
   const pathname = usePathname();
   const { user } = useUser();
   const email = user?.primaryEmailAddress?.emailAddress;
-  const userIsAdmin = isAdmin(email);
+  const userIsAdmin = isAdmin(email, user?.publicMetadata?.role);
+  const userIsSuperAdmin = isSuperAdmin(email);
 
   return (
     <aside className="w-64 bg-brand-blue text-white min-h-screen flex flex-col fixed left-0 top-0">
@@ -59,6 +60,21 @@ export default function AdminSidebar() {
               </li>
             );
           })}
+
+          {userIsSuperAdmin && (
+            <li className="pt-4 mt-4 border-t border-brand-gold/10">
+              <Link
+                href="/admin/access"
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${pathname === "/admin/access"
+                  ? "bg-white/10 text-brand-gold font-bold"
+                  : "text-brand-gold/60 hover:bg-white/5 hover:text-brand-gold"
+                  }`}
+              >
+                <ShieldCheckIcon className="w-5 h-5" />
+                <span>Access Control</span>
+              </Link>
+            </li>
+          )}
         </ul>
       </nav>
 

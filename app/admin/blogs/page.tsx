@@ -9,9 +9,18 @@ import { isAdmin } from "@/lib/admin";
 import { PlusIcon, PencilIcon, TrashIcon, LinkIcon, BookOpenIcon, SparklesIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function AdminBlogsPage() {
-  const { user } = useUser();
-  const email = user?.primaryEmailAddress?.emailAddress;
-  const userIsAdmin = isAdmin(email);
+  const { user, isLoaded } = useUser();
+  const [userIsAdmin, setIsUserAdmin] = useState(false);
+
+  useEffect(() => {
+    if (isLoaded && user) {
+      const email = user.primaryEmailAddress?.emailAddress;
+      const admin = isAdmin(email, user?.publicMetadata?.role);
+      setIsUserAdmin(admin);
+    } else if (isLoaded && !user) {
+      setIsUserAdmin(false);
+    }
+  }, [isLoaded, user]);
 
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -76,13 +85,13 @@ export default function AdminBlogsPage() {
             {userIsAdmin ? "Blog Management" : "My Stories"}
           </h2>
           <p className="text-brand-gray mt-1">
-            {userIsAdmin 
-              ? "Manage all club stories and community contributions." 
+            {userIsAdmin
+              ? "Manage all club stories and community contributions."
               : `Welcome back, ${user?.firstName || 'Storyteller'}! Manage your experiences and impact.`}
           </p>
         </div>
-        <Link 
-          href="/admin/blogs/add" 
+        <Link
+          href="/admin/blogs/add"
           className="flex items-center gap-2 px-6 py-2 bg-brand-gold hover:bg-yellow-500 text-brand-blue font-bold rounded-full transition-colors whitespace-nowrap shadow-md hover:shadow-lg"
         >
           <PlusIcon className="w-5 h-5" />
@@ -151,14 +160,14 @@ export default function AdminBlogsPage() {
                       </div>
                     ) : (
                       <div className="flex items-center justify-end gap-2">
-                        <Link 
-                          href={`/admin/blogs/${item.id}`} 
+                        <Link
+                          href={`/admin/blogs/${item.id}`}
                           className="p-2 text-brand-azure hover:bg-blue-50 rounded-lg transition-colors flex items-center justify-center"
                           title="Edit Post"
                         >
                           <PencilIcon className="w-5 h-5" />
                         </Link>
-                        <button 
+                        <button
                           onClick={() => setConfirmDeleteId(item.id)}
                           className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors flex items-center justify-center cursor-pointer"
                           title="Delete Post"

@@ -22,7 +22,7 @@ export default function AdminTeamPage() {
   useEffect(() => {
     if (isLoaded && user) {
       const email = user.primaryEmailAddress?.emailAddress;
-      if (!isAdmin(email)) {
+      if (!isAdmin(email, user?.publicMetadata?.role)) {
         router.push("/admin");
       }
     }

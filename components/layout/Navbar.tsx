@@ -18,7 +18,7 @@ function AuthSection({ mobile = false }: { mobile?: boolean }) {
   const { isSignedIn, isLoaded, user } = useUser();
   const { openSignIn, signOut, openUserProfile } = useClerk();
   const userEmail = user?.primaryEmailAddress?.emailAddress;
-  const isUserAdmin = isAdmin(userEmail);
+  const isUserAdmin = isAdmin(userEmail, user?.publicMetadata?.role);
 
   if (!isLoaded) return (
     <div className={`flex items-center gap-2 ${mobile ? "w-full" : ""}`}>

@@ -18,8 +18,8 @@ export async function POST(request: Request) {
     // Authorization logic:
     // 1. Admin can do anything.
     // 2. Blogger can ONLY create 'blog' type.
-    const isUserAdmin = isAdmin(email);
-    const userRole = getUserRole(email);
+    const isUserAdmin = isAdmin(email, user?.publicMetadata?.role);
+    const userRole = getUserRole(email, user?.publicMetadata?.role);
 
     if (!isUserAdmin && body.type !== "blog") {
       return NextResponse.json({ error: "Unauthorized: Only Admins can manage projects/events." }, { status: 403 });
@@ -51,7 +51,7 @@ export async function GET() {
   try {
     const user = await currentUser();
     const email = user?.primaryEmailAddress?.emailAddress;
-    const isUserAdmin = isAdmin(email);
+    const isUserAdmin = isAdmin(email, user?.publicMetadata?.role);
 
     // If not admin, only fetch their own stories
     const baseEndpoint = isUserAdmin ? "/api/projects" : `/api/projects?author=${encodeURIComponent(email || "")}`;

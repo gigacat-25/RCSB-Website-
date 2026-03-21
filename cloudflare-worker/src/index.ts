@@ -280,6 +280,36 @@ export default {
         }
       }
 
+      // > Authorized Admins CRUD
+      if (request.method === "GET" && url.pathname === "/api/authorized-admins") {
+        const results = await env.DB.prepare("SELECT * FROM authorized_admins ORDER BY created_at DESC").all();
+        return new Response(JSON.stringify(results.results), { headers });
+      }
+
+      if (request.method === "GET" && url.pathname === "/api/authorized-admins/check") {
+        const email = url.searchParams.get("email");
+        if (!email) return new Response(JSON.stringify({ role: null }), { headers });
+        const admin = await env.DB.prepare("SELECT role FROM authorized_admins WHERE email = ?").bind(email).first() as { role: string } | null;
+        return new Response(JSON.stringify({ role: admin?.role || null }), { headers });
+      }
+
+      if (request.method === "POST" && url.pathname === "/api/authorized-admins") {
+        const body = await request.json() as any;
+        const exists = await env.DB.prepare("SELECT id FROM authorized_admins WHERE email=?").bind(body.email).first();
+        if (exists) {
+          return new Response(JSON.stringify({ error: "Email already authorized" }), { status: 400, headers });
+        }
+        await env.DB.prepare("INSERT INTO authorized_admins (email, role, name) VALUES (?, ?, ?)")
+          .bind(body.email, body.role || 'editor', body.name || null).run();
+        return new Response(JSON.stringify({ success: true }), { headers });
+      }
+
+      const matchAdmins = url.pathname.match(/^\/api\/authorized-admins\/(\d+)$/);
+      if (matchAdmins && request.method === "DELETE") {
+        await env.DB.prepare("DELETE FROM authorized_admins WHERE id=?").bind(matchAdmins[1]).run();
+        return new Response(JSON.stringify({ success: true }), { headers });
+      }
+
       // > Past Presidents CRUD
       if (request.method === "POST" && url.pathname === "/api/past-presidents") {
         const body = await request.json() as any;

@@ -17,12 +17,15 @@ export default function AdminProjectsPage() {
   const [activeTab, setActiveTab] = useState("project"); // 'project', 'event'
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [isUserAdmin, setIsUserAdmin] = useState(false);
 
   // Role Protection
   useEffect(() => {
     if (isLoaded && user) {
       const email = user.primaryEmailAddress?.emailAddress;
-      if (!isAdmin(email)) {
+      const admin = isAdmin(email, user?.publicMetadata?.role);
+      setIsUserAdmin(admin);
+      if (!admin) {
         router.push("/admin");
       }
     }

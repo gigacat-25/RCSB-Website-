@@ -8,8 +8,8 @@ import { BookOpenIcon, PencilSquareIcon, SparklesIcon, GlobeAltIcon } from "@her
 export default async function AdminDashboard() {
   const user = await currentUser();
   const email = user?.primaryEmailAddress?.emailAddress;
-  const userIsAdmin = isAdmin(email);
-  
+  const userIsAdmin = isAdmin(email, user?.publicMetadata?.role);
+
   // Stats
   let projectsCount = 0;
   let inquiriesCount = 0;
@@ -21,10 +21,10 @@ export default async function AdminDashboard() {
     if (userIsAdmin) {
       const projects = await apiFetch("/api/projects");
       projectsCount = projects.length;
-      
+
       const messages = await apiFetch("/api/messages");
       inquiriesCount = messages.filter((m: any) => m.status === 'unread').length;
-      
+
       const team = await apiFetch("/api/team");
       teamCount = team.length;
     } else {
@@ -129,24 +129,24 @@ export default async function AdminDashboard() {
 
       {/* Action Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 px-2">
-         <div className="bg-brand-blue text-white p-8 rounded-[40px] shadow-xl relative overflow-hidden group">
-            <div className="relative z-10">
-              <h2 className="text-2xl font-heading font-bold mb-4">Create New Project</h2>
-              <p className="text-blue-100 mb-8 font-medium">Ready to showcase a new club initiative? Add project details, impact stats, and photos to keep the community inspired.</p>
-              <Link href="/admin/projects/add" className="inline-block px-8 py-4 bg-brand-gold text-brand-blue font-black rounded-2xl hover:bg-white transition-all shadow-lg">
-                Launch Project Editor
-              </Link>
-            </div>
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3 blur-3xl"></div>
-         </div>
-         
-         <div className="bg-white border-2 border-brand-blue p-8 rounded-[40px] group hover:bg-brand-blue/5 transition-colors">
-            <h2 className="text-2xl font-heading font-bold text-brand-blue mb-4">Update Leadership</h2>
-            <p className="text-brand-gray mb-8 font-medium">Switch roles for the new tenure or update existing board member details and profile photos.</p>
-            <Link href="/admin/team" className="inline-block px-8 py-4 border-2 border-brand-blue text-brand-blue font-black rounded-2xl hover:bg-brand-blue hover:text-white transition-all">
-               Edit Board Roster
+        <div className="bg-brand-blue text-white p-8 rounded-[40px] shadow-xl relative overflow-hidden group">
+          <div className="relative z-10">
+            <h2 className="text-2xl font-heading font-bold mb-4">Create New Project</h2>
+            <p className="text-blue-100 mb-8 font-medium">Ready to showcase a new club initiative? Add project details, impact stats, and photos to keep the community inspired.</p>
+            <Link href="/admin/projects/add" className="inline-block px-8 py-4 bg-brand-gold text-brand-blue font-black rounded-2xl hover:bg-white transition-all shadow-lg">
+              Launch Project Editor
             </Link>
-         </div>
+          </div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3 blur-3xl"></div>
+        </div>
+
+        <div className="bg-white border-2 border-brand-blue p-8 rounded-[40px] group hover:bg-brand-blue/5 transition-colors">
+          <h2 className="text-2xl font-heading font-bold text-brand-blue mb-4">Update Leadership</h2>
+          <p className="text-brand-gray mb-8 font-medium">Switch roles for the new tenure or update existing board member details and profile photos.</p>
+          <Link href="/admin/team" className="inline-block px-8 py-4 border-2 border-brand-blue text-brand-blue font-black rounded-2xl hover:bg-brand-blue hover:text-white transition-all">
+            Edit Board Roster
+          </Link>
+        </div>
       </div>
     </div>
   );

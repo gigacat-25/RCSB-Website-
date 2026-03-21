@@ -11,7 +11,7 @@ export default async function AdminLayout({
 }) {
   const user = await currentUser();
   const email = user?.primaryEmailAddress?.emailAddress;
-  const userIsAdmin = isAdmin(email);
+  const userIsAdmin = isAdmin(email, user?.publicMetadata?.role);
 
   // If NOT admin, they can only access /admin and /admin/blogs
   // Check if current path is restricted
@@ -24,7 +24,7 @@ export default async function AdminLayout({
     <div className="flex min-h-screen bg-brand-light">
       {/* Sidebar Navigation */}
       <AdminSidebar />
-      
+
       {/* Main Content Area */}
       <div className="flex-1 ml-64 flex flex-col">
         <AdminHeader />

@@ -19,7 +19,7 @@ export default function AdminMessagesPage() {
   useEffect(() => {
     if (isLoaded && user) {
       const email = user.primaryEmailAddress?.emailAddress;
-      if (!isAdmin(email)) {
+      if (!isAdmin(email, user?.publicMetadata?.role)) {
         router.push("/admin");
       }
     }
@@ -75,11 +75,10 @@ export default function AdminMessagesPage() {
             </div>
           ) : (
             messages.map((msg: any) => (
-              <div 
-                key={msg.id} 
-                className={`bg-white p-6 rounded-3xl border transition-all ${
-                  msg.status === 'unread' ? 'border-brand-gold shadow-md' : 'border-gray-100 opacity-75'
-                }`}
+              <div
+                key={msg.id}
+                className={`bg-white p-6 rounded-3xl border transition-all ${msg.status === 'unread' ? 'border-brand-gold shadow-md' : 'border-gray-100 opacity-75'
+                  }`}
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
@@ -96,13 +95,12 @@ export default function AdminMessagesPage() {
                       <ClockIcon className="w-3.5 h-3.5" />
                       {new Date(msg.created_at).toLocaleDateString()}
                     </div>
-                    <button 
+                    <button
                       onClick={() => toggleStatus(msg.id, msg.status)}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all ${
-                        msg.status === 'unread' 
-                          ? 'bg-brand-blue text-white hover:bg-black' 
+                      className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all ${msg.status === 'unread'
+                          ? 'bg-brand-blue text-white hover:bg-black'
                           : 'bg-green-50 text-green-600 border border-green-100'
-                      }`}
+                        }`}
                     >
                       {msg.status === 'unread' ? (
                         <>Mark as Read</>
