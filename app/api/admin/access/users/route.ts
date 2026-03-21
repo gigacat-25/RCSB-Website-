@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import { NextResponse } from 'next/server';
 import { clerkClient } from '@clerk/nextjs/server';
 import { apiFetch } from '@/lib/api';
