@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { isSuperAdmin } from "@/lib/admin";
-import { ShieldCheckIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { ShieldCheckIcon, CheckIcon, XMarkIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 export default function AccessControlPage() {
     const { user, isLoaded } = useUser();
@@ -13,6 +13,8 @@ export default function AccessControlPage() {
 
     const [processingId, setProcessingId] = useState<string | null>(null);
     const [confirmRevokeId, setConfirmRevokeId] = useState<string | null>(null);
+
+    const [searchQuery, setSearchQuery] = useState("");
 
     const email = user?.primaryEmailAddress?.emailAddress;
     const superAdmin = isSuperAdmin(email);
@@ -70,14 +72,21 @@ export default function AccessControlPage() {
         </div>
     );
 
+    const filteredUsers = users.filter((u) =>
+        u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        u.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
         <div className="py-6 max-w-5xl mx-auto">
-            <div className="mb-8">
-                <h2 className="text-3xl font-heading font-bold text-brand-blue flex items-center gap-3">
-                    <ShieldCheckIcon className="w-8 h-8 text-brand-gold" />
-                    Access Control
-                </h2>
-                <p className="text-brand-gray mt-1">Manage who can edit website content and view the admin dashboard.</p>
+            <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 className="text-3xl font-heading font-bold text-brand-blue flex items-center gap-3">
+                        <ShieldCheckIcon className="w-8 h-8 text-brand-gold" />
+                        Access Control
+                    </h2>
+                    <p className="text-brand-gray mt-1">Manage who can edit website content and view the admin dashboard.</p>
+                </div>
             </div>
 
             {error && (
@@ -94,18 +103,33 @@ export default function AccessControlPage() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-                    <h3 className="font-bold text-brand-blue">Registered Users</h3>
-                    <span className="text-xs font-black text-brand-gold bg-white px-3 py-1 rounded-full shadow-sm">{users.length} Total Users</span>
+                <div className="p-4 sm:p-6 border-b border-gray-100 bg-gray-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <h3 className="font-bold text-brand-blue">Registered Users</h3>
+                        <span className="text-xs font-black text-brand-gold bg-white px-3 py-1 rounded-full shadow-sm">{filteredUsers.length} Users</span>
+                    </div>
+
+                    <div className="relative w-full sm:w-72">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="Search by name or email..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-brand-gold sm:text-sm transition-shadow"
+                        />
+                    </div>
                 </div>
 
                 {loading ? (
                     <div className="p-12 text-center text-gray-400 font-bold animate-pulse">Loading users...</div>
-                ) : users.length === 0 ? (
-                    <div className="p-12 text-center text-gray-400 font-bold">No users registered on your site yet.</div>
+                ) : filteredUsers.length === 0 ? (
+                    <div className="p-12 text-center text-gray-400 font-bold">No users match your criteria.</div>
                 ) : (
                     <div className="divide-y divide-gray-100">
-                        {users.map((u) => {
+                        {filteredUsers.map((u) => {
                             const isEditor = u.role === 'editor' || u.role === 'admin';
                             const isMe = u.email === email;
 
