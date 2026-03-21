@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { isAdmin } from "@/lib/admin";
-import { PlusIcon, PencilIcon, TrashIcon, LinkIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, PencilIcon, TrashIcon, LinkIcon, CheckIcon, XMarkIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 export default function AdminProjectsPage() {
   const router = useRouter();
@@ -18,6 +18,7 @@ export default function AdminProjectsPage() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [isUserAdmin, setIsUserAdmin] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Role Protection
   useEffect(() => {
@@ -70,7 +71,11 @@ export default function AdminProjectsPage() {
     }
   };
 
-  const filteredItems = items.filter(item => (item.type || 'project') === activeTab);
+  const filteredItems = items.filter(item => {
+    const typeMatch = (item.type || 'project') === activeTab;
+    const searchMatch = item.title?.toLowerCase().includes(searchQuery.toLowerCase()) || item.category?.toLowerCase().includes(searchQuery.toLowerCase());
+    return typeMatch && searchMatch;
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -117,6 +122,19 @@ export default function AdminProjectsPage() {
             {getTabLabel(tab)} ({items.filter(i => (i.type || 'project') === tab).length})
           </button>
         ))}
+      </div>
+
+      <div className="mb-6 relative w-full md:w-96">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+        </div>
+        <input
+          type="text"
+          placeholder="Search by title or category..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-brand-gold sm:text-sm transition-shadow"
+        />
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">

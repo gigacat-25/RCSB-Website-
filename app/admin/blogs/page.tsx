@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { isAdmin } from "@/lib/admin";
-import { PlusIcon, PencilIcon, TrashIcon, LinkIcon, BookOpenIcon, SparklesIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, PencilIcon, TrashIcon, LinkIcon, BookOpenIcon, SparklesIcon, CheckIcon, XMarkIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 export default function AdminBlogsPage() {
   const { user, isLoaded } = useUser();
@@ -23,6 +23,7 @@ export default function AdminBlogsPage() {
   }, [isLoaded, user]);
 
   const [items, setItems] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -72,9 +73,14 @@ export default function AdminBlogsPage() {
     }
   };
 
+  const filteredItems = items.filter((item: any) =>
+    item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.category?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="py-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <div>
           <h2 className="text-3xl font-heading font-bold text-brand-blue flex items-center gap-3">
             {userIsAdmin ? (
@@ -99,6 +105,19 @@ export default function AdminBlogsPage() {
         </Link>
       </div>
 
+      <div className="mb-6 relative w-full md:w-96">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+        </div>
+        <input
+          type="text"
+          placeholder="Search by title or category..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-brand-gold sm:text-sm transition-shadow"
+        />
+      </div>
+
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
@@ -116,7 +135,7 @@ export default function AdminBlogsPage() {
                   Loading blogs...
                 </td>
               </tr>
-            ) : items.length === 0 ? (
+            ) : filteredItems.length === 0 ? (
               <tr>
                 <td colSpan={4} className="p-12 text-center text-gray-500">
                   <div className="text-lg font-bold mb-2">No blog posts found.</div>
@@ -124,7 +143,7 @@ export default function AdminBlogsPage() {
                 </td>
               </tr>
             ) : (
-              items.map((item: any) => (
+              filteredItems.map((item: any) => (
                 <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                   <td className="p-4">
                     <div className="font-bold text-brand-blue text-lg mb-1">{item.title}</div>

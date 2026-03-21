@@ -7,12 +7,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { isAdmin } from "@/lib/admin";
-import { PlusIcon, PencilIcon, TrashIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, PencilIcon, TrashIcon, CheckIcon, XMarkIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 export default function AdminTeamPage() {
   const router = useRouter();
   const { isLoaded, user } = useUser();
   const [members, setMembers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
@@ -58,9 +59,14 @@ export default function AdminTeamPage() {
     }
   };
 
+  const filteredMembers = members.filter((m: any) =>
+    m.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    m.role?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="py-6">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <div>
           <h2 className="text-3xl font-heading font-bold text-brand-blue">Team Leadership</h2>
           <p className="text-brand-gray mt-1">Manage the Board of Directors and key tenure roles.</p>
@@ -72,6 +78,19 @@ export default function AdminTeamPage() {
           <PlusIcon className="w-5 h-5" />
           Add Member
         </Link>
+      </div>
+
+      <div className="mb-6 relative w-full md:w-96">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+        </div>
+        <input
+          type="text"
+          placeholder="Search by name or role..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-brand-gold sm:text-sm transition-shadow"
+        />
       </div>
 
       {loading ? (
@@ -91,14 +110,14 @@ export default function AdminTeamPage() {
               </tr>
             </thead>
             <tbody>
-              {members.length === 0 ? (
+              {filteredMembers.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="p-8 text-center text-gray-500">
                     No team members found. Start by adding the President!
                   </td>
                 </tr>
               ) : (
-                members.map((member: any) => (
+                filteredMembers.map((member: any) => (
                   <tr key={member.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                     <td className="p-4">
                       <div className="flex items-center gap-3">
