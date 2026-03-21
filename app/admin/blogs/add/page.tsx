@@ -5,7 +5,7 @@ export const runtime = 'edge';
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeftIcon, PhotoIcon, XMarkIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, PhotoIcon, XMarkIcon, PlusIcon, UserIcon } from "@heroicons/react/24/outline";
 
 function AddBlogContent() {
   const router = useRouter();
@@ -25,6 +25,8 @@ function AddBlogContent() {
     type: "blog",
     status: "completed",
     gallery_urls: "[]", // Stored as a JSON string
+    event_date: "",
+    rsvp_link: "",
   });
 
   const [gallery, setGallery] = useState<string[]>([]);
@@ -186,11 +188,23 @@ function AddBlogContent() {
                       type="date"
                       name="year"
                       value={formData.year}
-                      onChange={handleChange}
-                      required
-                      className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
+                      readOnly
+                      disabled
+                      className="w-full bg-gray-100 border-2 border-gray-200 text-gray-500 cursor-not-allowed rounded-xl px-4 py-3 outline-none transition-all"
                     />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Author Name (Optional)</label>
+                  <input
+                    type="text"
+                    name="event_date"
+                    value={formData.event_date}
+                    onChange={handleChange}
+                    placeholder="e.g. Rtr. John Doe"
+                    className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
+                  />
                 </div>
 
                 <div className="space-y-2">
@@ -224,6 +238,51 @@ function AddBlogContent() {
 
           {/* Sidebar: Media */}
           <div className="space-y-6">
+            {/* Author Image */}
+            <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+              <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block mb-4">Author Photo</label>
+              <div className="aspect-square w-32 bg-gray-50 border-2 border-dashed border-gray-200 rounded-full overflow-hidden mb-4 relative group mx-auto">
+                {formData.rsvp_link ? (
+                  <img src={formData.rsvp_link} alt="Author Preview" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                    <UserIcon className="w-8 h-8 mb-1 opacity-50" />
+                    <span className="text-[9px] font-bold uppercase text-center px-1">No Image</span>
+                  </div>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setLoading(true);
+                    const uploadData = new FormData();
+                    uploadData.append("file", file);
+                    try {
+                      const res = await fetch("/api/admin/upload", { method: "POST", body: uploadData });
+                      if (res.ok) {
+                        const data = await res.json();
+                        setFormData(prev => ({ ...prev, rsvp_link: data.url }));
+                      }
+                    } finally {
+                      setLoading(false);
+                    }
+                  }}
+                  className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                />
+              </div>
+              <p className="text-[10px] text-gray-400 font-bold uppercase mb-2 text-center">Or Paste URL</p>
+              <input
+                type="url"
+                name="rsvp_link"
+                value={formData.rsvp_link}
+                onChange={handleChange}
+                className="w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-xs outline-none focus:border-brand-azure transition-all"
+                placeholder="https://..."
+              />
+            </div>
+
             {/* Cover Image */}
             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
               <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block mb-4">Cover Image *</label>

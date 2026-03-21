@@ -102,8 +102,12 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
               </h1>
               <div className="flex flex-wrap items-center gap-4 md:gap-6 text-white/80 font-bold uppercase text-[10px] md:text-[11px] tracking-widest">
                 <div className="flex items-center gap-2">
-                  <UserIcon className="w-4 h-4 text-brand-gold" />
-                  <span>By {blog.author_email || "RCSB Editorial Team"}</span>
+                  {blog.rsvp_link ? (
+                    <img src={fixImageUrl(blog.rsvp_link)} alt={blog.event_date || "Author"} className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover border border-brand-gold" />
+                  ) : (
+                    <UserIcon className="w-4 h-4 text-brand-gold" />
+                  )}
+                  <span>By {blog.event_date || blog.author_email || "RCSB Editorial Team"}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CalendarIcon className="w-4 h-4 text-brand-gold" />

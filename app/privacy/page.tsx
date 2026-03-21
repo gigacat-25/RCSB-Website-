@@ -50,7 +50,7 @@ export default function PrivacyPolicyPage() {
                             <h4 className="text-lg font-black text-brand-blue mb-2 font-heading">Contact Us</h4>
                             <p className="text-sm">
                                 If you have any questions about this Privacy Policy, please contact us at: <br />
-                                <strong><a href="mailto:contact@rcsb.in" className="text-brand-azure hover:underline">contact@rcsb.in</a></strong>
+                                <strong><a href="mailto:rota.rcsb@gmail.com" className="text-brand-azure hover:underline">ROTA.RCSB@GMAIL.COM</a></strong>
                             </p>
                         </div>
                     </div>

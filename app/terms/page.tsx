@@ -61,7 +61,7 @@ export default function TermsAndConditionsPage() {
                             <h4 className="text-lg font-black text-brand-gold mb-2 font-heading">Questions?</h4>
                             <p className="text-sm">
                                 If you have any questions or concerns about these Terms, feel free to email us at: <br />
-                                <strong><a href="mailto:contact@rcsb.in" className="text-brand-blue hover:text-brand-azure hover:underline transition-colors mt-1 inline-block">contact@rcsb.in</a></strong>
+                                <strong><a href="mailto:rota.rcsb@gmail.com" className="text-brand-blue hover:text-brand-azure hover:underline transition-colors mt-1 inline-block">ROTA.RCSB@GMAIL.COM</a></strong>
                             </p>
                         </div>
                     </div>
