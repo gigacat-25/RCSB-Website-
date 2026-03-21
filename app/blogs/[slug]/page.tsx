@@ -100,18 +100,32 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
               <h1 className="text-3xl md:text-6xl font-heading font-black text-white leading-tight mb-4 md:mb-6">
                 {blog.title}
               </h1>
-              <div className="flex flex-wrap items-center gap-4 md:gap-6 text-white/80 font-bold uppercase text-[10px] md:text-[11px] tracking-widest">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-6 md:gap-8 text-white/80 font-bold uppercase text-[10px] md:text-[11px] tracking-widest mt-4">
+                <div className="flex items-center gap-4">
                   {blog.rsvp_link ? (
-                    <img src={fixImageUrl(blog.rsvp_link)} alt={blog.event_date || "Author"} className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover border border-brand-gold" />
+                    <img src={fixImageUrl(blog.rsvp_link)} alt={blog.event_date || "Author"} className="w-14 h-14 md:w-16 md:h-16 rounded-full object-cover border-[3px] border-brand-gold shadow-[0_0_20px_rgba(255,215,0,0.4)]" />
                   ) : (
-                    <UserIcon className="w-4 h-4 text-brand-gold" />
+                    <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-brand-gold/10 flex items-center justify-center border-[3px] border-brand-gold shadow-[0_0_20px_rgba(255,215,0,0.4)]">
+                      <UserIcon className="w-6 h-6 md:w-8 md:h-8 text-brand-gold" />
+                    </div>
                   )}
-                  <span>By {blog.event_date || blog.author_email || "RCSB Editorial Team"}</span>
+                  <span className="flex flex-col justify-center">
+                    <span className="text-[9px] text-brand-gold/80 mb-1">Written By</span>
+                    <span className="text-white text-xs md:text-sm tracking-widest leading-none">{blog.event_date || blog.author_email || "RCSB Editorial Team"}</span>
+                    {blog.event_date && blog.author_email && (
+                      <span className="text-[9px] text-white/50 lowercase mt-1.5 tracking-wider font-semibold normal-case">{blog.author_email}</span>
+                    )}
+                  </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CalendarIcon className="w-4 h-4 text-brand-gold" />
-                  <span>Published in {blog.year}</span>
+
+                <div className="w-px h-10 bg-white/20 hidden md:block"></div>
+
+                <div className="flex items-center gap-3">
+                  <CalendarIcon className="w-6 h-6 text-brand-gold" />
+                  <span className="flex flex-col justify-center">
+                    <span className="text-[9px] text-brand-gold/80 mb-1">Published</span>
+                    <span className="text-white text-xs md:text-sm tracking-widest leading-none">{blog.year}</span>
+                  </span>
                 </div>
               </div>
             </div>

@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeftIcon, PhotoIcon, XMarkIcon, PlusIcon, UserIcon } from "@heroicons/react/24/outline";
+import ImageCropper from "@/components/admin/ImageCropper";
 
 export default function EditBlogPage() {
   const router = useRouter();
@@ -31,6 +32,7 @@ export default function EditBlogPage() {
   });
 
   const [gallery, setGallery] = useState<string[]>([]);
+  const [pendingAuthorImage, setPendingAuthorImage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -160,6 +162,28 @@ export default function EditBlogPage() {
         </div>
       )}
 
+      {pendingAuthorImage && (
+        <ImageCropper
+          imageSrc={pendingAuthorImage}
+          onCancel={() => setPendingAuthorImage(null)}
+          onCropCompleteAction={async (croppedBlob) => {
+            setSaving(true);
+            const uploadData = new FormData();
+            uploadData.append("file", croppedBlob, "author-avatar.jpg");
+            try {
+              const res = await fetch("/api/admin/upload", { method: "POST", body: uploadData });
+              if (res.ok) {
+                const data = await res.json();
+                setFormData((prev) => ({ ...prev, rsvp_link: data.url }));
+              }
+            } finally {
+              setPendingAuthorImage(null);
+              setSaving(false);
+            }
+          }}
+        />
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
@@ -264,21 +288,11 @@ export default function EditBlogPage() {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={async (e) => {
+                  onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
-                    setSaving(true);
-                    const uploadData = new FormData();
-                    uploadData.append("file", file);
-                    try {
-                      const res = await fetch("/api/admin/upload", { method: "POST", body: uploadData });
-                      if (res.ok) {
-                        const data = await res.json();
-                        setFormData(prev => ({ ...prev, rsvp_link: data.url }));
-                      }
-                    } finally {
-                      setSaving(false);
-                    }
+                    setPendingAuthorImage(URL.createObjectURL(file));
+                    e.target.value = ""; // Reset to allow re-upload
                   }}
                   className="absolute inset-0 opacity-0 cursor-pointer z-10"
                 />
