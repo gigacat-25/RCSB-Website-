@@ -53,6 +53,12 @@ export default {
         return new Response(JSON.stringify(results.results), { headers });
       }
 
+      // > Public Past Presidents
+      if (request.method === "GET" && url.pathname === "/api/past-presidents") {
+        const results = await env.DB.prepare("SELECT * FROM past_presidents ORDER BY order_index ASC").all();
+        return new Response(JSON.stringify(results.results), { headers });
+      }
+
       // > Public Gallery (for homepage carousel)
       if (request.method === "GET" && url.pathname === "/api/gallery") {
         const results = await env.DB.prepare("SELECT * FROM gallery_slides ORDER BY order_index ASC, created_at ASC").all();
@@ -270,6 +276,54 @@ export default {
             await env.DB.prepare("UPDATE team_members SET order_index = order_index - 1 WHERE order_index > ?").bind(oldIndex).run();
           }
           await env.DB.prepare("DELETE FROM team_members WHERE id=?").bind(id).run();
+          return new Response(JSON.stringify({ success: true }), { headers });
+        }
+      }
+
+      // > Past Presidents CRUD
+      if (request.method === "POST" && url.pathname === "/api/past-presidents") {
+        const body = await request.json() as any;
+        await env.DB.prepare("UPDATE past_presidents SET order_index = order_index + 1 WHERE order_index >= ?").bind(body.order_index || 0).run();
+        await env.DB.prepare(
+          "INSERT INTO past_presidents (name, period, image_url, order_index) VALUES (?, ?, ?, ?)"
+        ).bind(body.name, body.period, body.image_url || null, body.order_index || 0).run();
+        return new Response(JSON.stringify({ success: true }), { headers });
+      }
+
+      const matchPastPres = url.pathname.match(/^\/api\/past-presidents\/(\d+)$/);
+      if (matchPastPres) {
+        const id = matchPastPres[1];
+        if (request.method === "GET") {
+          const result = await env.DB.prepare("SELECT * FROM past_presidents WHERE id=?").bind(id).first();
+          if (!result) return new Response(JSON.stringify({ error: "Not found" }), { status: 404, headers });
+          return new Response(JSON.stringify(result), { headers });
+        }
+        if (request.method === "PUT") {
+          const body = await request.json() as any;
+          const oldMember = await env.DB.prepare("SELECT order_index FROM past_presidents WHERE id=?").bind(id).first();
+          if (oldMember) {
+            const oldIndex = oldMember.order_index as number;
+            const newIndex = body.order_index || 0;
+            if (oldIndex !== newIndex) {
+              if (newIndex < oldIndex) {
+                await env.DB.prepare("UPDATE past_presidents SET order_index = order_index + 1 WHERE order_index >= ? AND order_index < ?").bind(newIndex, oldIndex).run();
+              } else {
+                await env.DB.prepare("UPDATE past_presidents SET order_index = order_index - 1 WHERE order_index > ? AND order_index <= ?").bind(oldIndex, newIndex).run();
+              }
+            }
+          }
+          await env.DB.prepare(
+            "UPDATE past_presidents SET name=?, period=?, image_url=?, order_index=? WHERE id=?"
+          ).bind(body.name, body.period, body.image_url || null, body.order_index || 0, id).run();
+          return new Response(JSON.stringify({ success: true }), { headers });
+        }
+        if (request.method === "DELETE") {
+          const oldMember = await env.DB.prepare("SELECT order_index FROM past_presidents WHERE id=?").bind(id).first();
+          if (oldMember) {
+            const oldIndex = oldMember.order_index as number;
+            await env.DB.prepare("UPDATE past_presidents SET order_index = order_index - 1 WHERE order_index > ?").bind(oldIndex).run();
+          }
+          await env.DB.prepare("DELETE FROM past_presidents WHERE id=?").bind(id).run();
           return new Response(JSON.stringify({ success: true }), { headers });
         }
       }

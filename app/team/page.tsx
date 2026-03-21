@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function TeamPage() {
   const [teamMembers, setTeamMembers] = useState<any[]>([]);
@@ -47,10 +48,16 @@ export default function TeamPage() {
         <div className="container-custom">
 
           <div className="mb-12 md:mb-24">
-            <div className="flex items-center gap-6 mb-10 md:mb-16 animate-fade-up">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-10 md:mb-16 animate-fade-up">
               <h2 className="text-2xl md:text-3xl font-heading font-black text-brand-blue italic underline decoration-brand-gold decoration-4 underline-offset-8">
                 Board of Directors 2025-26
               </h2>
+              <Link
+                href="/past-presidents"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-brand-gold/10 text-brand-gold hover:bg-brand-gold hover:text-white font-bold text-sm tracking-widest uppercase rounded-full transition-all border border-brand-gold/20 hover:border-brand-gold shadow-sm"
+              >
+                View Past Presidents &rarr;
+              </Link>
             </div>
 
             {loading ? (
