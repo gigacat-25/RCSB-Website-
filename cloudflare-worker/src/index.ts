@@ -227,6 +227,9 @@ export default {
       // > Team CRUD
       if (request.method === "POST" && url.pathname === "/api/team") {
         const body = await request.json() as any;
+        // Shift existing members down to make room
+        await env.DB.prepare("UPDATE team_members SET order_index = order_index + 1 WHERE order_index >= ?").bind(body.order_index || 0).run();
+
         await env.DB.prepare(
           "INSERT INTO team_members (name, role, period, image_url, bio, order_index) VALUES (?, ?, ?, ?, ?, ?)"
         ).bind(body.name, body.role, body.period, body.image_url || null, body.bio || null, body.order_index || 0).run();
@@ -243,12 +246,29 @@ export default {
         }
         if (request.method === "PUT") {
           const body = await request.json() as any;
+          const oldMember = await env.DB.prepare("SELECT order_index FROM team_members WHERE id=?").bind(id).first();
+          if (oldMember) {
+            const oldIndex = oldMember.order_index as number;
+            const newIndex = body.order_index || 0;
+            if (oldIndex !== newIndex) {
+              if (newIndex < oldIndex) {
+                await env.DB.prepare("UPDATE team_members SET order_index = order_index + 1 WHERE order_index >= ? AND order_index < ?").bind(newIndex, oldIndex).run();
+              } else {
+                await env.DB.prepare("UPDATE team_members SET order_index = order_index - 1 WHERE order_index > ? AND order_index <= ?").bind(oldIndex, newIndex).run();
+              }
+            }
+          }
           await env.DB.prepare(
             "UPDATE team_members SET name=?, role=?, period=?, image_url=?, bio=?, order_index=? WHERE id=?"
           ).bind(body.name, body.role, body.period, body.image_url || null, body.bio || null, body.order_index || 0, id).run();
           return new Response(JSON.stringify({ success: true }), { headers });
         }
         if (request.method === "DELETE") {
+          const oldMember = await env.DB.prepare("SELECT order_index FROM team_members WHERE id=?").bind(id).first();
+          if (oldMember) {
+            const oldIndex = oldMember.order_index as number;
+            await env.DB.prepare("UPDATE team_members SET order_index = order_index - 1 WHERE order_index > ?").bind(oldIndex).run();
+          }
           await env.DB.prepare("DELETE FROM team_members WHERE id=?").bind(id).run();
           return new Response(JSON.stringify({ success: true }), { headers });
         }
