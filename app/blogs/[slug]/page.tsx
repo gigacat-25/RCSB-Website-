@@ -105,8 +105,8 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
                   {blog.rsvp_link ? (
                     <img src={fixImageUrl(blog.rsvp_link)} alt={blog.event_date || "Author"} className="w-14 h-14 md:w-16 md:h-16 rounded-full object-cover border-[3px] border-brand-gold shadow-[0_0_20px_rgba(255,215,0,0.4)]" />
                   ) : (
-                    <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-brand-gold/10 flex items-center justify-center border-[3px] border-brand-gold shadow-[0_0_20px_rgba(255,215,0,0.4)]">
-                      <UserIcon className="w-6 h-6 md:w-8 md:h-8 text-brand-gold" />
+                    <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-white flex items-center justify-center border-[3px] border-brand-gold shadow-[0_0_20px_rgba(255,215,0,0.4)] p-2">
+                      <img src="/favicon.png" alt="RCSB Defaults" className="w-full h-full object-contain" />
                     </div>
                   )}
                   <span className="flex flex-col justify-center">

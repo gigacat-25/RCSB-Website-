@@ -269,8 +269,8 @@ function AddBlogContent() {
                 {formData.rsvp_link ? (
                   <img src={formData.rsvp_link} alt="Author Preview" className="w-full h-full object-cover" />
                 ) : (
-                  <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                    <UserIcon className="w-8 h-8 mb-1 opacity-50" />
+                  <div className="flex flex-col items-center justify-center h-full bg-white text-gray-400">
+                    <img src="/favicon.png" alt="No Image" className="w-8 h-8 mb-1 opacity-20 grayscale" />
                     <span className="text-[9px] font-bold uppercase text-center px-1">No Image</span>
                   </div>
                 )}

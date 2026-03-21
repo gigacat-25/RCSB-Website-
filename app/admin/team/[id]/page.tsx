@@ -211,8 +211,8 @@ export default function EditTeamMemberPage() {
                 {formData.image_url ? (
                   <img src={formData.image_url} alt="Profile Preview" className="w-full h-full object-cover" />
                 ) : (
-                  <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                    <UserIcon className="w-10 h-10 mb-1 opacity-50" />
+                  <div className="flex flex-col items-center justify-center h-full bg-white text-gray-400">
+                    <img src="/favicon.png" alt="Upload Photo" className="w-10 h-10 mb-1 opacity-20 grayscale" />
                     <span className="text-[10px] font-bold uppercase text-center px-1">Upload Photo</span>
                   </div>
                 )}
