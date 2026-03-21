@@ -65,8 +65,8 @@ export default function AdminTeamPage() {
           <h2 className="text-3xl font-heading font-bold text-brand-blue">Team Leadership</h2>
           <p className="text-brand-gray mt-1">Manage the Board of Directors and key tenure roles.</p>
         </div>
-        <Link 
-          href="/admin/team/add" 
+        <Link
+          href="/admin/team/add"
           className="flex items-center gap-2 px-6 py-2 bg-brand-gold hover:bg-yellow-500 text-brand-blue font-bold rounded-full transition-colors"
         >
           <PlusIcon className="w-5 h-5" />
@@ -101,10 +101,10 @@ export default function AdminTeamPage() {
                   <tr key={member.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <img 
-                          src={member.image_url || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop"} 
-                          alt="" 
-                          className="w-10 h-10 rounded-full border border-gray-100 object-cover"
+                        <img
+                          src={member.image_url || "/favicon.png"}
+                          alt={member.name}
+                          className={`w-10 h-10 rounded-full border border-gray-100 ${member.image_url ? 'object-cover' : 'object-contain p-2 bg-gray-50'}`}
                         />
                         <div className="font-bold text-brand-blue">{member.name}</div>
                       </div>
@@ -135,13 +135,13 @@ export default function AdminTeamPage() {
                         </div>
                       ) : (
                         <div className="flex items-center justify-end gap-2">
-                          <Link 
-                            href={`/admin/team/${member.id}`} 
+                          <Link
+                            href={`/admin/team/${member.id}`}
                             className="p-2 text-brand-azure hover:bg-blue-50 rounded-lg transition-colors"
                           >
                             <PencilIcon className="w-5 h-5" />
                           </Link>
-                          <button 
+                          <button
                             onClick={() => setConfirmDeleteId(member.id)}
                             className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                           >
