@@ -86,13 +86,14 @@ export default function AdminTeamPage() {
                 <th className="p-4">Name & Profile</th>
                 <th className="p-4">Role</th>
                 <th className="p-4">Period</th>
+                <th className="p-4">Order Index</th>
                 <th className="p-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
               {members.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="p-8 text-center text-gray-500">
+                  <td colSpan={5} className="p-8 text-center text-gray-500">
                     No team members found. Start by adding the President!
                   </td>
                 </tr>
@@ -115,6 +116,11 @@ export default function AdminTeamPage() {
                       </span>
                     </td>
                     <td className="p-4 text-gray-600 font-semibold">{member.period}</td>
+                    <td className="p-4">
+                      <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold font-mono">
+                        {member.order_index ?? 0}
+                      </span>
+                    </td>
                     <td className="p-4 text-right">
                       {confirmDeleteId === member.id ? (
                         <div className="flex items-center justify-end gap-2">

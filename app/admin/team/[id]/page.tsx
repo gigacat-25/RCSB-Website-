@@ -172,7 +172,7 @@ export default function EditTeamMemberPage() {
                     onChange={handleChange}
                     required
                     className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
-                    placeholder="e.g. 2024-25"
+                    placeholder="e.g. 2025-26"
                   />
                 </div>
               </div>

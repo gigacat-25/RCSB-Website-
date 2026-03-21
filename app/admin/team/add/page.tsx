@@ -1,7 +1,7 @@
 "use client";
 export const runtime = 'edge';
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeftIcon, PhotoIcon, XMarkIcon, UserIcon } from "@heroicons/react/24/outline";
@@ -17,11 +17,31 @@ export default function AddTeamMemberPage() {
   const [formData, setFormData] = useState({
     name: "",
     role: "Core Member",
-    period: "2024-25",
+    period: "2025-26",
     bio: "",
     image_url: "",
     order_index: "0",
   });
+
+  useEffect(() => {
+    const fetchTeam = async () => {
+      try {
+        const res = await fetch("/api/admin/team");
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            const maxOrder = Math.max(...data.map((m: any) => m.order_index || 0));
+            setFormData(prev => ({ ...prev, order_index: (maxOrder + 1).toString() }));
+          } else {
+            setFormData(prev => ({ ...prev, order_index: "1" }));
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch team for max order index", err);
+      }
+    };
+    fetchTeam();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -137,7 +157,7 @@ export default function AddTeamMemberPage() {
                     onChange={handleChange}
                     required
                     className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
-                    placeholder="e.g. 2024-25"
+                    placeholder="e.g. 2025-26"
                   />
                 </div>
               </div>

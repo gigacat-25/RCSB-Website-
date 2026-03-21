@@ -49,7 +49,7 @@ export default function TeamPage() {
           <div className="mb-12 md:mb-24">
             <div className="flex items-center gap-6 mb-10 md:mb-16 animate-fade-up">
               <h2 className="text-2xl md:text-3xl font-heading font-black text-brand-blue italic underline decoration-brand-gold decoration-4 underline-offset-8">
-                Board of Directors 2024-25
+                Board of Directors 2025-26
               </h2>
             </div>
 

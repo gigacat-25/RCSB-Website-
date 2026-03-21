@@ -54,7 +54,7 @@ export default async function LeadershipPreview() {
             href="/team"
             className="group inline-flex items-center gap-4 text-brand-blue font-black uppercase tracking-[0.2em] text-[10px]"
           >
-            Meet the 2024-25 Board
+            Meet the 2025-26 Board
             <div className="w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center group-hover:bg-brand-gold group-hover:text-brand-blue transition-all duration-300">
               &rarr;
             </div>
