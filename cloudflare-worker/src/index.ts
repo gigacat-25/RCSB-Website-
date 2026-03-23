@@ -280,6 +280,15 @@ export default {
         }
       }
 
+      if (request.method === "POST" && url.pathname === "/api/team/reorder") {
+        const body = await request.json() as { id: number, order_index: number }[];
+        const statements = body.map(item =>
+          env.DB.prepare("UPDATE team_members SET order_index = ? WHERE id = ?").bind(item.order_index, item.id)
+        );
+        await env.DB.batch(statements);
+        return new Response(JSON.stringify({ success: true }), { headers });
+      }
+
       // > Authorized Admins CRUD
       if (request.method === "GET" && url.pathname === "/api/authorized-admins") {
         const results = await env.DB.prepare("SELECT * FROM authorized_admins ORDER BY created_at DESC").all();
@@ -356,6 +365,15 @@ export default {
           await env.DB.prepare("DELETE FROM past_presidents WHERE id=?").bind(id).run();
           return new Response(JSON.stringify({ success: true }), { headers });
         }
+      }
+
+      if (request.method === "POST" && url.pathname === "/api/past-presidents/reorder") {
+        const body = await request.json() as { id: number, order_index: number }[];
+        const statements = body.map(item =>
+          env.DB.prepare("UPDATE past_presidents SET order_index = ? WHERE id = ?").bind(item.order_index, item.id)
+        );
+        await env.DB.batch(statements);
+        return new Response(JSON.stringify({ success: true }), { headers });
       }
 
       // > Messages Management

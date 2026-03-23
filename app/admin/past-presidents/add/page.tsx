@@ -187,19 +187,7 @@ export default function AddPastPresidentPage() {
                             </div>
                         </div>
 
-                        <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Order Index</label>
-                                <p className="text-xs text-gray-400 font-medium mb-3">Controls the display order. Lower numbers appear first.</p>
-                                <input
-                                    type="number"
-                                    name="order_index"
-                                    value={formData.order_index}
-                                    onChange={handleChange}
-                                    className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
-                                />
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             </form>
