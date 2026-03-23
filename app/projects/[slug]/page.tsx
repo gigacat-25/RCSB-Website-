@@ -2,6 +2,7 @@ export const runtime = 'edge';
 import { apiFetch } from "@/lib/api";
 import Link from "next/link";
 import { ArrowLeftIcon, CalendarIcon, MapPinIcon, RocketLaunchIcon, PencilSquareIcon, ClockIcon } from "@heroicons/react/24/outline";
+import { FaYoutube, FaInstagram, FaFacebook, FaLinkedin, FaTwitter, FaGlobe, FaGithub } from "react-icons/fa";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import ImageGallery from "@/components/projects/ImageGallery";
@@ -76,6 +77,19 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
     completed: "bg-green-100/90 text-green-900 border-green-200"
   };
 
+  const renderLinkIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'youtube': return <FaYoutube className="w-5 h-5 flex-shrink-0" />;
+      case 'instagram': return <FaInstagram className="w-5 h-5 flex-shrink-0" />;
+      case 'facebook': return <FaFacebook className="w-5 h-5 flex-shrink-0" />;
+      case 'linkedin': return <FaLinkedin className="w-5 h-5 flex-shrink-0" />;
+      case 'twitter': return <FaTwitter className="w-5 h-5 flex-shrink-0" />;
+      case 'github': return <FaGithub className="w-5 h-5 flex-shrink-0" />;
+      case 'globe': return <FaGlobe className="w-5 h-5 flex-shrink-0" />;
+      default: return null;
+    }
+  };
+
   return (
     <main className="min-h-screen bg-white pb-20">
       {/* Hero Section */}
@@ -142,6 +156,8 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
                 </Link>
               </div>
             ) : null}
+
+
             {/* Share Experience CTA */}
             {project.status !== "upcoming" && (
               <div className="mt-12 md:mt-16 p-6 md:p-8 bg-brand-blue text-white rounded-[2rem] md:rounded-[40px] shadow-2xl relative overflow-hidden group">
@@ -222,6 +238,30 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
                   </div>
                 </div>
               </div>
+
+              {/* Featured Links Sidebar */}
+              {project.featured_links && project.featured_links !== "[]" && JSON.parse(project.featured_links).length > 0 && (
+                <div className="pt-8 border-t border-gray-200">
+                  <h4 className="text-[11px] font-black text-brand-gray uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-brand-gold rounded-full"></span>
+                    Featured Links
+                  </h4>
+                  <div className="space-y-4">
+                    {JSON.parse(project.featured_links).map((link: { label: string, url: string, icon?: string }, index: number) => (
+                      <Link
+                        key={index}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-3 w-full py-4 bg-brand-gold text-brand-blue text-center font-black rounded-2xl hover:bg-yellow-500 transition-all shadow-md hover:shadow-xl"
+                      >
+                        {renderLinkIcon(link.icon || "none")}
+                        <span>{link.label}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="pt-8 border-t border-gray-200">
                 <p className="text-sm text-brand-gray font-medium leading-relaxed mb-6">

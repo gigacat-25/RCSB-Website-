@@ -152,7 +152,7 @@ export default {
         }
 
         await env.DB.prepare(
-          "INSERT INTO projects (title, slug, category, year, description, image_url, content, type, status, author_email, gallery_urls, rsvp_link, event_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+          "INSERT INTO projects (title, slug, category, year, description, image_url, content, type, status, author_email, gallery_urls, rsvp_link, event_date, featured_links) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         ).bind(
           body.title || "Untitled",
           slug,
@@ -166,7 +166,8 @@ export default {
           body.author_email || null,
           body.gallery_urls || "[]",
           body.rsvp_link || null,
-          body.event_date || null
+          body.event_date || null,
+          body.featured_links || "[]"
         ).run();
         return new Response(JSON.stringify({ success: true }), { headers });
       }
@@ -204,7 +205,7 @@ export default {
 
           if (request.method === "PUT") {
             await env.DB.prepare(
-              "UPDATE projects SET title=?, slug=?, category=?, year=?, description=?, image_url=?, content=?, type=?, status=?, gallery_urls=?, rsvp_link=?, event_date=?, updated_at=datetime('now') WHERE id=?"
+              "UPDATE projects SET title=?, slug=?, category=?, year=?, description=?, image_url=?, content=?, type=?, status=?, gallery_urls=?, rsvp_link=?, event_date=?, featured_links=?, updated_at=datetime('now') WHERE id=?"
             ).bind(
               body.title || "Untitled",
               body.slug || "unknown",
@@ -218,6 +219,7 @@ export default {
               body.gallery_urls || "[]",
               body.rsvp_link || null,
               body.event_date || null,
+              body.featured_links || "[]",
               id
             ).run();
             return new Response(JSON.stringify({ success: true }), { headers });

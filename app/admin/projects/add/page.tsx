@@ -7,7 +7,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { isAdmin } from "@/lib/admin";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, PhotoIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import IconSelect from "@/components/admin/IconSelect";
 
 function AddProjectForm() {
   const router = useRouter();
@@ -31,6 +32,7 @@ function AddProjectForm() {
     status: "completed",
     gallery_urls: "[]",
     event_date: "",
+    featured_links: "[]",
   });
 
   // Role Adjustment: If not admin, force type to blog
@@ -363,6 +365,69 @@ function AddProjectForm() {
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
               />
             </div>
+          </div>
+        </div>
+
+        {/* Featured Links Section */}
+        <div className="space-y-4">
+          <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Featured Links (Optional)</label>
+          <div className="space-y-3">
+            {JSON.parse((formData as any).featured_links || "[]").map((link: { label: string, url: string, icon?: string }, index: number) => (
+              <div key={index} className="flex gap-3 items-center">
+                <IconSelect
+                  value={link.icon || "none"}
+                  onChange={(val) => {
+                    const current = JSON.parse((formData as any).featured_links || "[]");
+                    current[index].icon = val;
+                    setFormData(prev => ({ ...prev, featured_links: JSON.stringify(current) }));
+                  }}
+                />
+                <input
+                  type="text"
+                  value={link.label}
+                  onChange={(e) => {
+                    const current = JSON.parse((formData as any).featured_links || "[]");
+                    current[index].label = e.target.value;
+                    setFormData(prev => ({ ...prev, featured_links: JSON.stringify(current) }));
+                  }}
+                  className="w-1/3 bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-2 outline-none transition-all text-sm"
+                  placeholder="Button Label (e.g. YouTube)"
+                />
+                <input
+                  type="url"
+                  value={link.url}
+                  onChange={(e) => {
+                    const current = JSON.parse((formData as any).featured_links || "[]");
+                    current[index].url = e.target.value;
+                    setFormData(prev => ({ ...prev, featured_links: JSON.stringify(current) }));
+                  }}
+                  className="flex-1 bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-2 outline-none transition-all text-sm"
+                  placeholder="URL (https://...)"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const current = JSON.parse((formData as any).featured_links || "[]");
+                    current.splice(index, 1);
+                    setFormData(prev => ({ ...prev, featured_links: JSON.stringify(current) }));
+                  }}
+                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors shrink-0 font-bold text-xs"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                const current = JSON.parse((formData as any).featured_links || "[]");
+                current.push({ label: "", url: "", icon: "none" });
+                setFormData(prev => ({ ...prev, featured_links: JSON.stringify(current) }));
+              }}
+              className="text-sm font-bold text-brand-azure hover:text-blue-700 transition-colors"
+            >
+              + Add Featured Link
+            </button>
           </div>
         </div>
 
