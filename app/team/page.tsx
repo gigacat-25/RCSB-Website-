@@ -91,11 +91,15 @@ export default function TeamPage() {
                     </div>
                     <div className="px-4">
                       <h3 className="text-2xl md:text-3xl font-heading font-black text-brand-blue mb-2 group-hover:text-brand-azure transition-colors">{member.name}</h3>
-                      <p className="text-brand-gray/40 text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3">
-                        {member.role}
-                        <span className="w-4 h-px bg-slate-200" />
-                        <span className="text-brand-gold">{member.period}</span>
-                      </p>
+                      <div className="text-brand-gray/40 text-[10px] font-black uppercase tracking-[0.3em] flex items-start justify-between gap-4 mt-2">
+                        <div className="flex-1 leading-[1.6]">
+                          {member.role}
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0 mt-[2px]">
+                          <span className="w-4 h-px bg-slate-200" />
+                          <span className="text-brand-gold">{member.period}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}
