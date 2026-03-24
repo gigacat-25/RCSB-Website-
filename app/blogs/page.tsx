@@ -88,7 +88,7 @@ export default function BlogsPage() {
   return (
     <main className="min-h-screen bg-slate-50">
       {/* Header */}
-      <section className="relative py-24 md:py-40 overflow-hidden bg-[#0a1835]">
+      <section className="relative flex flex-col justify-center min-h-[400px] md:min-h-[480px] pt-28 md:pt-36 pb-16 overflow-hidden bg-[#0a1835] border-b border-brand-gold/10">
         {/* Premium Line Grid */}
         <div className="absolute inset-0 pointer-events-none">
           <div
@@ -109,14 +109,14 @@ export default function BlogsPage() {
         <div className="absolute -top-20 right-1/4 w-[600px] h-[600px] bg-brand-gold/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute -bottom-40 left-1/4 w-[600px] h-[600px] bg-brand-azure/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="container-custom relative z-10 text-white">
-          <div className="max-w-4xl animate-fade-up pt-16 md:pt-24">
+          <div className="max-w-4xl animate-fade-up">
             <span className="text-[10px] font-black text-brand-gold uppercase tracking-[0.4em] mb-4 md:mb-6 block">Our Stories</span>
             <h1 className="text-5xl md:text-8xl font-heading font-black text-white mb-6 md:mb-8 leading-[1.1]">
               Insights and <br />
               <span className="text-brand-gold italic">Perspectives.</span>
             </h1>
-            <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
-              <p className="text-white/90 text-lg md:text-xl font-light leading-relaxed max-w-xl text-center md:text-left">
+            <div className="flex flex-col items-start gap-6 md:gap-8">
+              <p className="text-white/90 text-lg md:text-xl font-light leading-relaxed max-w-2xl">
                 Exploring the heart of Rotaract through reports, reflections, and deep-dives into our community impact.
               </p>
               <button
@@ -127,7 +127,7 @@ export default function BlogsPage() {
                     router.push("/admin/blogs/add");
                   }
                 }}
-                className="group px-8 py-4 md:px-10 md:py-5 w-full md:w-auto bg-brand-gold text-brand-blue font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl hover:bg-white transition-all shadow-xl hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-3 whitespace-nowrap"
+                className="group px-8 py-4 md:px-10 md:py-5 w-auto bg-brand-gold text-brand-blue font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl hover:bg-white transition-all shadow-xl hover:-translate-y-1 active:translate-y-0 flex items-center gap-3 whitespace-nowrap"
               >
                 <PencilSquareIcon className="w-4 h-4" />
                 Draft a Story

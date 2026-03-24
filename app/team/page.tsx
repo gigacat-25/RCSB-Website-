@@ -27,7 +27,7 @@ export default function TeamPage() {
   return (
     <div className="bg-slate-50 min-h-screen">
       {/* Header */}
-      <section className="relative py-24 md:py-40 overflow-hidden bg-[#0a1835] border-b border-brand-gold/10">
+      <section className="relative flex flex-col justify-center min-h-[400px] md:min-h-[480px] pt-28 md:pt-36 pb-16 overflow-hidden bg-[#0a1835] border-b border-brand-gold/10">
         {/* Premium Line Grid */}
         <div className="absolute inset-0 pointer-events-none">
           <div
@@ -48,7 +48,7 @@ export default function TeamPage() {
         <div className="absolute -top-20 right-1/4 w-[600px] h-[600px] bg-brand-gold/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute -bottom-40 left-1/4 w-[600px] h-[600px] bg-brand-azure/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="container-custom relative z-10 text-white">
-          <div className="max-w-4xl animate-fade-up pt-16 md:pt-24">
+          <div className="max-w-4xl animate-fade-up">
             <span className="text-[10px] font-black text-brand-gold uppercase tracking-[0.4em] mb-4 md:mb-6 block">Our Leadership</span>
             <h1 className="text-5xl md:text-8xl font-heading font-black text-white mb-6 md:mb-8 leading-[1.1]">
               The Guiding <br />
