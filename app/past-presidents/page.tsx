@@ -28,8 +28,26 @@ export default function PastPresidentsPage() {
     return (
         <div className="bg-slate-50 min-h-screen">
             {/* Header */}
-            <section className="relative py-20 md:py-32 overflow-hidden bg-brand-blue border-b border-brand-gold/20">
-                <div className="absolute inset-0 bg-mesh-gradient opacity-40 mix-blend-overlay" />
+            <section className="relative py-24 md:py-40 overflow-hidden bg-[#0a1835] border-b border-brand-gold/10">
+                {/* Premium Line Grid */}
+                <div className="absolute inset-0 pointer-events-none">
+                    <div
+                        className="absolute w-full h-full"
+                        style={{
+                            backgroundImage: `
+                        linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px)
+                      `,
+                            backgroundSize: '48px 48px',
+                            maskImage: 'radial-gradient(ellipse at center, black 10%, transparent 80%)',
+                            WebkitMaskImage: 'radial-gradient(ellipse at center, black 10%, transparent 80%)'
+                        }}
+                    />
+                </div>
+
+                {/* Ambient Color Glows */}
+                <div className="absolute -top-20 right-1/4 w-[600px] h-[600px] bg-brand-gold/10 rounded-full blur-[120px] pointer-events-none" />
+                <div className="absolute -bottom-40 left-1/4 w-[600px] h-[600px] bg-brand-azure/10 rounded-full blur-[120px] pointer-events-none" />
                 <div className="container-custom relative z-10 text-white">
                     <div className="max-w-4xl animate-fade-up pt-16 md:pt-24">
                         <span className="text-[10px] font-black text-brand-gold uppercase tracking-[0.4em] mb-4 md:mb-6 block">Our Legacy</span>
