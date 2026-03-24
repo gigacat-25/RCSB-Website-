@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 export default function About() {
   const [memberCount, setMemberCount] = useState(50);
+  const [aboutImage, setAboutImage] = useState("/group-photo-2.jpeg");
 
   useEffect(() => {
     fetch('/api/team')
@@ -14,6 +15,13 @@ export default function About() {
         }
       })
       .catch(err => console.error("Could not fetch team count:", err));
+
+    fetch("/api/settings/about-photo")
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.url) setAboutImage(data.url);
+      })
+      .catch(err => console.error("Could not load about photo:", err));
   }, []);
   return (
     <section className="py-20 md:py-32 bg-white relative overflow-hidden">
@@ -29,7 +37,7 @@ export default function About() {
             <div className="relative z-10 rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-premium group">
               <div className="absolute inset-0 bg-brand-blue/20 group-hover:bg-transparent transition-colors duration-700" />
               <img
-                src="/group-photo-2.jpeg"
+                src={aboutImage}
                 alt="Rotaract Team in Action"
                 className="w-full h-auto object-contain transition-transform duration-1000 group-hover:scale-105"
               />

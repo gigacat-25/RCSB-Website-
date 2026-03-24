@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { isAdmin, isSuperAdmin } from "@/lib/admin";
-import { DocumentTextIcon, UsersIcon, EnvelopeIcon, Squares2X2Icon, BookOpenIcon, HandRaisedIcon, ClockIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
+import { DocumentTextIcon, UsersIcon, EnvelopeIcon, Squares2X2Icon, BookOpenIcon, HandRaisedIcon, ClockIcon, ShieldCheckIcon, CogIcon } from "@heroicons/react/24/outline";
 
 const navItems = [
   { name: "Dashboard", href: "/admin", icon: Squares2X2Icon },
@@ -14,6 +14,7 @@ const navItems = [
   { name: "Past Presidents", href: "/admin/past-presidents", icon: ClockIcon },
   { name: "Partners", href: "/admin/partners", icon: HandRaisedIcon },
   { name: "Inquiries", href: "/admin/messages", icon: EnvelopeIcon },
+  { name: "Settings", href: "/admin/settings", icon: CogIcon },
 ];
 
 export default function AdminSidebar() {
