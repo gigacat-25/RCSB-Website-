@@ -1,4 +1,5 @@
 "use client";
+export const runtime = 'edge';
 
 import { useState, useEffect } from "react";
 import { CogIcon, PhotoIcon, CheckCircleIcon } from "@heroicons/react/24/outline";

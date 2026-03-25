@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import { NextRequest, NextResponse } from "next/server";
 
 const WORKER_URL = process.env.NEXT_PUBLIC_CLOUDFLARE_API_URL!;
