@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { isAdmin } from "@/lib/admin";
-import { PlusIcon, PencilIcon, TrashIcon, LinkIcon, CheckIcon, XMarkIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, PencilIcon, TrashIcon, LinkIcon, CheckIcon, XMarkIcon, MagnifyingGlassIcon, NewspaperIcon } from "@heroicons/react/24/outline";
 
 export default function AdminProjectsPage() {
   const router = useRouter();
@@ -206,6 +206,20 @@ export default function AdminProjectsPage() {
                           title="Edit Entry"
                         >
                           <PencilIcon className="w-5 h-5" />
+                        </Link>
+                        <Link
+                          href={`/admin/newsletter?subject=${encodeURIComponent(
+                            `Announcement: ${item.title}`
+                          )}&body=${encodeURIComponent(
+                            `<p>Hello! We're excited to announce our upcoming ${item.type || "project"
+                            }: <b>${item.title}</b>.</p><p>${item.description || ""
+                            }</p><p><a href='https://rcsb.in/${item.type === "event" ? "events" : "projects"
+                            }/${item.slug}'>View details on website →</a></p>`
+                          )}`}
+                          className="p-2 text-brand-gold hover:bg-yellow-50 rounded-lg transition-colors flex items-center justify-center"
+                          title="Blast Email to Subscribers"
+                        >
+                          <NewspaperIcon className="w-5 h-5" />
                         </Link>
                         <button
                           onClick={() => setConfirmDeleteId(item.id)}

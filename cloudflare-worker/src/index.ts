@@ -114,6 +114,33 @@ export default {
         return new Response(JSON.stringify(updated), { headers });
       }
 
+      // > Newsletter: Subscribe (public)
+      if (request.method === "POST" && url.pathname === "/api/newsletter/subscribe") {
+        const body = await request.json() as any;
+        if (!body.email) {
+          return new Response(JSON.stringify({ error: "Email is required" }), { status: 400, headers });
+        }
+        const token = crypto.randomUUID();
+        try {
+          await env.DB.prepare(
+            "INSERT INTO newsletter_subscribers (email, name, token, subscribed) VALUES (?, ?, ?, 1) ON CONFLICT(email) DO UPDATE SET subscribed=1"
+          ).bind(body.email.toLowerCase().trim(), body.name || null, token).run();
+          return new Response(JSON.stringify({ success: true }), { headers });
+        } catch (e: any) {
+          return new Response(JSON.stringify({ error: e.message }), { status: 500, headers });
+        }
+      }
+
+      // > Newsletter: Unsubscribe (public — uses token from email link)
+      if (request.method === "GET" && url.pathname === "/api/newsletter/unsubscribe") {
+        const token = url.searchParams.get("token");
+        if (!token) {
+          return new Response(JSON.stringify({ error: "Missing token" }), { status: 400, headers });
+        }
+        await env.DB.prepare("UPDATE newsletter_subscribers SET subscribed=0 WHERE token=?").bind(token).run();
+        return new Response(JSON.stringify({ success: true, message: "Unsubscribed" }), { headers });
+      }
+
       // --- PROTECTED ENDPOINTS ---
       const auth = request.headers.get("Authorization");
       if (auth !== `Bearer ${env.WORKER_SECRET}`) {
@@ -488,6 +515,14 @@ export default {
           await env.DB.prepare("DELETE FROM partners WHERE id=?").bind(id).run();
           return new Response(JSON.stringify({ success: true }), { headers });
         }
+      }
+
+      // > Newsletter: List subscribers (protected)
+      if (request.method === "GET" && url.pathname === "/api/newsletter/subscribers") {
+        const results = await env.DB.prepare(
+          "SELECT email, name, token FROM newsletter_subscribers WHERE subscribed=1 ORDER BY created_at DESC"
+        ).all();
+        return new Response(JSON.stringify(results.results), { headers });
       }
 
       return new Response(JSON.stringify({ error: "Not found", path: url.pathname }), { status: 404, headers });

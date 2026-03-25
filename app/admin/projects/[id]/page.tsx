@@ -5,7 +5,7 @@ export const runtime = 'edge';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { TrashIcon, PlusIcon, PhotoIcon, XMarkIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { TrashIcon, PlusIcon, PhotoIcon, XMarkIcon, ArrowLeftIcon, NewspaperIcon } from "@heroicons/react/24/outline";
 import IconSelect from "@/components/admin/IconSelect";
 const API_URL = process.env.NEXT_PUBLIC_CLOUDFLARE_API_URL || "https://rcsb-api-worker.impact1-iceas.workers.dev";
 
@@ -134,12 +134,21 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
           <p className="text-brand-gray mt-1">Update the details for "{formData.title}"</p>
         </div>
 
-        <button
-          onClick={handleDelete}
-          className="px-6 py-2 bg-red-50 text-red-600 hover:bg-red-100 font-bold rounded-full transition-colors border border-red-200"
-        >
-          Delete Project
-        </button>
+        <div className="flex gap-3">
+          <Link
+            href={`/admin/newsletter?subject=${encodeURIComponent(`New Announcement: ${formData.title}`)}&body=${encodeURIComponent(`<p>Hello! We're excited to share an update on <b>${formData.title}</b>.</p><p>${formData.description}</p><p><a href='https://rcsb.in/${formData.type === 'event' ? 'events' : 'projects'}/${formData.slug}'>View on official site →</a></p>`)}`}
+            className="flex items-center gap-2 px-6 py-2 bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 font-bold rounded-full transition-colors border border-brand-gold/20"
+          >
+            <NewspaperIcon className="w-5 h-5" />
+            Email Blast
+          </Link>
+          <button
+            onClick={handleDelete}
+            className="px-6 py-2 bg-red-50 text-red-600 hover:bg-red-100 font-bold rounded-full transition-colors border border-red-200"
+          >
+            Delete Project
+          </button>
+        </div>
       </div>
 
       {error && (

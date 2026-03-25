@@ -5,6 +5,8 @@ import Footer from "@/components/layout/Footer";
 import LoadingScreen from "@/components/layout/LoadingScreen";
 import { ClerkProvider } from "@clerk/nextjs";
 import Providers from "./providers";
+import SubscribePopup from "@/components/newsletter/SubscribePopup";
+import AutoSubscribeOnLogin from "@/components/newsletter/AutoSubscribeOnLogin";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://rcsb.in"),
@@ -63,9 +65,11 @@ export default function RootLayout({
           />
           <LoadingScreen />
           <Providers>
+            <AutoSubscribeOnLogin />
             <Navbar />
             <main className="flex-1">{children}</main>
             <Footer />
+            <SubscribePopup />
           </Providers>
         </body>
       </html>

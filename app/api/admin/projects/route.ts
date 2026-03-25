@@ -32,6 +32,34 @@ export async function POST(request: Request) {
       method: "POST",
       body: JSON.stringify(payload),
     });
+
+    // If a new event or blog is created, announce it via newsletter
+    if (result.success && (body.type === 'event' || body.type === 'blog')) {
+      const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
+      const typeLabel = body.type === 'event' ? 'New Event' : 'New Blog Post';
+
+      fetch(`${SITE_URL}/api/newsletter/send`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-internal-key": process.env.CLOUDFLARE_WORKER_SECRET || "",
+        },
+        body: JSON.stringify({
+          subject: `${typeLabel}: ${body.title}`,
+          body: `
+            <p>Hello! 👋</p>
+            <p>We've just published a ${body.type === 'event' ? 'new event' : 'new blog post'}: <strong>"${body.title}"</strong>.</p>
+            <p>${body.description}</p>
+            <p>
+              <a href="${SITE_URL}/projects/${body.slug}" style="color:#C9982A;font-weight:bold;">
+                Read more on our website →
+              </a>
+            </p>
+          `,
+        }),
+      }).catch(err => console.error("Newsletter auto-send failed:", err));
+    }
+
     return NextResponse.json(result);
   } catch (error: any) {
     console.error("Internal API Error [POST /api/admin/projects]:", {

@@ -19,7 +19,7 @@ export default function LikeButton({ projectId, initialLikes }: { projectId: num
         setLiked(true);
 
         try {
-            const res = await fetch(`${API_URL}/api/projects/${projectId}/like`, {
+            const res = await fetch(`/api/projects/${projectId}/like`, {
                 method: "POST"
             });
             if (res.ok) {

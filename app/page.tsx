@@ -8,6 +8,7 @@ import FeaturedContent from "@/components/home/FeaturedContent";
 import LeadershipPreview from "@/components/home/LeadershipPreview";
 import PartnersCarousel from "@/components/home/PartnersCarousel";
 import ContactCTA from "@/components/home/ContactCTA";
+import NewsletterBar from "@/components/newsletter/NewsletterBar";
 
 export default function Home() {
   return (
@@ -19,6 +20,7 @@ export default function Home() {
       <FeaturedContent />
       <LeadershipPreview />
       <PartnersCarousel />
+      <NewsletterBar />
       <ContactCTA />
     </div>
   );

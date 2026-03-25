@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { isAdmin } from "@/lib/admin";
-import { PlusIcon, PencilIcon, TrashIcon, LinkIcon, BookOpenIcon, SparklesIcon, CheckIcon, XMarkIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, PencilIcon, TrashIcon, LinkIcon, BookOpenIcon, SparklesIcon, CheckIcon, XMarkIcon, MagnifyingGlassIcon, NewspaperIcon } from "@heroicons/react/24/outline";
 
 export default function AdminBlogsPage() {
   const { user, isLoaded } = useUser();
@@ -185,6 +185,17 @@ export default function AdminBlogsPage() {
                           title="Edit Post"
                         >
                           <PencilIcon className="w-5 h-5" />
+                        </Link>
+                        <Link
+                          href={`/admin/newsletter?subject=${encodeURIComponent(
+                            `New Story: ${item.title}`
+                          )}&body=${encodeURIComponent(
+                            `<p>Hello! We've just published a new story: <b>${item.title}</b>.</p><p><a href='https://rcsb.in/blogs/${item.slug}'>Read the full story here →</a></p>`
+                          )}`}
+                          className="p-2 text-brand-gold hover:bg-yellow-50 rounded-lg transition-colors flex items-center justify-center"
+                          title="Share Story with Subscribers"
+                        >
+                          <NewspaperIcon className="w-5 h-5" />
                         </Link>
                         <button
                           onClick={() => setConfirmDeleteId(item.id)}
