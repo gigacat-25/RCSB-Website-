@@ -177,7 +177,7 @@ function AddBlogContent() {
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-brand-gray uppercase tracking-widest flex items-center gap-2">
                     URL Slug
-                    <span className="capitalize font-normal text-gray-400 font-mono">(rcsb.in/blogs/{formData.slug || "..."})</span>
+                    <span className="capitalize font-normal text-gray-400 font-mono">(rcsb-website.pages.dev/blogs/{formData.slug || "..."})</span>
                   </label>
                   <input
                     type="text"

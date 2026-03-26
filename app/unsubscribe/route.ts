@@ -20,9 +20,22 @@ export async function GET(req: NextRequest) {
   const WORKER_URL = process.env.NEXT_PUBLIC_CLOUDFLARE_API_URL!;
   const WORKER_SECRET = process.env.CLOUDFLARE_WORKER_SECRET!;
 
-  await fetch(`${WORKER_URL}/api/newsletter/unsubscribe?token=${encodeURIComponent(token)}`, {
+  const response = await fetch(`${WORKER_URL}/api/newsletter/unsubscribe?token=${encodeURIComponent(token)}`, {
     headers: { Authorization: `Bearer ${WORKER_SECRET}` },
   });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    return new NextResponse(
+      `<!DOCTYPE html><html><head><title>Unsubscribe Error</title></head>
+      <body style="font-family:sans-serif;text-align:center;padding:60px;background:#0a0f1e;color:white;">
+        <h1 style="color:#C9982A;">Link Error</h1>
+        <p>${errorData.error || "This unsubscribe link is invalid or has already been used."}</p>
+        <a href="/" style="color:#C9982A;">← Back to RCSB</a>
+      </body></html>`,
+      { status: response.status, headers: { "Content-Type": "text/html" } }
+    );
+  }
 
   return new NextResponse(
     `<!DOCTYPE html><html lang="en"><head>

@@ -136,7 +136,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
 
         <div className="flex gap-3">
           <Link
-            href={`/admin/newsletter?subject=${encodeURIComponent(`New Announcement: ${formData.title}`)}&body=${encodeURIComponent(`<p>Hello! We're excited to share an update on <b>${formData.title}</b>.</p><p>${formData.description}</p><p><a href='https://rcsb.in/${formData.type === 'event' ? 'events' : 'projects'}/${formData.slug}'>View on official site →</a></p>`)}`}
+            href={`/admin/newsletter?subject=${encodeURIComponent(`New Announcement: ${formData.title}`)}&body=${encodeURIComponent(`<p>Hello! We're excited to share an update on <b>${formData.title}</b>.</p><p>${formData.description}</p><p><a href='https://rcsb-website.pages.dev/${formData.type === 'event' ? 'events' : 'projects'}/${formData.slug}'>View on official site →</a></p>`)}`}
             className="flex items-center gap-2 px-6 py-2 bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 font-bold rounded-full transition-colors border border-brand-gold/20"
           >
             <NewspaperIcon className="w-5 h-5" />

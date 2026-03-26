@@ -213,7 +213,7 @@ export default function AdminProjectsPage() {
                           )}&body=${encodeURIComponent(
                             `<p>Hello! We're excited to announce our upcoming ${item.type || "project"
                             }: <b>${item.title}</b>.</p><p>${item.description || ""
-                            }</p><p><a href='https://rcsb.in/${item.type === "event" ? "events" : "projects"
+                            }</p><p><a href='https://rcsb-website.pages.dev/${item.type === "event" ? "events" : "projects"
                             }/${item.slug}'>View details on website →</a></p>`
                           )}`}
                           className="p-2 text-brand-gold hover:bg-yellow-50 rounded-lg transition-colors flex items-center justify-center"

@@ -9,7 +9,7 @@ import SubscribePopup from "@/components/newsletter/SubscribePopup";
 import AutoSubscribeOnLogin from "@/components/newsletter/AutoSubscribeOnLogin";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://rcsb.in"),
+  metadataBase: new URL("https://rcsb-website.pages.dev"),
   alternates: {
     canonical: "/",
   },
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://rcsb.in",
+    url: "https://rcsb-website.pages.dev",
     siteName: "Rotaract Club of Swarna Bengaluru",
     images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
   },
@@ -51,8 +51,8 @@ export default function RootLayout({
                 "@context": "https://schema.org",
                 "@type": "NGO",
                 "name": "Rotaract Club of Swarna Bengaluru",
-                "url": "https://rcsb.in",
-                "logo": "https://rcsb.in/logo.png",
+                "url": "https://rcsb-website.pages.dev",
+                "logo": "https://rcsb-website.pages.dev/logo.png",
                 "sameAs": [
                   "https://www.facebook.com/rotaractswarnabengaluru/",
                   "https://www.instagram.com/rotaract_swarnabengaluru",

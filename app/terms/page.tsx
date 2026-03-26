@@ -23,7 +23,7 @@ export default function TermsAndConditionsPage() {
                     <div className="prose prose-lg prose-slate max-w-none text-brand-gray">
                         <h3 className="text-2xl font-black text-brand-blue font-heading mt-8 mb-4">1. Introduction</h3>
                         <p>
-                            Welcome to the website of Rotaract Club of Swarna Bengaluru. By accessing our website (rcsb.in), you are agreeing to comply with these terms of service, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws.
+                            Welcome to the website of Rotaract Club of Swarna Bengaluru. By accessing our website (rcsb-website.pages.dev), you are agreeing to comply with these terms of service, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws.
                         </p>
 
                         <h3 className="text-2xl font-black text-brand-blue font-heading mt-8 mb-4">2. Use License</h3>

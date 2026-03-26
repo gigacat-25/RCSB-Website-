@@ -18,12 +18,12 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     if (!blog) return {};
 
     const fixImageUrl = (url: string | null | undefined) => {
-      if (!url) return "https://rcsb.in/Images/placeholder.jpg";
+      if (!url) return "https://rcsb-website.pages.dev/Images/placeholder.jpg";
       if (url.includes("media.rcsb.in/")) {
         const key = url.split("media.rcsb.in/").pop();
         return `https://rcsb-api-worker.impact1-iceas.workers.dev/media/${key}`;
       }
-      return url.startsWith("/") ? `https://rcsb.in${url}` : url;
+      return url.startsWith("/") ? `https://rcsb-website.pages.dev${url}` : url;
     };
 
     return {
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
         title: blog.title,
         description: blog.description?.substring(0, 160),
         type: 'article',
-        url: `https://rcsb.in/blogs/${blog.slug}`,
+        url: `https://rcsb-website.pages.dev/blogs/${blog.slug}`,
         images: [{ url: fixImageUrl(blog.image_url) }],
       },
     };

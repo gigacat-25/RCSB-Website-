@@ -27,6 +27,10 @@ export default function RecentProjects() {
   // Import or inline definition for fixImageUrl
   const fixImageUrl = (url: string | null | undefined) => {
     if (!url) return "/Images/placeholder.jpg";
+    if (url.includes("rcsb-website.pages.dev/media/")) {
+      const key = url.split("rcsb-website.pages.dev/media/").pop();
+      return `https://rcsb-api-worker.impact1-iceas.workers.dev/media/${key}`;
+    }
     if (url.includes("media.rcsb.in/")) {
       const key = url.split("media.rcsb.in/").pop();
       return `https://rcsb-api-worker.impact1-iceas.workers.dev/media/${key}`;

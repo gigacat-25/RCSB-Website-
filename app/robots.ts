@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: ['/admin/', '/api/'],
         },
-        sitemap: 'https://rcsb.in/sitemap.xml',
+        sitemap: 'https://rcsb-website.pages.dev/sitemap.xml',
     };
 }

@@ -2,6 +2,11 @@
 const nextConfig = {
   images: {
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "rcsb-website.pages.dev",
+        pathname: "/**",
+      },
       // Production media CDN
       {
         protocol: "https",

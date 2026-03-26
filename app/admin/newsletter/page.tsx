@@ -56,17 +56,53 @@ function NewsletterForm() {
         }
     }
 
+    async function handleSync() {
+        const confirmSync = confirm("This will automatically subscribe all registered website users who aren't already on the list. Continue?");
+        if (!confirmSync) return;
+
+        setStatus("loading");
+        try {
+            const res = await fetch("/api/newsletter/sync-users", { method: "POST" });
+            const data = await res.json();
+            if (res.ok) {
+                alert(`Success! Synced ${data.synced} users.`);
+                window.location.reload();
+            } else {
+                alert("Sync failed: " + data.error);
+            }
+        } catch {
+            alert("Error connecting to server.");
+        } finally {
+            setStatus("idle");
+        }
+    }
+
     return (
         <div className="max-w-4xl mx-auto py-10 px-4">
-            <div className="mb-10 text-center md:text-left">
-                <h1 className="text-4xl font-heading font-black text-brand-blue">Newsletter <span className="text-brand-gold">Broadcast</span></h1>
-                <p className="text-brand-gray mt-2 text-base font-medium">Compose and send a branded email to your entire subscriber base.</p>
-                {subCount !== null && (
-                    <div className="mt-6 inline-flex items-center gap-3 bg-brand-gold/10 border-2 border-brand-gold/30 rounded-2xl px-6 py-3 shadow-sm">
-                        <span className="text-brand-gold font-black text-2xl">{subCount}</span>
-                        <span className="text-brand-blue font-bold uppercase tracking-widest text-xs">Active Subscriber{subCount !== 1 ? "s" : ""}</span>
+            <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-slate-100">
+                <div className="text-center md:text-left">
+                    <h1 className="text-4xl font-heading font-black text-brand-blue">Newsletter <span className="text-brand-gold">Broadcast</span></h1>
+                    <p className="text-brand-gray mt-2 text-base font-medium">Compose and send a branded email to your entire subscriber base.</p>
+                    {subCount !== null && (
+                        <div className="mt-6 inline-flex items-center gap-3 bg-brand-gold/10 border-2 border-brand-gold/30 rounded-2xl px-6 py-3 shadow-sm">
+                            <span className="text-brand-gold font-black text-2xl">{subCount}</span>
+                            <span className="text-brand-blue font-bold uppercase tracking-widest text-xs">Active Subscriber{subCount !== 1 ? "s" : ""}</span>
+                        </div>
+                    )}
+                </div>
+                <button
+                    onClick={handleSync}
+                    disabled={status === "loading"}
+                    className="group flex items-center gap-3 px-6 py-4 bg-slate-900 hover:bg-brand-blue text-white rounded-2xl transition-all shadow-lg hover:-translate-y-1 disabled:opacity-50"
+                >
+                    <div className="text-left leading-tight">
+                        <p className="text-[10px] font-black uppercase tracking-widest opacity-60 group-hover:opacity-100">Sync Members</p>
+                        <p className="text-xs font-bold whitespace-nowrap">Subscribe All Web Users</p>
                     </div>
-                )}
+                    <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                    </div>
+                </button>
             </div>
 
             <div className="bg-white rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-slate-100 p-8 md:p-12">
@@ -105,7 +141,7 @@ function NewsletterForm() {
                             {status === "loading" ? (
                                 <>
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    Dispatching Emails...
+                                    Processing Agent...
                                 </>
                             ) : (
                                 <>
@@ -141,8 +177,8 @@ function NewsletterForm() {
                     <div className="mt-10 bg-red-50 border-2 border-red-100 rounded-[2rem] p-6 text-red-600 flex items-center gap-4">
                         <div className="w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center font-bold text-xl font-mono">!</div>
                         <div>
-                            <p className="font-black uppercase tracking-widest text-sm">Deployment Failed</p>
-                            <p className="text-xs font-medium opacity-80">Check your SMTP settings in .env.local or Worker logs.</p>
+                            <p className="font-black uppercase tracking-widest text-sm">Broadcast Failed</p>
+                            <p className="text-xs font-medium opacity-80">Check your Resend API Key in .env.local or Resend dashboard.</p>
                         </div>
                     </div>
                 )}

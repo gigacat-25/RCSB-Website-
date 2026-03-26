@@ -4,7 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 
 const WORKER_URL = process.env.NEXT_PUBLIC_CLOUDFLARE_API_URL!;
 const WORKER_SECRET = process.env.CLOUDFLARE_WORKER_SECRET!;
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb.in";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb-website.pages.dev";
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const EMAIL_FROM = process.env.EMAIL_FROM || "updates@rcsb.in";
 
@@ -110,6 +110,10 @@ export async function POST(req: NextRequest) {
     // Batch send emails (or send one by one if batching isn't straightforward)
     // For simplicity and direct unsubscribe links, we map and send in parallel or sequentially.
     for (const sub of subscribers) {
+      if (!sub.token) {
+        console.warn(`[Newsletter Send] Skipping ${sub.email} - missing unsubscribe token.`);
+        continue;
+      }
       const unsubUrl = `${SITE_URL}/unsubscribe?token=${sub.token}`;
       const html = buildEmailHtml(subject, body, unsubUrl);
 

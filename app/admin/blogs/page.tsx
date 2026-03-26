@@ -190,7 +190,7 @@ export default function AdminBlogsPage() {
                           href={`/admin/newsletter?subject=${encodeURIComponent(
                             `New Story: ${item.title}`
                           )}&body=${encodeURIComponent(
-                            `<p>Hello! We've just published a new story: <b>${item.title}</b>.</p><p><a href='https://rcsb.in/blogs/${item.slug}'>Read the full story here →</a></p>`
+                            `<p>Hello! We've just published a new story: <b>${item.title}</b>.</p><p><a href='https://rcsb-website.pages.dev/blogs/${item.slug}'>Read the full story here →</a></p>`
                           )}`}
                           className="p-2 text-brand-gold hover:bg-yellow-50 rounded-lg transition-colors flex items-center justify-center"
                           title="Share Story with Subscribers"

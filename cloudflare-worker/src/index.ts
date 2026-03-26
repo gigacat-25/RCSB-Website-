@@ -116,16 +116,21 @@ export default {
 
       // > Newsletter: Subscribe (public)
       if (request.method === "POST" && url.pathname === "/api/newsletter/subscribe") {
-        const body = await request.json() as any;
+        const body: any = await request.json();
         if (!body.email) {
           return new Response(JSON.stringify({ error: "Email is required" }), { status: 400, headers });
         }
         const token = crypto.randomUUID();
         try {
-          await env.DB.prepare(
-            "INSERT INTO newsletter_subscribers (email, name, token, subscribed) VALUES (?, ?, ?, 1) ON CONFLICT(email) DO UPDATE SET subscribed=1"
-          ).bind(body.email.toLowerCase().trim(), body.name || null, token).run();
-          return new Response(JSON.stringify({ success: true }), { headers });
+          // On conflict, we set subscribed=1 and also set a token IF it was missing/null
+          await env.DB.prepare(`
+            INSERT INTO newsletter_subscribers (email, name, token, subscribed)
+            VALUES (?, ?, ?, 1)
+            ON CONFLICT(email) DO UPDATE SET
+              subscribed=1,
+              token=COALESCE(newsletter_subscribers.token, EXCLUDED.token)
+          `).bind(body.email.toLowerCase().trim(), body.name || null, token).run();
+          return new Response(JSON.stringify({ success: true, message: "Subscribed" }), { headers });
         } catch (e: any) {
           return new Response(JSON.stringify({ error: e.message }), { status: 500, headers });
         }
@@ -134,10 +139,13 @@ export default {
       // > Newsletter: Unsubscribe (public — uses token from email link)
       if (request.method === "GET" && url.pathname === "/api/newsletter/unsubscribe") {
         const token = url.searchParams.get("token");
-        if (!token) {
-          return new Response(JSON.stringify({ error: "Missing token" }), { status: 400, headers });
+        if (!token || token === "undefined" || token === "null") {
+          return new Response(JSON.stringify({ error: "Invalid or missing token" }), { status: 400, headers });
         }
-        await env.DB.prepare("UPDATE newsletter_subscribers SET subscribed=0 WHERE token=?").bind(token).run();
+        const result = await env.DB.prepare("UPDATE newsletter_subscribers SET subscribed=0 WHERE token=?").bind(token).run();
+        if (result.meta.changes === 0) {
+          return new Response(JSON.stringify({ error: "Token not found" }), { status: 404, headers });
+        }
         return new Response(JSON.stringify({ success: true, message: "Unsubscribed" }), { headers });
       }
 

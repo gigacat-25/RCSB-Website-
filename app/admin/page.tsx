@@ -15,6 +15,7 @@ export default async function AdminDashboard() {
   let inquiriesCount = 0;
   let teamCount = 0;
   let myBlogsCount = 0;
+  let subCount: number | null = null;
 
   try {
     // Only admins can fetch messages and full team data
@@ -27,6 +28,9 @@ export default async function AdminDashboard() {
 
       const team = await apiFetch("/api/team");
       teamCount = team.length;
+
+      const subscribers = await apiFetch("/api/newsletter/subscribers");
+      subCount = Array.isArray(subscribers) ? subscribers.length : 0;
     } else {
       // For bloggers, only fetch projects to filter blogs
       const projects = await apiFetch("/api/projects");
@@ -128,13 +132,13 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Action Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 px-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-2">
         <div className="bg-brand-blue text-white p-8 rounded-[40px] shadow-xl relative overflow-hidden group">
           <div className="relative z-10">
             <h2 className="text-2xl font-heading font-bold mb-4">Create New Project</h2>
-            <p className="text-blue-100 mb-8 font-medium">Ready to showcase a new club initiative? Add project details, impact stats, and photos to keep the community inspired.</p>
-            <Link href="/admin/projects/add" className="inline-block px-8 py-4 bg-brand-gold text-brand-blue font-black rounded-2xl hover:bg-white transition-all shadow-lg">
-              Launch Project Editor
+            <p className="text-blue-100 mb-8 font-medium italic">Ready to showcase a new club initiative? Add project details and impact photos.</p>
+            <Link href="/admin/projects/add" className="inline-block px-8 py-4 bg-brand-gold text-brand-blue font-black rounded-2xl hover:bg-white transition-all shadow-lg text-sm">
+              Launch Editor
             </Link>
           </div>
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3 blur-3xl"></div>
@@ -142,10 +146,21 @@ export default async function AdminDashboard() {
 
         <div className="bg-white border-2 border-brand-blue p-8 rounded-[40px] group hover:bg-brand-blue/5 transition-colors">
           <h2 className="text-2xl font-heading font-bold text-brand-blue mb-4">Update Leadership</h2>
-          <p className="text-brand-gray mb-8 font-medium">Switch roles for the new tenure or update existing board member details and profile photos.</p>
-          <Link href="/admin/team" className="inline-block px-8 py-4 border-2 border-brand-blue text-brand-blue font-black rounded-2xl hover:bg-brand-blue hover:text-white transition-all">
-            Edit Board Roster
+          <p className="text-brand-gray mb-8 font-medium italic">Switch roles for the new tenure or update existing board member details.</p>
+          <Link href="/admin/team" className="inline-block px-8 py-4 border-2 border-brand-blue text-brand-blue font-black rounded-2xl hover:bg-brand-blue hover:text-white transition-all text-sm">
+            Edit Roster
           </Link>
+        </div>
+
+        <div className="bg-slate-900 text-white p-8 rounded-[40px] shadow-xl relative overflow-hidden group">
+          <div className="relative z-10">
+            <h2 className="text-2xl font-heading font-bold mb-4">Newsletter Broadcast</h2>
+            <p className="text-slate-300 mb-8 font-medium italic">Send a branded update to all {subCount ?? ""} email subscribers at once.</p>
+            <Link href="/admin/newsletter" className="inline-block px-8 py-4 bg-white text-slate-900 font-black rounded-2xl hover:bg-brand-gold transition-all shadow-lg text-sm">
+              Compose Email
+            </Link>
+          </div>
+          <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-white/5 rounded-full blur-3xl"></div>
         </div>
       </div>
     </div>
