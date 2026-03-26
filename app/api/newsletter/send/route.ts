@@ -1,11 +1,12 @@
 export const runtime = 'edge';
 import { NextRequest, NextResponse } from "next/server";
-import nodemailer from "nodemailer";
 import { auth } from "@clerk/nextjs/server";
 
 const WORKER_URL = process.env.NEXT_PUBLIC_CLOUDFLARE_API_URL!;
 const WORKER_SECRET = process.env.CLOUDFLARE_WORKER_SECRET!;
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb.in";
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const EMAIL_FROM = process.env.EMAIL_FROM || "updates@rcsb.in";
 
 function buildEmailHtml(subject: string, body: string, unsubscribeUrl: string): string {
   return `
@@ -84,42 +85,54 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "subject and body are required" }, { status: 400 });
     }
 
+    if (!RESEND_API_KEY || RESEND_API_KEY.includes('put_your_resend_api_key_here')) {
+      return NextResponse.json({
+        success: false,
+        sent: 0,
+        errors: ["Resend API Key is not configured. Please add RESEND_API_KEY to your .env.local."]
+      });
+    }
+
     // 1. Fetch subscribers from Worker
     const subsRes = await fetch(`${WORKER_URL}/api/newsletter/subscribers`, {
       headers: { Authorization: `Bearer ${WORKER_SECRET}` },
     });
-    const subscribers: { email: string; name: string | null; token: string }[] =
-      await subsRes.json();
+    const subscribers: { email: string; name: string | null; token: string }[] = await subsRes.json();
 
     if (!subscribers.length) {
       return NextResponse.json({ success: true, sent: 0, message: "No subscribers" });
     }
 
-    // 2. Create Nodemailer transporter
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || "smtp.gmail.com",
-      port: Number(process.env.SMTP_PORT) || 587,
-      secure: false,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-
-    // 3. Send to each subscriber
+    // 2. Send via Resend API
     let sent = 0;
     const errors: string[] = [];
 
+    // Batch send emails (or send one by one if batching isn't straightforward)
+    // For simplicity and direct unsubscribe links, we map and send in parallel or sequentially.
     for (const sub of subscribers) {
       const unsubUrl = `${SITE_URL}/unsubscribe?token=${sub.token}`;
       const html = buildEmailHtml(subject, body, unsubUrl);
+
       try {
-        await transporter.sendMail({
-          from: process.env.EMAIL_FROM || `"Rotaract RCSB" <${process.env.SMTP_USER}>`,
-          to: sub.email,
-          subject,
-          html,
+        const res = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${RESEND_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from: EMAIL_FROM,
+            to: sub.email,
+            subject: subject,
+            html: html,
+          }),
         });
+
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.message || "Failed to send");
+        }
+
         sent++;
       } catch (e: any) {
         errors.push(`${sub.email}: ${e.message}`);
@@ -127,8 +140,9 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true, sent, total: subscribers.length, errors });
-  } catch (err) {
+  } catch (err: any) {
     console.error("[Newsletter Send]", err);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error: " + err.message }, { status: 500 });
   }
 }
+
