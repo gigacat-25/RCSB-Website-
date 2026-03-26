@@ -8,18 +8,22 @@ export default function LoadingScreen() {
 
     useEffect(() => {
         const handleLoad = () => {
-            // Start fading out
             setFade(true);
-            // Wait for fade transition to finish before unmounting
             setTimeout(() => setIsLoading(false), 500);
         };
 
+        // Failsafe: Hide loading screen after 5 seconds no matter what
+        const failsafe = setTimeout(handleLoad, 5000);
+
         if (document.readyState === "complete") {
-            // Start fade out after a tiny delay for visual smoothness even if already loaded
             setTimeout(handleLoad, 300);
+            clearTimeout(failsafe);
         } else {
             window.addEventListener("load", handleLoad);
-            return () => window.removeEventListener("load", handleLoad);
+            return () => {
+                window.removeEventListener("load", handleLoad);
+                clearTimeout(failsafe);
+            };
         }
     }, []);
 
