@@ -50,9 +50,11 @@ function NewsletterForm() {
                 setResult(data);
             } else {
                 setStatus("error");
+                setResult({ sent: 0, total: 0, errors: [data.error || "Unknown server error"] });
             }
-        } catch {
+        } catch (err: any) {
             setStatus("error");
+            setResult({ sent: 0, total: 0, errors: [err.message || "Failed to connect to server"] });
         }
     }
 
@@ -178,7 +180,9 @@ function NewsletterForm() {
                         <div className="w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center font-bold text-xl font-mono">!</div>
                         <div>
                             <p className="font-black uppercase tracking-widest text-sm">Broadcast Failed</p>
-                            <p className="text-xs font-medium opacity-80">Check your Resend API Key in .env.local or Resend dashboard.</p>
+                            <p className="text-xs font-medium opacity-80">
+                                {result?.errors?.[0] || "Check your API credentials in .env.local or server logs."}
+                            </p>
                         </div>
                     </div>
                 )}
