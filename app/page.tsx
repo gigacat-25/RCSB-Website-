@@ -20,7 +20,6 @@ export default function Home() {
       <FeaturedContent />
       <LeadershipPreview />
       <PartnersCarousel />
-      <NewsletterBar />
       <ContactCTA />
     </div>
   );

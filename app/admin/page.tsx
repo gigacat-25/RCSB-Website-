@@ -18,26 +18,30 @@ export default async function AdminDashboard() {
   let subCount: number | null = null;
 
   try {
-    // Only admins can fetch messages and full team data
     if (userIsAdmin) {
-      const projects = await apiFetch("/api/projects");
-      projectsCount = projects.length;
+      // Parallel fetch with individual error handling
+      const [projects, messages, team, subscribers] = await Promise.allSettled([
+        apiFetch("/api/projects"),
+        apiFetch("/api/messages"),
+        apiFetch("/api/team"),
+        apiFetch("/api/newsletter/subscribers")
+      ]);
 
-      const messages = await apiFetch("/api/messages");
-      inquiriesCount = messages.filter((m: any) => m.status === 'unread').length;
+      projectsCount = projects.status === 'fulfilled' ? projects.value.length : 0;
+      inquiriesCount = messages.status === 'fulfilled' ? messages.value.filter((m: any) => m.status === 'unread').length : 0;
+      teamCount = team.status === 'fulfilled' ? team.value.length : 0;
+      subCount = subscribers.status === 'fulfilled' && Array.isArray(subscribers.value) ? subscribers.value.length : 0;
 
-      const team = await apiFetch("/api/team");
-      teamCount = team.length;
-
-      const subscribers = await apiFetch("/api/newsletter/subscribers");
-      subCount = Array.isArray(subscribers) ? subscribers.length : 0;
+      if (projects.status === 'rejected') console.error("Projects fetch failed", projects.reason);
+      if (messages.status === 'rejected') console.error("Messages fetch failed", messages.reason);
+      if (team.status === 'rejected') console.error("Team fetch failed", team.reason);
+      if (subscribers.status === 'rejected') console.error("Subscribers fetch failed", subscribers.reason);
     } else {
-      // For bloggers, only fetch projects to filter blogs
-      const projects = await apiFetch("/api/projects");
+      const projects = await apiFetch("/api/projects").catch(() => []);
       myBlogsCount = projects.filter((p: any) => p.type === 'blog').length;
     }
   } catch (err) {
-    console.error("Failed to fetch dashboard stats", err);
+    console.error("Critical failure in dashboard stats fetch", err);
   }
 
   if (!userIsAdmin) {

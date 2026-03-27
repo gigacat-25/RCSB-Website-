@@ -84,9 +84,12 @@ function buildEmailHtml(subject: string, body: string, unsubscribeUrl: string): 
 </head>
 <body style="margin:0;padding:40px 0;background:#0a0f1e;">
   <div class="container" style="max-width: 600px; margin: 0 auto; background: #0d1528; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,215,0,0.15);">
-    <div class="header">
-      <p style="margin:0;color:#C9982A;font-size:11px;text-transform:uppercase;letter-spacing:2px;">Rotaract Club of Swarna Bengaluru</p>
-      <h1 style="margin:8px 0 0;color:#ffffff;font-size:22px;font-weight:700;">${subject}</h1>
+    <div class="header" style="background: linear-gradient(135deg,#0a0f1e 0%,#1a2744 100%); padding: 32px 40px; border-bottom: 2px solid #C9982A;">
+      <div style="margin-bottom:20px; background:#ffffff; display:inline-block; padding:8px; border-radius:8px; line-height: 0;">
+        <img src="https://rcsb-website.pages.dev/logo.png" alt="RCSB Logo" style="height:44px; width:auto; border:0; display:block;" />
+      </div>
+      <p style="margin:0;color:#C9982A;font-size:11px;text-transform:uppercase;letter-spacing:2px;font-weight:700;">Rotaract Club of Swarna Bengaluru</p>
+      <h1 style="margin:8px 0 0;color:#ffffff;font-size:24px;font-weight:900;letter-spacing:-0.5px;">${subject}</h1>
     </div>
     <div class="content" style="padding: 32px 40px; color:#c8d0e0; font-size:15px; line-height: 1.7;">
       ${body}
@@ -96,11 +99,38 @@ function buildEmailHtml(subject: string, body: string, unsubscribeUrl: string): 
         </a>
       </div>
     </div>
-    <div class="footer">
-      <p style="margin:0;color:#556;font-size:11px;">
+    <div class="footer" style="background:#090e1a; padding:40px 40px; border-top: 1px solid rgba(255,255,255,0.06); text-align:center;">
+      <div style="margin-bottom:28px;">
+        <a href="https://www.instagram.com/rotaract_swarnabengaluru" style="display:inline-block; margin:0 10px; text-decoration:none;">
+          <img src="https://img.icons8.com/ios-filled/50/C9982A/instagram-new.png" alt="IG" style="width:24px; height:24px;" />
+        </a>
+        <a href="https://www.facebook.com/rotaractswarnabengaluru/" style="display:inline-block; margin:0 10px; text-decoration:none;">
+          <img src="https://img.icons8.com/ios-filled/50/C9982A/facebook-new.png" alt="FB" style="width:24px; height:24px;" />
+        </a>
+        <a href="https://linkedin.com/company/rotaract-club-of-swarna-bengaluru" style="display:inline-block; margin:0 10px; text-decoration:none;">
+          <img src="https://img.icons8.com/ios-filled/50/C9982A/linkedin.png" alt="LI" style="width:24px; height:24px;" />
+        </a>
+        <a href="https://x.com/RCSwarnaB" style="display:inline-block; margin:0 10px; text-decoration:none;">
+          <img src="https://img.icons8.com/ios-filled/50/C9982A/twitterx.png" alt="X" style="width:24px; height:24px;" />
+        </a>
+        <a href="https://www.youtube.com/channel/UCE4XQBKSjPs8rj5xyH6FOxA" style="display:inline-block; margin:0 10px; text-decoration:none;">
+          <img src="https://img.icons8.com/ios-filled/50/C9982A/youtube-play.png" alt="YT" style="width:24px; height:24px;" />
+        </a>
+      </div>
+      
+      <div style="margin-bottom:24px; color:#c8d0e0; font-size:12px; line-height:1.6;">
+        <p style="margin:0; font-weight:700; color:#ffffff;">Rotaract Club of Swarna Bengaluru</p>
+        <p style="margin:4px 0 0;">Rotary House of Friendship, 11 Lavelle Road, Bengaluru</p>
+        <p style="margin:2px 0 0;"><a href="mailto:rota.rcbs@gmail.com" style="color:#C9982A; text-decoration:none;">rota.rcbs@gmail.com</a> | <a href="${SITE_URL}" style="color:#C9982A; text-decoration:none;">Visit Website</a></p>
+      </div>
+
+      <p style="margin:0;color:#556677;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;">
         © 2026 Rotaract Club of Swarna Bengaluru
+      </p>
+      <p style="margin:16px 0 0;color:#556677;font-size:11px;">
+        You're receiving this because you're a member of the RCSB community.
         <br/><br/>
-        <a href="${unsubscribeUrl}" style="color:#C9982A;text-decoration:underline;">Unsubscribe from updates</a>
+        <a href="${unsubscribeUrl}" style="color:#C9982A;text-decoration:underline;font-weight:600;">Unsubscribe from these emails</a>
       </p>
     </div>
   </div>

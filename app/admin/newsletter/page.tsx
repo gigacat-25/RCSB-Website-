@@ -24,6 +24,7 @@ function NewsletterForm() {
 
     const [aiPrompt, setAiPrompt] = useState("");
     const [isGenerating, setIsGenerating] = useState(false);
+    const [contextMedia, setContextMedia] = useState<{ imageUrl?: string; eventDate?: string; rsvpLink?: string }>({});
     const hasAutoDrafted = useRef(false);
 
     useEffect(() => {
@@ -38,6 +39,8 @@ function NewsletterForm() {
             const imageUrl = searchParams.get("imageUrl") || "";
             const eventDate = searchParams.get("eventDate") || "";
             const rsvpLink = searchParams.get("rsvpLink") || "";
+
+            setContextMedia({ imageUrl, eventDate, rsvpLink });
 
             const section = type === "event" ? "events" : (type === "blog" ? "blogs" : "projects");
 
@@ -56,9 +59,12 @@ function NewsletterForm() {
                 }
             }
 
+            const absImageUrl = imageUrl ? (imageUrl.startsWith("http") ? imageUrl : `https://rcsb-website.pages.dev${imageUrl}`) : "";
+            const imageTag = absImageUrl ? `<img src="${absImageUrl}" alt="${title}" style="width:100%; border-radius:12px; margin-bottom:24px; border: 1px solid rgba(255,215,0,0.1);" />` : "";
+
             let imageContext = "";
-            if (imageUrl) {
-                imageContext = `\nPlease embed this cover image at the very beginning of the email body exactly like this: <img src="${imageUrl}" alt="Cover Image" style="width:100%; border-radius:12px; margin-bottom:20px;" />`;
+            if (imageTag) {
+                imageContext = `\nCRITICAL: You MUST include this EXACT cover image tag at the very top of your body: ${imageTag}`;
             }
 
             let rsvpContext = "";
@@ -66,14 +72,29 @@ function NewsletterForm() {
                 rsvpContext = `\nThere is an RSVP link for this event: ${rsvpLink}. Create a large, prominent RSVP button that points to this exact link with the text "RSVP Now" or "Get Your Tickets".`;
             }
 
-            const prompt = `Please write a highly engaging, professional HTML email newsletter announcing the following ${type}.
+            const prompt = `You are a professional communications officer for the Rotaract Club of Swarna Bengaluru (RCSB). 
+Please write a highly engaging, branded HTML email newsletter announcing the following ${type}.
+
 Title: ${title}
 Details: ${details}
-Link to view: https://rcsb-website.pages.dev/${section}/${slug}
+Official Website: https://rcsb-website.pages.dev
+Official Email: rota.rcbs@gmail.com
+Link to view on site: https://rcsb-website.pages.dev/${section}/${slug}
+
+CONTEXTUAL DATA:
 ${dateContext}${imageContext}${rsvpContext}
 
-Make sure the link text is an interesting, compelling Call-To-Action (e.g. "Discover the Full Story" or "Secure Your Spot Today!") instead of a plain "Click here".
-Do not output anything but the JSON format with "subject" and "body" (using semantic HTML tags).`;
+Guidelines:
+1. Always start the email body with a professional header: "Rotaract Club of Swarna Bengaluru".
+2. Use a sophisticated, warm, and community-focused tone.
+3. **Buttons**: Any primary link (like a feedback form or "Read More") MUST be a styled button. Use this EXACT HTML: 
+   <div style="margin: 32px 0; text-align: center;">
+     <a href="URL_HERE" style="background-color: #C9982A; color: #0a0f1e; padding: 16px 32px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 15px; display: inline-block; letter-spacing: 1px; text-transform: uppercase;">BUTTON_TEXT_HERE</a>
+   </div>
+4. **Media Usage**: Do NOT use placeholder images. Only use the image tag provided in the context above. If no image tag is provided, do not include an image.
+5. Ensure the Call-To-Action (CTA) text is interesting and compelling.
+6. **Note**: Do not repeat the physical address or social media links in the body; they are already handled by our permanent email footer.
+7. Output ONLY a valid JSON object with keys "subject" and "body". Use semantic HTML tags in the body.`;
 
             setIsGenerating(true);
             fetch("/api/newsletter/generate", {
@@ -81,14 +102,18 @@ Do not output anything but the JSON format with "subject" and "body" (using sema
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ prompt }),
             })
-                .then(res => res.json())
+                .then(async res => {
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.details || data.error || "Generation failed");
+                    return data;
+                })
                 .then(data => {
                     if (data.subject) setSubject(data.subject);
                     if (data.body) setBody(data.body);
                 })
                 .catch(err => {
                     console.error("Auto draft failed:", err);
-                    alert("Failed to auto-generate draft.");
+                    alert(`AI Generation failed: ${err.message}`);
                 })
                 .finally(() => setIsGenerating(false));
         }
@@ -208,26 +233,89 @@ Do not output anything but the JSON format with "subject" and "body" (using sema
         }
     }
 
-    async function handleGenerateAI() {
-        const promptToUse = aiPrompt.trim()
-            ? aiPrompt
-            : `Please rewrite the following project/event details into a highly engaging, professional HTML email newsletter. Use semantic HTML tags. Do not output anything but the final JSON.\nSubject: ${subject}\nDetails: ${body}`;
+    async function handlePurge() {
+        const confirm1 = confirm("⚠️ CRITICAL WARNING: This will permanently delete ALL active and unsubscribed emails from the newsletter database. This cannot be undone. Are you absolutely sure?");
+        if (!confirm1) return;
 
-        if (!promptToUse.trim()) return;
+        const confirm2 = confirm("FINAL CONFIRMATION: Are you 100% certain you want to WIPE the entire subscriber list?");
+        if (!confirm2) return;
+
+        setStatus("loading");
+        try {
+            const res = await fetch("/api/newsletter/purge", { method: "DELETE" });
+            if (res.ok) {
+                alert("Database purged successfully. All emails have been deleted.");
+                window.location.reload();
+            } else {
+                alert("Purge failed. Check server logs.");
+            }
+        } catch (err) {
+            alert("Connection error during purge.");
+        } finally {
+            setStatus("idle");
+        }
+    }
+
+    async function handleGenerateAI() {
+        let finalPrompt = "";
+        const isRefining = subject.trim() || body.trim();
+
+        const { imageUrl, rsvpLink } = contextMedia;
+        const absImageUrl = imageUrl ? (imageUrl.startsWith("http") ? imageUrl : `https://rcsb-website.pages.dev${imageUrl}`) : "";
+        const imageTag = absImageUrl ? `<img src="${absImageUrl}" style="width:100%; border-radius:12px; margin-bottom:24px;" />` : "";
+        const imageInstruction = imageTag ? `\nCRITICAL: You MUST include this EXACT cover image tag at the VERY TOP of the email body: ${imageTag}` : "";
+        const rsvpInstruction = rsvpLink ? `\nThere is an RSVP/Link: ${rsvpLink}. Make a proper gold button for it.` : "";
+
+        if (isRefining && aiPrompt.trim()) {
+            // Refinement Mode
+            finalPrompt = `You are a professional communications officer for the Rotaract Club of Swarna Bengaluru.
+I have an existing newsletter draft that needs modification.
+
+CURRENT SUBJECT: ${subject}
+CURRENT BODY: ${body}
+
+MY REQUEST: ${aiPrompt}
+${imageInstruction}${rsvpInstruction}
+
+STRICT GUIDELINES:
+1. Apply the requested changes while maintaining the branding.
+2. If a cover image tag is provided above, ensure it is at the very top.
+3. Use proper buttons for links. Use semantic HTML.
+4. Output ONLY a valid JSON object with "subject" and "body".`;
+        } else {
+            // Normal Draft Mode
+            finalPrompt = aiPrompt.trim()
+                ? aiPrompt + imageInstruction + rsvpInstruction
+                : `You are the communications officer for the Rotaract Club of Swarna Bengaluru. 
+Please rewrite the following details into a highly engaging newsletter.
+
+Subject: ${subject}
+Details: ${body}
+${imageInstruction}${rsvpInstruction}
+
+Guidelines:
+1. Include the cover image at the top if provided.
+2. Use professional buttons for CTAs.
+3. Do not repeat footer details.
+4. Output ONLY a JSON object with "subject" and "body".`;
+        }
+
+        if (!finalPrompt.trim()) return;
 
         setIsGenerating(true);
         try {
             const res = await fetch("/api/newsletter/generate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prompt: promptToUse }),
+                body: JSON.stringify({ prompt: finalPrompt }),
             });
             const data = await res.json();
             if (res.ok) {
                 setSubject(data.subject || "");
                 setBody(data.body || "");
+                setAiPrompt("");
             } else {
-                alert("AI Generation failed: " + (data.error || "Unknown error"));
+                alert("AI Refinement failed: " + (data.error || "Unknown error"));
             }
         } catch (err: any) {
             alert("Error connecting to AI service. " + err.message);
@@ -242,12 +330,20 @@ Do not output anything but the JSON format with "subject" and "body" (using sema
                 <div className="text-center md:text-left">
                     <h1 className="text-4xl font-heading font-black text-brand-blue">Newsletter <span className="text-brand-gold">Broadcast</span></h1>
                     <p className="text-brand-gray mt-2 text-base font-medium">Compose and send a branded email to your entire subscriber base.</p>
-                    {subCount !== null && (
-                        <div className="mt-6 inline-flex items-center gap-3 bg-brand-gold/10 border-2 border-brand-gold/30 rounded-2xl px-6 py-3 shadow-sm">
-                            <span className="text-brand-gold font-black text-2xl">{subCount}</span>
-                            <span className="text-brand-blue font-bold uppercase tracking-widest text-xs">Active Subscriber{subCount !== 1 ? "s" : ""}</span>
-                        </div>
-                    )}
+                    <div className="flex flex-wrap items-center gap-4 mt-6">
+                        {subCount !== null && (
+                            <div className="inline-flex items-center gap-3 bg-brand-gold/10 border-2 border-brand-gold/30 rounded-2xl px-6 py-3 shadow-sm">
+                                <span className="text-brand-gold font-black text-2xl">{subCount}</span>
+                                <span className="text-brand-blue font-bold uppercase tracking-widest text-xs">Active Subscriber{subCount !== 1 ? "s" : ""}</span>
+                            </div>
+                        )}
+                        <button
+                            onClick={handlePurge}
+                            className="px-6 py-3 bg-red-50 hover:bg-red-100 text-red-600 border-2 border-red-200 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+                        >
+                            🗑 Purge List
+                        </button>
+                    </div>
                 </div>
                 <button
                     onClick={handleSync}
@@ -280,7 +376,7 @@ Do not output anything but the JSON format with "subject" and "body" (using sema
                         disabled={isGenerating || status === "loading" || (!aiPrompt.trim() && !body.trim())}
                         className="self-end px-6 py-3 bg-brand-gold hover:bg-yellow-500 text-white font-bold rounded-xl text-sm transition-all disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-brand-gold/20 tracking-wider"
                     >
-                        {isGenerating ? "✨ Generating..." : "✨ Generate Draft"}
+                        {isGenerating ? "✨ Processing..." : (subject.trim() || body.trim()) ? "✨ Refine with AI" : "✨ Generate Draft"}
                     </button>
                 </div>
 

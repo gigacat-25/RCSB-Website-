@@ -550,6 +550,12 @@ export default {
         return new Response(JSON.stringify(results.results), { headers });
       }
 
+      // > Newsletter: Purge all (protected)
+      if (request.method === "DELETE" && url.pathname === "/api/newsletter/purge") {
+        await env.DB.prepare("DELETE FROM newsletter_subscribers").run();
+        return new Response(JSON.stringify({ success: true, message: "All subscribers purged" }), { headers });
+      }
+
       return new Response(JSON.stringify({ error: "Not found", path: url.pathname }), { status: 404, headers });
 
     } catch (err: any) {

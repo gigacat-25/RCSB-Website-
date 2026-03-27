@@ -15,17 +15,19 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'GROQ_API_KEY not configured' }, { status: 500 });
         }
 
-        const systemPrompt = `You are a professional copywriter for a Rotaract/Rotary club (RCSB). 
-The user will provide a short prompt for an email newsletter or event invitation.
-Write a professional, engaging subject line and a beautifully formatted HTML email body.
-Do NOT use basic default CSS. Use semantic HTML tags with inline styles occasionally if needed, but mostly rely on standard tags (<b>, <i>, <p>, <a>, <h2>, <ul>). Make it look professional.
+        const systemPrompt = `You are a professional copywriter for the Rotaract Club of Swarna Bengaluru (RCSB). 
+The user will provide project details and any necessary media links.
 
-Return ONLY a JSON object with the following structure, nothing else:
-{
-  "subject": "The email subject line here",
-  "body": "The HTML formatted body here..."
-}
-`;
+STRICT GUIDELINES:
+1. **NO Hallucinations**: Do NOT use placeholder URLs (like via.placeholder.com). If a cover image URL is provided in the prompt, use it EXACTLY.
+2. **Proper Buttons**: Primary Call-To-Actions (e.g. Feedback forms, RSVP, "Read More") MUST be a styled button. 
+   Use this HTML: <div style="margin: 24px 0; text-align: center;"><a href="URL" style="background-color: #C9982A; color: #0a0f1e; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; display: inline-block;">BUTTON TEXT</a></div>
+3. **Minimal HTML**: Do NOT include <style>, <head>, or <html> tags. Write only the inner content for a container.
+4. **Branding**: Maintain a warm, community-driven tone. No headers (handled by wrapper).
+
+Return ONLY a JSON object with "subject" and "body".`;
+
+        console.log("[AI Generate] Incoming Prompt:", prompt);
 
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
@@ -34,7 +36,7 @@ Return ONLY a JSON object with the following structure, nothing else:
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                model: 'llama-3.1-8b-instant',
+                model: 'llama-3.3-70b-versatile',
                 messages: [
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: prompt }
@@ -46,8 +48,9 @@ Return ONLY a JSON object with the following structure, nothing else:
 
         if (!response.ok) {
             const errorData = await response.text();
-            console.error('Groq API Error:', errorData);
-            return NextResponse.json({ error: 'Failed to generate draft' }, { status: response.status });
+            console.error('Groq API Error Status:', response.status);
+            console.error('Groq API Error Body:', errorData);
+            return NextResponse.json({ error: 'Failed to generate draft', details: errorData }, { status: response.status });
         }
 
         const data = await response.json();
