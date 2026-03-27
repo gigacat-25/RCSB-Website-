@@ -1,179 +1,140 @@
-# RCSB Website
+# Rotaract Club of Swarna Bengaluru (RCSB) — Official Website
 
-Official website for the **Rotaract Club of Seshadripuram Bangalore (RCSB)**.  
-Built with Next.js 14, Clerk authentication, a Cloudflare Worker API, Cloudflare D1 (SQLite), and Cloudflare R2 for media storage.
+Official digital platform for the **Rotaract Club of Swarna Bengaluru (RCSB)**. This is a high-performance web application built to manage club projects, showcase the leadership team, and engage the community through an AI-powered newsletter system.
 
 ---
 
-## Tech Stack
+## 🚀 Tech Stack
 
 | Layer | Technology |
 |---|---|
-| Frontend | Next.js 14 (App Router), React 18, TypeScript |
-| Styling | Tailwind CSS, Framer Motion |
-| Auth | Clerk |
-| API | Cloudflare Worker (TypeScript) |
-| Database | Cloudflare D1 (SQLite) |
-| Media Storage | Cloudflare R2 (served via Worker `/media/` proxy) |
+| **Frontend** | [Next.js 14](https://nextjs.org/) (App Router, Edge Runtime) |
+| **Styling** | [Tailwind CSS](https://tailwindcss.com/), [Framer Motion](https://www.framer.com/motion/) |
+| **Authentication** | [Clerk](https://clerk.com/) |
+| **AI Engine** | [Groq](https://groq.com/) (Llama 3.3 70B) for Newsletter Generation |
+| **Email Delivery** | [Gmail API](https://developers.google.com/gmail/api) (OAuth2) |
+| **API / Backend** | [Cloudflare Workers](https://workers.cloudflare.com/) (TypeScript) |
+| **Database** | [Cloudflare D1](https://developers.cloudflare.com/d1/) (Edge SQLite) |
+| **Media Storage** | [Cloudflare R2](https://developers.cloudflare.com/r2/) (served via Worker proxy) |
 
 ---
 
-## Project Structure
+## ✨ Key Features
 
-```
+- **AI-Powered Newsletter Engine**: Generate professional newsletter drafts from project descriptions using Llama 3.3. Refine content iteratively and send to all subscribers in bulk via the Gmail API.
+- **Dynamic Board Management**: Manage the current Board of Directors and Past Presidents with an intuitive drag-and-drop reordering interface.
+- **Unified Projects & Blogs**: A versatile content management system for club projects, events, and blog posts with multimedia support (R2 storage).
+- **Engagement Hooks**: Interactive project liking, nested comments, and a subscription lead magnet with automated sync on user login.
+- **Admin Dashboard**: A secure, Clerk-protected workspace for authorized admins to manage all site content, media, and configurations.
+- **Edge Optimized**: Built on the Next.js Edge Runtime and Cloudflare network for sub-second global response times.
+
+---
+
+## 📂 Project Structure
+
+```text
 ├── app/
-│   ├── page.tsx              # Home page
-│   ├── team/                 # Public leadership page
-│   ├── projects/             # Projects showcase
-│   ├── blogs/                # Blog listing
-│   ├── contact/              # Contact form
-│   ├── admin/                # Admin dashboard (Clerk-protected)
-│   │   ├── team/             # Manage Board of Directors
-│   │   ├── projects/         # Manage projects & events
-│   │   └── blogs/            # Manage blog posts
-│   └── api/
-│       └── admin/            # Next.js API routes (proxies to Cloudflare Worker)
-│           ├── team/
-│           ├── projects/
-│           └── upload/
+│   ├── admin/                # Secure Admin Dashboard
+│   │   ├── newsletter/       # AI Newsletter management & distribution
+│   │   ├── team/             # D&D Board of Directors management
+│   │   ├── projects/         # CMS for projects and blogs
+│   │   └── settings/         # Global site configurations (e.g., about photos)
+│   ├── api/
+│   │   ├── newsletter/       # Newsletter logic (Groq + Gmail Auth)
+│   │   └── admin/            # Admin proxy routes to Cloudflare Worker
+│   ├── projects/             # Public project showcase
+│   ├── team/                 # Public leadership & members page
+│   └── page.tsx              # Immersive homepage
 ├── cloudflare-worker/
-│   ├── src/index.ts          # Worker source (all API + D1 + R2 logic)
-│   └── schema.sql            # D1 database schema
+│   ├── src/index.ts          # Core API + D1 + R2 logic
+│   └── schema.sql            # Database schema migrations
+├── components/
+│   ├── home/                 # Homepage sections (Hero, Gallery, etc.)
+│   ├── newsletter/           # AI components and sub-popups
+│   └── shared/               # Reusable UI elements
 ├── lib/
-│   ├── api.ts                # apiFetch helper + env constants
-│   └── admin.ts              # isAdmin() helper
-└── middleware.ts             # Clerk auth middleware
+│   ├── api.ts                # apiFetch & environment constants
+│   └── admin.ts              # Authorization Helpers
+└── middleware.ts             # Clerk auth & route protection
 ```
 
 ---
 
-## Getting Started
+## 🔧 Getting Started
 
-### 1. Clone & install
+### 1. Installation
 
 ```bash
 git clone <repo-url>
-cd RCSB-Website-
 npm install
 ```
 
-### 2. Environment variables
+### 2. Environment Setup
 
-Copy `.env.local` and fill in your values:
+Create a `.env.local` file with the following keys:
 
 ```env
-# Clerk
+# Clerk Auth
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_...
 CLERK_SECRET_KEY=sk_...
-NEXT_PUBLIC_ADMIN_EMAIL=admin@yourdomain.com
+NEXT_PUBLIC_ADMIN_EMAIL=...
 
-# Cloudflare Worker & D1
+# Cloudflare Worker & API
 NEXT_PUBLIC_CLOUDFLARE_API_URL=https://your-worker.workers.dev
 CLOUDFLARE_WORKER_SECRET=your_secret_key
 
-# R2 (served via worker /media/ proxy)
-NEXT_PUBLIC_R2_PUBLIC_URL=https://your-worker.workers.dev/media
+# Groq AI
+GROQ_API_KEY=gsk_...
+
+# Gmail API (for Newsletter)
+GMAIL_CLIENT_ID=...
+GMAIL_CLIENT_SECRET=...
+GMAIL_REFRESH_TOKEN=...
+GMAIL_USER=rcsb.allert@gmail.com
 ```
 
-### 3. Run locally
+### 3. Development
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
-
 ---
 
-## Cloudflare Worker Setup
+## ☁️ Cloudflare Setup
 
-The worker handles all data operations and media storage. It is deployed separately.
-
+### Worker Deployment
 ```bash
 cd cloudflare-worker
 npm install
-```
-
-### Deploy the Worker
-
-```bash
 npx wrangler deploy
 ```
 
-### Set up D1 database
-
+### Database (D1) Initialization
 ```bash
-# Create the D1 database
 npx wrangler d1 create rcsb-db
-
-# Apply the schema
 npx wrangler d1 execute rcsb-db --file=./schema.sql
-```
-
-### Set worker secret
-
-```bash
 npx wrangler secret put WORKER_SECRET
 ```
 
 ---
 
-## Database Schema
+## 📊 Database Schema
 
-Five tables managed in Cloudflare D1:
+The SQLite database (D1) manages 9 core tables:
 
-- **`projects`** — Projects, events, and blog posts (unified, differentiated by `type`)
-- **`team_members`** — Board of Directors with `order_index` for display order
-- **`authorized_admins`** — RBAC table; roles are `admin` or `blogger`
-- **`comments`** — Blog post comments, linked to `projects`
-- **`contact_submissions`** — Public contact form submissions
-
----
-
-## Admin Panel
-
-The admin dashboard is available at `/admin` and is protected by Clerk.  
-Role-based access is enforced at the Worker level via the `authorized_admins` table.
-
-| Role | Capabilities |
-|---|---|
-| `admin` | Full access — manage team, projects, events, blogs, messages |
-| `blogger` | Can only create and edit blog posts |
+1.  **`projects`** — Unified storage for projects, events, and blog posts.
+2.  **`team_members`** — Current Board of Directors with `order_index`.
+3.  **`past_presidents`** — Legacy leadership history.
+4.  **`gallery_slides`** — Dynamic homepage carousel assets.
+5.  **`partners`** — Collaboration and sponsor logos.
+6.  **`newsletter_subscribers`** — Audience list with secure tokens.
+7.  **`authorized_admins`** — Role-based access control (Admin/Blogger).
+8.  **`comments`** — User engagement on blog posts.
+9.  **`contact_submissions`** — Contact form message tracking.
 
 ---
 
-## API Endpoints (Cloudflare Worker)
+## 📝 License
 
-All protected endpoints require `Authorization: Bearer <WORKER_SECRET>`.
-
-| Method | Path | Auth | Description |
-|---|---|---|---|
-| `GET` | `/api/projects` | Public | List all projects |
-| `GET` | `/api/team` | Public | List team members |
-| `POST` | `/api/contact` | Public | Submit contact form |
-| `GET` | `/media/:key` | Public | Serve R2 media |
-| `POST` | `/api/upload` | Protected | Upload image to R2 |
-| `POST` | `/api/projects` | Protected | Create project |
-| `PUT` | `/api/projects/:id` | Protected | Update project |
-| `DELETE` | `/api/projects/:id` | Protected | Delete project |
-| `POST` | `/api/team` | Protected | Add team member |
-| `PUT` | `/api/team/:id` | Protected | Update team member |
-| `DELETE` | `/api/team/:id` | Protected | Delete team member |
-| `GET` | `/api/messages` | Protected | List contact submissions |
-
----
-
-## Scripts
-
-```bash
-npm run dev       # Start development server
-npm run build     # Production build
-npm run start     # Start production server
-npm run lint      # Run ESLint
-```
-
----
-
-## License
-
-See [LICENSE](./LICENSE).
+Distributed under the MIT License. See [LICENSE](./LICENSE) for details.

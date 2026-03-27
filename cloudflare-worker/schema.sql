@@ -80,6 +80,26 @@ CREATE TABLE IF NOT EXISTS partners (
     created_at TEXT DEFAULT (datetime('now'))
 );
 
+-- Dynamic homepage gallery slides
+CREATE TABLE IF NOT EXISTS gallery_slides (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    caption TEXT,
+    image_url TEXT NOT NULL,
+    order_index INTEGER DEFAULT 0,
+    created_at TEXT DEFAULT (datetime('now'))
+);
+
+-- Newsletter audience and tracking
+CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE NOT NULL,
+    name TEXT,
+    token TEXT UNIQUE NOT NULL,
+    subscribed INTEGER DEFAULT 1, -- 1 for active, 0 for unsubscribed
+    created_at TEXT DEFAULT (datetime('now'))
+);
+
 -- Initial Mock Projects Data
 INSERT OR IGNORE INTO projects (title, slug, category, year, description, image_url) VALUES 
 ('RYLA 2026 – Rotary Youth Leadership Awards', 'ryla-2026', 'Leadership', '2026', 'Empowering young scouts and guides with leadership skills.', 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80'),
