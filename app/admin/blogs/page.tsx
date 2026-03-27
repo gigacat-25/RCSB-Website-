@@ -187,11 +187,11 @@ export default function AdminBlogsPage() {
                           <PencilIcon className="w-5 h-5" />
                         </Link>
                         <Link
-                          href={`/admin/newsletter?subject=${encodeURIComponent(
-                            `New Story: ${item.title}`
-                          )}&body=${encodeURIComponent(
-                            `<p>Hello! We've just published a new story: <b>${item.title}</b>.</p><p><a href='https://rcsb-website.pages.dev/blogs/${item.slug}'>Read the full story here →</a></p>`
-                          )}`}
+                          href={`/admin/newsletter?autoDraft=true&projectTitle=${encodeURIComponent(
+                            item.title
+                          )}&projectDetails=${encodeURIComponent(
+                            item.excerpt || item.description || ""
+                          )}&projectType=blog&projectSlug=${item.slug}`}
                           className="p-2 text-brand-gold hover:bg-yellow-50 rounded-lg transition-colors flex items-center justify-center"
                           title="Share Story with Subscribers"
                         >

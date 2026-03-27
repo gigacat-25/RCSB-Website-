@@ -208,14 +208,11 @@ export default function AdminProjectsPage() {
                           <PencilIcon className="w-5 h-5" />
                         </Link>
                         <Link
-                          href={`/admin/newsletter?subject=${encodeURIComponent(
-                            `Announcement: ${item.title}`
-                          )}&body=${encodeURIComponent(
-                            `<p>Hello! We're excited to announce our upcoming ${item.type || "project"
-                            }: <b>${item.title}</b>.</p><p>${item.description || ""
-                            }</p><p><a href='https://rcsb-website.pages.dev/${item.type === "event" ? "events" : "projects"
-                            }/${item.slug}'>View details on website →</a></p>`
-                          )}`}
+                          href={`/admin/newsletter?autoDraft=true&projectTitle=${encodeURIComponent(
+                            item.title
+                          )}&projectDetails=${encodeURIComponent(
+                            item.description || ""
+                          )}&projectType=${item.type || "project"}&projectSlug=${item.slug}`}
                           className="p-2 text-brand-gold hover:bg-yellow-50 rounded-lg transition-colors flex items-center justify-center"
                           title="Blast Email to Subscribers"
                         >

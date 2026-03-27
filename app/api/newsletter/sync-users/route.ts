@@ -30,7 +30,8 @@ export async function POST(request: Request) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     email: uEmail,
-                    name: u.fullName || u.firstName || null
+                    name: u.fullName || u.firstName || null,
+                    forceResubscribe: false
                 }),
             }).catch(() => { });
             synced++;

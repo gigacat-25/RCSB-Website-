@@ -1,7 +1,7 @@
 "use client";
 export const runtime = 'edge';
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import { useUser } from "@clerk/nextjs";
 import { isAdmin } from "@/lib/admin";
 import { useSearchParams } from "next/navigation";
@@ -17,11 +17,97 @@ function NewsletterForm() {
     const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
     const [result, setResult] = useState<{ sent: number; total: number; errors?: string[] } | null>(null);
     const [subCount, setSubCount] = useState<number | null>(null);
+    const [subscribers, setSubscribers] = useState<any[]>([]);
+    const [unsubscribed, setUnsubscribed] = useState<any[]>([]);
+    const [bulkEmails, setBulkEmails] = useState("");
+    const [isBulkAdding, setIsBulkAdding] = useState(false);
+
+    const [aiPrompt, setAiPrompt] = useState("");
+    const [isGenerating, setIsGenerating] = useState(false);
+    const hasAutoDrafted = useRef(false);
+
+    useEffect(() => {
+        const autoDraft = searchParams.get("autoDraft");
+        if (autoDraft === "true" && !hasAutoDrafted.current) {
+            hasAutoDrafted.current = true;
+
+            const title = searchParams.get("projectTitle") || "";
+            const details = searchParams.get("projectDetails") || "";
+            const type = searchParams.get("projectType") || "project";
+            const slug = searchParams.get("projectSlug") || "";
+            const imageUrl = searchParams.get("imageUrl") || "";
+            const eventDate = searchParams.get("eventDate") || "";
+            const rsvpLink = searchParams.get("rsvpLink") || "";
+
+            const section = type === "event" ? "events" : (type === "blog" ? "blogs" : "projects");
+
+            let dateContext = "";
+            if (eventDate) {
+                const eDate = new Date(eventDate);
+                const today = new Date();
+                const diffTime = eDate.getTime() - today.getTime();
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                if (diffDays > 0) {
+                    dateContext = `\nThe event is scheduled for ${eDate.toLocaleDateString()}. It is exactly ${diffDays} days away. Make sure to mention this countdown/urgency in the email.`;
+                } else if (diffDays === 0) {
+                    dateContext = `\nThe event is scheduled for today! Emphasize that it's happening today in the email.`;
+                } else {
+                    dateContext = `\nThe event was on ${eDate.toLocaleDateString()}. Write the email in past tense as a recap or highlight of the successful event.`;
+                }
+            }
+
+            let imageContext = "";
+            if (imageUrl) {
+                imageContext = `\nPlease embed this cover image at the very beginning of the email body exactly like this: <img src="${imageUrl}" alt="Cover Image" style="width:100%; border-radius:12px; margin-bottom:20px;" />`;
+            }
+
+            let rsvpContext = "";
+            if (rsvpLink) {
+                rsvpContext = `\nThere is an RSVP link for this event: ${rsvpLink}. Create a large, prominent RSVP button that points to this exact link with the text "RSVP Now" or "Get Your Tickets".`;
+            }
+
+            const prompt = `Please write a highly engaging, professional HTML email newsletter announcing the following ${type}.
+Title: ${title}
+Details: ${details}
+Link to view: https://rcsb-website.pages.dev/${section}/${slug}
+${dateContext}${imageContext}${rsvpContext}
+
+Make sure the link text is an interesting, compelling Call-To-Action (e.g. "Discover the Full Story" or "Secure Your Spot Today!") instead of a plain "Click here".
+Do not output anything but the JSON format with "subject" and "body" (using semantic HTML tags).`;
+
+            setIsGenerating(true);
+            fetch("/api/newsletter/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prompt }),
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.subject) setSubject(data.subject);
+                    if (data.body) setBody(data.body);
+                })
+                .catch(err => {
+                    console.error("Auto draft failed:", err);
+                    alert("Failed to auto-generate draft.");
+                })
+                .finally(() => setIsGenerating(false));
+        }
+    }, [searchParams]);
 
     useEffect(() => {
         fetch("/api/newsletter/subscribers-count")
             .then((r) => r.json())
             .then((d) => setSubCount(d.count ?? null))
+            .catch(() => { });
+
+        fetch("/api/newsletter/subscribers")
+            .then((r) => r.json())
+            .then((d) => setSubscribers(Array.isArray(d) ? d : []))
+            .catch(() => { });
+
+        fetch("/api/newsletter/unsubscribed")
+            .then((r) => r.json())
+            .then((d) => setUnsubscribed(Array.isArray(d) ? d : []))
             .catch(() => { });
     }, []);
 
@@ -79,6 +165,77 @@ function NewsletterForm() {
         }
     }
 
+    async function handleBulkAdd(e: React.FormEvent) {
+        e.preventDefault();
+        const emails = bulkEmails.split(/[\n,]+/).map(e => e.trim()).filter(e => e.includes("@"));
+        if (emails.length === 0) return alert("No valid emails found.");
+
+        setIsBulkAdding(true);
+        let successCount = 0;
+        for (const email of emails) {
+            try {
+                await fetch("/api/newsletter/subscribe", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, forceResubscribe: false }),
+                });
+                successCount++;
+            } catch (err) { console.error(err); }
+        }
+        setIsBulkAdding(false);
+        setBulkEmails("");
+        alert(`Successfully processed ${successCount} emails.`);
+        window.location.reload();
+    }
+
+    async function handleResync(emailParam: string) {
+        if (!confirm(`Force resync ${emailParam}? They will receive emails again.`)) return;
+
+        try {
+            const res = await fetch("/api/newsletter/subscribe", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: emailParam, forceResubscribe: true }),
+            });
+            if (res.ok) {
+                alert(`${emailParam} has been successfully resynced!`);
+                window.location.reload();
+            } else {
+                alert("Failed to resync.");
+            }
+        } catch (err) {
+            alert("Error resyncing.");
+        }
+    }
+
+    async function handleGenerateAI() {
+        const promptToUse = aiPrompt.trim()
+            ? aiPrompt
+            : `Please rewrite the following project/event details into a highly engaging, professional HTML email newsletter. Use semantic HTML tags. Do not output anything but the final JSON.\nSubject: ${subject}\nDetails: ${body}`;
+
+        if (!promptToUse.trim()) return;
+
+        setIsGenerating(true);
+        try {
+            const res = await fetch("/api/newsletter/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prompt: promptToUse }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setSubject(data.subject || "");
+                setBody(data.body || "");
+            } else {
+                alert("AI Generation failed: " + (data.error || "Unknown error"));
+            }
+        } catch (err: any) {
+            alert("Error connecting to AI service. " + err.message);
+        } finally {
+            setIsGenerating(false);
+        }
+    }
+
     return (
         <div className="max-w-4xl mx-auto py-10 px-4">
             <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-slate-100">
@@ -108,6 +265,25 @@ function NewsletterForm() {
             </div>
 
             <div className="bg-white rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-slate-100 p-8 md:p-12">
+                <div className="mb-8 p-6 bg-brand-gold/10 border-2 border-brand-gold/20 rounded-2xl flex flex-col gap-4">
+                    <label className="block text-xs font-black text-brand-gold uppercase tracking-[0.2em] ml-1">✨ Draft with AI</label>
+                    <textarea
+                        value={aiPrompt}
+                        onChange={(e) => setAiPrompt(e.target.value)}
+                        rows={3}
+                        placeholder="e.g. Write an invitation to our upcoming beach cleanup event on Saturday..."
+                        className="w-full bg-white border-2 border-brand-gold/20 rounded-xl px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-gold transition-all text-sm"
+                    />
+                    <button
+                        type="button"
+                        onClick={handleGenerateAI}
+                        disabled={isGenerating || status === "loading" || (!aiPrompt.trim() && !body.trim())}
+                        className="self-end px-6 py-3 bg-brand-gold hover:bg-yellow-500 text-white font-bold rounded-xl text-sm transition-all disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-brand-gold/20 tracking-wider"
+                    >
+                        {isGenerating ? "✨ Generating..." : "✨ Generate Draft"}
+                    </button>
+                </div>
+
                 <form onSubmit={handleSend} className="space-y-8">
                     <div>
                         <label className="block text-xs font-black text-brand-blue uppercase tracking-[0.2em] mb-3 ml-1">Email Subject Line</label>
@@ -186,6 +362,78 @@ function NewsletterForm() {
                         </div>
                     </div>
                 )}
+            </div>
+
+            {/* Subscriber Management Section */}
+            <div className="bg-white rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-slate-100 p-8 md:p-12 mt-8">
+                <h2 className="text-2xl font-heading font-black text-brand-blue mb-6">Manage Subscribers</h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {/* Active List */}
+                    <div className="p-6 bg-slate-50 border-2 border-slate-100 rounded-2xl flex flex-col lg:col-span-1">
+                        <label className="block text-xs font-black text-green-600 uppercase tracking-[0.2em] mb-3 ml-1">Active Subscribers ({subscribers.length})</label>
+                        <div className="flex-1 bg-white border-2 border-slate-200 rounded-xl overflow-y-auto max-h-48 p-2">
+                            {subscribers.length === 0 ? (
+                                <div className="h-full flex items-center justify-center p-4 text-xs font-medium text-slate-400 text-center">No active subscribers.</div>
+                            ) : (
+                                <ul className="divide-y divide-slate-100">
+                                    {subscribers.map((u, i) => (
+                                        <li key={i} className="p-3 text-sm">
+                                            <span className="font-medium text-slate-700 break-all">{u.email}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Bulk Add */}
+                    <div className="p-6 bg-slate-50 border-2 border-slate-100 rounded-2xl">
+                        <label className="block text-xs font-black text-brand-blue uppercase tracking-[0.2em] mb-3 ml-1">Bulk Add Emails</label>
+                        <form onSubmit={handleBulkAdd}>
+                            <textarea
+                                value={bulkEmails}
+                                onChange={(e) => setBulkEmails(e.target.value)}
+                                rows={5}
+                                placeholder="john@example.com, jane@example.com&#10;admin@example.com"
+                                className="w-full bg-white border-2 border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-brand-gold transition-all text-sm mb-4"
+                            />
+                            <button
+                                type="submit"
+                                disabled={isBulkAdding || !bulkEmails.trim()}
+                                className="w-full py-3 bg-brand-gold hover:bg-yellow-500 text-white font-bold rounded-xl text-sm transition-all disabled:opacity-50"
+                            >
+                                {isBulkAdding ? "Processing..." : "Bulk Subscribe"}
+                            </button>
+                            <p className="text-[10px] text-slate-400 mt-3 font-medium text-center">Unsubscribed users are safely skipped.</p>
+                        </form>
+                    </div>
+
+                    {/* Unsubscribed List */}
+                    <div className="p-6 bg-slate-50 border-2 border-slate-100 rounded-2xl flex flex-col">
+                        <label className="block text-xs font-black text-brand-cranberry uppercase tracking-[0.2em] mb-3 ml-1">Unsubscribed Users ({unsubscribed.length})</label>
+                        <div className="flex-1 bg-white border-2 border-slate-200 rounded-xl overflow-y-auto max-h-48 p-2">
+                            {unsubscribed.length === 0 ? (
+                                <div className="h-full flex items-center justify-center p-4 text-xs font-medium text-slate-400 text-center">No unsubscribed users.</div>
+                            ) : (
+                                <ul className="divide-y divide-slate-100">
+                                    {unsubscribed.map((u, i) => (
+                                        <li key={i} className="flex flex-col gap-2 items-start justify-between p-3 text-sm">
+                                            <span className="font-medium text-slate-700 break-all">{u.email}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleResync(u.email)}
+                                                className="w-full px-3 py-1.5 bg-slate-100 hover:bg-brand-blue hover:text-white text-brand-blue font-bold rounded-lg text-xs transition-all"
+                                            >
+                                                Force Resync
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div className="mt-12 flex justify-between items-center px-4">

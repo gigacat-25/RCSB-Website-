@@ -92,7 +92,7 @@ function buildEmailHtml(subject: string, body: string, unsubscribeUrl: string): 
       ${body}
       <div style="margin-top:32px;">
         <a href="${SITE_URL}" style="display:inline-block;background:#C9982A;color:#0a0f1e;text-decoration:none;font-weight:700;padding:12px 28px;border-radius:8px;font-size:14px;">
-          Explore Your Dashboard →
+          Visit the Website →
         </a>
       </div>
     </div>

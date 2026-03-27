@@ -80,7 +80,22 @@ function AddProjectForm() {
         throw new Error(errorData.error || errorData.details || "Failed to create project");
       }
 
-      router.push("/admin/projects");
+      if (confirm(`Successfully published! Would you like to automatically draft and send a newsletter email to your subscribers about this?`)) {
+        const urlParams = new URLSearchParams({
+          autoDraft: "true",
+          projectTitle: formData.title,
+          projectDetails: formData.description,
+          projectType: formData.type || "project",
+          projectSlug: formData.slug,
+          imageUrl: formData.image_url,
+          eventDate: formData.event_date,
+          rsvpLink: (formData as any).rsvp_link || ""
+        });
+        router.push(`/admin/newsletter?${urlParams.toString()}`);
+      } else {
+        router.push("/admin/projects");
+      }
+
       router.refresh();
     } catch (err: any) {
       setError(err.message);

@@ -17,7 +17,11 @@ export async function POST(req: NextRequest) {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${WORKER_SECRET}`,
             },
-            body: JSON.stringify({ email: body.email, name: body.name || null }),
+            body: JSON.stringify({
+                email: body.email,
+                name: body.name || null,
+                forceResubscribe: body.forceResubscribe !== false
+            }),
         });
 
         const data = await res.json();

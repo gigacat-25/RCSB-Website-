@@ -120,16 +120,25 @@ export default {
         if (!body.email) {
           return new Response(JSON.stringify({ error: "Email is required" }), { status: 400, headers });
         }
+        const forceResubscribe = body.forceResubscribe !== false;
         const token = crypto.randomUUID();
         try {
-          // On conflict, we set subscribed=1 and also set a token IF it was missing/null
-          await env.DB.prepare(`
-            INSERT INTO newsletter_subscribers (email, name, token, subscribed)
-            VALUES (?, ?, ?, 1)
-            ON CONFLICT(email) DO UPDATE SET
-              subscribed=1,
-              token=COALESCE(newsletter_subscribers.token, EXCLUDED.token)
-          `).bind(body.email.toLowerCase().trim(), body.name || null, token).run();
+          if (forceResubscribe) {
+            await env.DB.prepare(`
+              INSERT INTO newsletter_subscribers (email, name, token, subscribed)
+              VALUES (?, ?, ?, 1)
+              ON CONFLICT(email) DO UPDATE SET
+                subscribed=1,
+                token=COALESCE(newsletter_subscribers.token, EXCLUDED.token)
+            `).bind(body.email.toLowerCase().trim(), body.name || null, token).run();
+          } else {
+            await env.DB.prepare(`
+              INSERT INTO newsletter_subscribers (email, name, token, subscribed)
+              VALUES (?, ?, ?, 1)
+              ON CONFLICT(email) DO UPDATE SET
+                token=COALESCE(newsletter_subscribers.token, EXCLUDED.token)
+            `).bind(body.email.toLowerCase().trim(), body.name || null, token).run();
+          }
           return new Response(JSON.stringify({ success: true, message: "Subscribed" }), { headers });
         } catch (e: any) {
           return new Response(JSON.stringify({ error: e.message }), { status: 500, headers });
@@ -529,6 +538,14 @@ export default {
       if (request.method === "GET" && url.pathname === "/api/newsletter/subscribers") {
         const results = await env.DB.prepare(
           "SELECT email, name, token FROM newsletter_subscribers WHERE subscribed=1 ORDER BY created_at DESC"
+        ).all();
+        return new Response(JSON.stringify(results.results), { headers });
+      }
+
+      // > Newsletter: List unsubscribed (protected)
+      if (request.method === "GET" && url.pathname === "/api/newsletter/unsubscribed") {
+        const results = await env.DB.prepare(
+          "SELECT email, name, token, created_at FROM newsletter_subscribers WHERE subscribed=0 ORDER BY created_at DESC"
         ).all();
         return new Response(JSON.stringify(results.results), { headers });
       }
