@@ -96,6 +96,7 @@ CREATE TABLE IF NOT EXISTS newsletter_subscribers (
     email TEXT UNIQUE NOT NULL,
     name TEXT,
     token TEXT UNIQUE NOT NULL,
+    clerk_id TEXT UNIQUE, -- Added for account deletion automation
     subscribed INTEGER DEFAULT 1, -- 1 for active, 0 for unsubscribed
     created_at TEXT DEFAULT (datetime('now'))
 );

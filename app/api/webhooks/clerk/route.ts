@@ -122,9 +122,12 @@ export async function POST(req: Request) {
                 headers: { Authorization: `Bearer ${WORKER_SECRET}` }
             });
 
+            console.log(`[Clerk Webhook] Lookup status for ${id}: ${lookupRes.status}`);
+
             if (lookupRes.ok) {
                 const userData: any = await lookupRes.json();
                 const email = userData.email;
+                console.log(`[Clerk Webhook] Found user email: ${email}`);
 
                 if (email) {
                     // 2. Send Goodbye Email
@@ -141,6 +144,10 @@ export async function POST(req: Request) {
                     await sendEmail(email, subject, emailBody);
                     console.log(`[Clerk Webhook] Goodbye email sent to ${email}`);
                 }
+            } else {
+                console.warn(`[Clerk Webhook] Could not find user with Clerk ID ${id} in newsletter DB. (Status: ${lookupRes.status})`);
+                const errorText = await lookupRes.text();
+                console.warn(`[Clerk Webhook] Lookup error details: ${errorText}`);
             }
 
             // 3. Remove from Worker database
