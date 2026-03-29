@@ -1,17 +1,32 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 const isClerkEnabled = clerkKey && clerkKey.startsWith("pk_");
 
-// Only activate Clerk middleware when a valid publishable key is configured.
-// This allows the site to run without Clerk keys during development.
+const isPublicRoute = createRouteMatcher([
+  '/',
+  '/about(.*)',
+  '/projects(.*)',
+  '/blogs(.*)',
+  '/team(.*)',
+  '/contact(.*)',
+  '/sign-in(.*)',
+  '/sign-up(.*)',
+  '/api/(.*)',
+  '/past-presidents(.*)',
+  '/privacy(.*)',
+  '/terms(.*)',
+]);
+
 export default isClerkEnabled
-  ? clerkMiddleware()
+  ? clerkMiddleware((auth, req) => {
+    if (isPublicRoute(req)) return NextResponse.next();
+  })
   : function middleware(_req: NextRequest) {
-      return NextResponse.next();
-    };
+    return NextResponse.next();
+  };
 
 export const config = {
   matcher: [

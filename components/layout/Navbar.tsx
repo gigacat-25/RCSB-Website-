@@ -14,9 +14,9 @@ const navLinks = [
   { href: "/contact", label: "Contact Us" },
 ];
 
-function AuthSection({ mobile = false }: { mobile?: boolean }) {
+function AuthSection({ mobile = false, scrolled = false }: { mobile?: boolean, scrolled?: boolean }) {
   const { isSignedIn, isLoaded, user } = useUser();
-  const { openSignIn, signOut, openUserProfile } = useClerk();
+  const { openSignIn, openSignUp, signOut, openUserProfile } = useClerk();
   const userEmail = user?.primaryEmailAddress?.emailAddress;
   const isUserAdmin = isAdmin(userEmail, user?.publicMetadata?.role);
 
@@ -67,16 +67,45 @@ function AuthSection({ mobile = false }: { mobile?: boolean }) {
     );
   }
 
-  return (
-    <button
-      onClick={() => openSignIn()}
-      className={`font-bold rounded-full transition-all active:scale-95 shadow-[0_10px_30px_rgba(247,168,27,0.2)] hover:shadow-[0_15px_35px_rgba(247,168,27,0.4)] ${mobile
-        ? "w-full py-4 text-brand-blue bg-brand-gold hover:bg-white"
-        : "px-8 py-3 text-sm text-brand-blue bg-brand-gold hover:bg-white border-2 border-brand-gold hover:border-white"
-        }`}
-    >
-      Login
-    </button>
+  return mobile ? (
+    <div className="flex flex-col gap-4 w-full">
+      <button
+        onClick={() => openSignIn()}
+        className="w-full py-4 text-white hover:text-brand-gold font-bold transition-colors"
+      >
+        Sign In
+      </button>
+      <button
+        onClick={() => openSignUp()}
+        className="w-full py-4 text-brand-blue bg-brand-gold rounded-full font-bold shadow-xl active:scale-95 transition-all"
+      >
+        Join Swarna Bengaluru
+      </button>
+    </div>
+  ) : (
+    <div className="flex items-center gap-8">
+      <button
+        onClick={() => openSignIn()}
+        className={`text-[11px] font-black uppercase tracking-[0.25em] transition-all duration-300 relative group
+          ${scrolled ? "text-brand-blue/80 hover:text-brand-blue" : "text-white/80 hover:text-white"}`}
+      >
+        Log In
+        <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-brand-gold transition-all duration-300 group-hover:w-full" />
+      </button>
+
+      <button
+        onClick={() => openSignUp()}
+        className="relative group px-8 py-3 overflow-hidden rounded-full transition-all duration-500"
+      >
+        <div className="absolute inset-0 bg-brand-gold transition-transform duration-500 group-hover:scale-105" />
+        <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
+        <span className="relative z-10 text-[11px] font-black uppercase tracking-[0.2em] text-brand-blue">
+          Join Us
+        </span>
+        {/* Subtle glow effect */}
+        <div className="absolute inset-0 shadow-[0_0_20px_rgba(247,168,27,0.3)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      </button>
+    </div>
   );
 }
 
@@ -135,8 +164,9 @@ export default function Navbar() {
             })}
           </ul>
 
-          <div className="pl-6 border-l border-slate-200/50">
-            <AuthSection />
+          <div className="pl-10 relative">
+            <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-[1px] h-6 bg-current opacity-10 transition-colors ${scrolled ? 'text-brand-blue' : 'text-white'}`} />
+            <AuthSection scrolled={scrolled} />
           </div>
         </nav>
 
