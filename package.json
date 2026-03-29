@@ -20,7 +20,8 @@
     "react": "^18",
     "react-dom": "^18",
     "react-easy-crop": "^5.5.6",
-    "react-icons": "^5.6.0"
+    "react-icons": "^5.6.0",
+    "svix": "^1.89.0"
   },
   "devDependencies": {
     "@types/node": "^20",
