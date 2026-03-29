@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import Link from "next/link";
 import { DocumentTextIcon } from "@heroicons/react/24/outline";
 
