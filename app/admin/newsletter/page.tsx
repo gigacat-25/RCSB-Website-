@@ -24,6 +24,8 @@ function NewsletterForm() {
 
     const [aiPrompt, setAiPrompt] = useState("");
     const [isGenerating, setIsGenerating] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [showPreview, setShowPreview] = useState(false);
     const [contextMedia, setContextMedia] = useState<{ imageUrl?: string; eventDate?: string; rsvpLink?: string }>({});
     const hasAutoDrafted = useRef(false);
 
@@ -136,6 +138,16 @@ Guidelines:
             .catch(() => { });
     }, []);
 
+    const filteredSubscribers = subscribers.filter(s =>
+        s.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        s.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const filteredUnsubscribed = unsubscribed.filter(s =>
+        s.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        s.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     if (!userIsAdmin) {
         return (
             <div className="p-8 text-center text-red-400">
@@ -230,6 +242,23 @@ Guidelines:
             }
         } catch (err) {
             alert("Error resyncing.");
+        }
+    }
+
+    async function handleUnsubscribe(emailParam: string, tokenParam: string) {
+        if (!confirm(`Are you sure you want to force unsubscribe ${emailParam}?`)) return;
+
+        try {
+            const res = await fetch(`/api/newsletter/unsubscribe?token=${tokenParam}`);
+            if (res.ok) {
+                alert(`${emailParam} has been unsubscribed.`);
+                window.location.reload();
+            } else {
+                const data = await res.json();
+                alert(`Failed to unsubscribe: ${data.error || "Unknown error"}`);
+            }
+        } catch (err) {
+            alert("Error connecting to server.");
         }
     }
 
@@ -380,6 +409,18 @@ Guidelines:
                     </button>
                 </div>
 
+                <div className="flex justify-end mb-6">
+                    <button
+                        type="button"
+                        onClick={() => setShowPreview(true)}
+                        disabled={!subject.trim() && !body.trim()}
+                        className="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-all flex items-center gap-2 border border-slate-200"
+                    >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                        Preview Draft
+                    </button>
+                </div>
+
                 <form onSubmit={handleSend} className="space-y-8">
                     <div>
                         <label className="block text-xs font-black text-brand-blue uppercase tracking-[0.2em] mb-3 ml-1">Email Subject Line</label>
@@ -462,20 +503,44 @@ Guidelines:
 
             {/* Subscriber Management Section */}
             <div className="bg-white rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-slate-100 p-8 md:p-12 mt-8">
-                <h2 className="text-2xl font-heading font-black text-brand-blue mb-6">Manage Subscribers</h2>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                    <h2 className="text-2xl font-heading font-black text-brand-blue">Manage Subscribers</h2>
+
+                    <div className="relative flex-1 max-w-sm">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="Search subscribers by email..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl pl-11 pr-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-gold/50 focus:bg-white transition-all font-medium"
+                        />
+                    </div>
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {/* Active List */}
                     <div className="p-6 bg-slate-50 border-2 border-slate-100 rounded-2xl flex flex-col lg:col-span-1">
-                        <label className="block text-xs font-black text-green-600 uppercase tracking-[0.2em] mb-3 ml-1">Active Subscribers ({subscribers.length})</label>
+                        <label className="block text-xs font-black text-green-600 uppercase tracking-[0.2em] mb-3 ml-1">Active Subscribers ({filteredSubscribers.length})</label>
                         <div className="flex-1 bg-white border-2 border-slate-200 rounded-xl overflow-y-auto max-h-48 p-2">
-                            {subscribers.length === 0 ? (
-                                <div className="h-full flex items-center justify-center p-4 text-xs font-medium text-slate-400 text-center">No active subscribers.</div>
+                            {filteredSubscribers.length === 0 ? (
+                                <div className="h-full flex items-center justify-center p-4 text-xs font-medium text-slate-400 text-center">
+                                    {searchTerm ? "No subscribers match your search." : "No active subscribers."}
+                                </div>
                             ) : (
                                 <ul className="divide-y divide-slate-100">
-                                    {subscribers.map((u, i) => (
-                                        <li key={i} className="p-3 text-sm">
+                                    {filteredSubscribers.map((u, i) => (
+                                        <li key={i} className="p-3 text-sm flex flex-col gap-2">
                                             <span className="font-medium text-slate-700 break-all">{u.email}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleUnsubscribe(u.email, u.token)}
+                                                className="w-full px-3 py-1.5 bg-slate-100 hover:bg-brand-cranberry hover:text-white text-brand-cranberry font-bold rounded-lg text-xs transition-all text-center"
+                                            >
+                                                Unsubscribe
+                                            </button>
                                         </li>
                                     ))}
                                 </ul>
@@ -507,13 +572,15 @@ Guidelines:
 
                     {/* Unsubscribed List */}
                     <div className="p-6 bg-slate-50 border-2 border-slate-100 rounded-2xl flex flex-col">
-                        <label className="block text-xs font-black text-brand-cranberry uppercase tracking-[0.2em] mb-3 ml-1">Unsubscribed Users ({unsubscribed.length})</label>
+                        <label className="block text-xs font-black text-brand-cranberry uppercase tracking-[0.2em] mb-3 ml-1">Unsubscribed Users ({filteredUnsubscribed.length})</label>
                         <div className="flex-1 bg-white border-2 border-slate-200 rounded-xl overflow-y-auto max-h-48 p-2">
-                            {unsubscribed.length === 0 ? (
-                                <div className="h-full flex items-center justify-center p-4 text-xs font-medium text-slate-400 text-center">No unsubscribed users.</div>
+                            {filteredUnsubscribed.length === 0 ? (
+                                <div className="h-full flex items-center justify-center p-4 text-xs font-medium text-slate-400 text-center">
+                                    {searchTerm ? "No users match your search." : "No unsubscribed users."}
+                                </div>
                             ) : (
                                 <ul className="divide-y divide-slate-100">
-                                    {unsubscribed.map((u, i) => (
+                                    {filteredUnsubscribed.map((u, i) => (
                                         <li key={i} className="flex flex-col gap-2 items-start justify-between p-3 text-sm">
                                             <span className="font-medium text-slate-700 break-all">{u.email}</span>
                                             <button
@@ -541,6 +608,91 @@ Guidelines:
                 </button>
                 <p className="text-brand-gray/40 text-[10px] uppercase font-black tracking-[0.2em]">RCSB Newsletter Engine v1.0</p>
             </div>
+
+            {/* Email Preview Modal */}
+            {showPreview && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
+                    <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-md" onClick={() => setShowPreview(false)} />
+                    <div className="relative w-full max-w-2xl max-h-full bg-white rounded-[2rem] shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300">
+                        <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                            <div>
+                                <h3 className="text-lg font-black text-brand-blue uppercase tracking-wider">Email Preview</h3>
+                                <p className="text-xs text-brand-gray font-medium">Checking: {subject || "No Subject"}</p>
+                            </div>
+                            <button
+                                onClick={() => setShowPreview(false)}
+                                className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors"
+                            >
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-200/30">
+                            {/* The Email Content Shell */}
+                            <div className="max-w-[600px] mx-auto bg-[#0a0f1e] rounded-2xl overflow-hidden shadow-xl border border-white/5">
+                                {/* Header */}
+                                <div className="bg-gradient-to-br from-[#0a0f1e] to-[#1a2744] p-8 border-b-2 border-[#C9982A]">
+                                    <div className="mb-5 bg-white inline-block p-2 rounded-lg leading-none">
+                                        <img src="https://rcsb-website.pages.dev/logo.png" alt="RCSB Logo" className="h-10 w-auto" />
+                                    </div>
+                                    <p className="m-0 text-[#C9982A] text-[10px] uppercase font-bold tracking-[0.2em]">Rotaract Club of Swarna Bengaluru</p>
+                                    <h1 className="mt-2 text-white text-2xl font-black tracking-tight leading-tight">{subject || "No Subject"}</h1>
+                                </div>
+
+                                {/* Body */}
+                                <div className="p-8 text-[#c8d0e0] text-sm leading-[1.7]">
+                                    <div className="email-content-preview prose prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: body || "<p className='opacity-40 italic'>You haven't added any content yet.</p>" }} />
+
+                                    <div className="mt-8 pt-4">
+                                        <div className="inline-block bg-[#C9982A] text-[#0a0f1e] font-bold px-7 py-3 rounded-lg text-sm">
+                                            Visit the Website →
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Footer */}
+                                <div className="bg-[#090e1a] p-10 border-t border-white/5 text-center">
+                                    <div className="flex justify-center gap-4 mb-7 opacity-70">
+                                        {[
+                                            { icon: "instagram-new", label: "IG" },
+                                            { icon: "facebook-new", label: "FB" },
+                                            { icon: "linkedin", label: "LI" },
+                                            { icon: "twitterx", label: "X" },
+                                            { icon: "youtube-play", label: "YT" }
+                                        ].map(app => (
+                                            <div key={app.label} className="w-6 h-6 flex items-center justify-center">
+                                                <img src={`https://img.icons8.com/ios-filled/50/C9982A/${app.icon}.png`} alt={app.label} className="w-5 h-5" />
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="mb-6 text-[#c8d0e0] text-[11px] leading-relaxed opacity-80">
+                                        <p className="m-0 font-bold text-white">Rotaract Club of Swarna Bengaluru</p>
+                                        <p className="mt-1">Rotary House of Friendship, 11 Lavelle Road, Bengaluru</p>
+                                        <p className="mt-0.5 text-[#C9982A]">rota.rcbs@gmail.com | Visit Website</p>
+                                    </div>
+
+                                    <p className="m-0 text-[#556677] text-[9px] font-bold uppercase tracking-widest">
+                                        © 2026 Rotaract Club of Swarna Bengaluru
+                                    </p>
+                                    <p className="mt-4 text-[#556677] text-[10px]">
+                                        You're receiving this because you're a member of the RCSB community.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end">
+                            <button
+                                onClick={() => setShowPreview(false)}
+                                className="px-8 py-3 bg-brand-blue text-white font-black rounded-xl text-xs uppercase tracking-widest shadow-lg shadow-blue-500/20"
+                            >
+                                Close Preview
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
