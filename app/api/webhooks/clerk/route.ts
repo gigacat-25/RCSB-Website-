@@ -95,12 +95,13 @@ export async function POST(req: Request) {
                     body: JSON.stringify({
                         email: email,
                         name: name,
+                        clerk_id: id,
                         forceResubscribe: false
                     }),
                 });
 
                 if (subRes.ok) {
-                    console.log(`[Clerk Webhook] ${email} auto-subscribed to newsletter.`);
+                    console.log(`[Clerk Webhook] ${email} auto-subscribed to newsletter with ID ${id}.`);
                 } else {
                     console.error(`[Clerk Webhook] Failed to auto-subscribe ${email}:`, await subRes.text());
                 }
@@ -108,6 +109,52 @@ export async function POST(req: Request) {
             } catch (error) {
                 console.error(`[Clerk Webhook] Error processing user.created for ${email}:`, error);
             }
+        }
+    }
+
+    if (eventType === 'user.deleted') {
+        const { id } = evt.data;
+        console.log(`[Clerk Webhook] User account deleted: ${id}`);
+
+        try {
+            // 1. Lookup user in Worker to get email before deleting
+            const lookupRes = await fetch(`${WORKER_URL}/api/newsletter/lookup?clerk_id=${id}`, {
+                headers: { Authorization: `Bearer ${WORKER_SECRET}` }
+            });
+
+            if (lookupRes.ok) {
+                const userData: any = await lookupRes.json();
+                const email = userData.email;
+
+                if (email) {
+                    // 2. Send Goodbye Email
+                    const subject = "We're sorry to see you go... 💔";
+                    const emailBody = `
+                        <p>Hello,</p>
+                        <p>We've received notification that your account has been deleted from <strong>Rotaract Club of Swarna Bengaluru</strong>.</p>
+                        <p>We're sorry to see you go! Your contributions and presence in our community will be missed. If this was a mistake, or if you'd like to rejoin us in the future, you're always welcome to sign up again.</p>
+                        <p>Your email has also been removed from our active newsletter list.</p>
+                        <p>Wishing you the best in your future endeavors.</p>
+                        <p>Best regards,<br/><strong>The RCSB Team</strong></p>
+                    `;
+
+                    await sendEmail(email, subject, emailBody);
+                    console.log(`[Clerk Webhook] Goodbye email sent to ${email}`);
+                }
+            }
+
+            // 3. Remove from Worker database
+            const deleteRes = await fetch(`${WORKER_URL}/api/newsletter/subscriber?clerk_id=${id}`, {
+                method: "DELETE",
+                headers: { Authorization: `Bearer ${WORKER_SECRET}` }
+            });
+
+            if (deleteRes.ok) {
+                console.log(`[Clerk Webhook] ${id} removed from newsletter database.`);
+            }
+
+        } catch (error) {
+            console.error(`[Clerk Webhook] Error processing user.deleted for ${id}:`, error);
         }
     }
 

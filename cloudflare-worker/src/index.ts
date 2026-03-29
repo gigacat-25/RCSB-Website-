@@ -122,27 +122,50 @@ export default {
         }
         const forceResubscribe = body.forceResubscribe !== false;
         const token = crypto.randomUUID();
+        const clerkId = body.clerk_id || null;
+
         try {
           if (forceResubscribe) {
             await env.DB.prepare(`
-              INSERT INTO newsletter_subscribers (email, name, token, subscribed)
-              VALUES (?, ?, ?, 1)
+              INSERT INTO newsletter_subscribers (email, name, token, clerk_id, subscribed)
+              VALUES (?, ?, ?, ?, 1)
               ON CONFLICT(email) DO UPDATE SET
                 subscribed=1,
+                clerk_id=COALESCE(EXCLUDED.clerk_id, newsletter_subscribers.clerk_id),
                 token=COALESCE(newsletter_subscribers.token, EXCLUDED.token)
-            `).bind(body.email.toLowerCase().trim(), body.name || null, token).run();
+            `).bind(body.email.toLowerCase().trim(), body.name || null, token, clerkId).run();
           } else {
             await env.DB.prepare(`
-              INSERT INTO newsletter_subscribers (email, name, token, subscribed)
-              VALUES (?, ?, ?, 1)
+              INSERT INTO newsletter_subscribers (email, name, token, clerk_id, subscribed)
+              VALUES (?, ?, ?, ?, 1)
               ON CONFLICT(email) DO UPDATE SET
+                clerk_id=COALESCE(EXCLUDED.clerk_id, newsletter_subscribers.clerk_id),
                 token=COALESCE(newsletter_subscribers.token, EXCLUDED.token)
-            `).bind(body.email.toLowerCase().trim(), body.name || null, token).run();
+            `).bind(body.email.toLowerCase().trim(), body.name || null, token, clerkId).run();
           }
           return new Response(JSON.stringify({ success: true, message: "Subscribed" }), { headers });
         } catch (e: any) {
           return new Response(JSON.stringify({ error: e.message }), { status: 500, headers });
         }
+      }
+
+      // > Newsletter: Lookup by Clerk ID (protected)
+      if (request.method === "GET" && url.pathname === "/api/newsletter/lookup") {
+        const clerkId = url.searchParams.get("clerk_id");
+        if (!clerkId) return new Response(JSON.stringify({ error: "clerk_id required" }), { status: 400, headers });
+
+        const user = await env.DB.prepare("SELECT * FROM newsletter_subscribers WHERE clerk_id = ?").bind(clerkId).first();
+        if (!user) return new Response(JSON.stringify({ error: "User not found" }), { status: 404, headers });
+        return new Response(JSON.stringify(user), { headers });
+      }
+
+      // > Newsletter: Delete by Clerk ID (protected)
+      if (request.method === "DELETE" && url.pathname === "/api/newsletter/subscriber") {
+        const clerkId = url.searchParams.get("clerk_id");
+        if (!clerkId) return new Response(JSON.stringify({ error: "clerk_id required" }), { status: 400, headers });
+
+        const result = await env.DB.prepare("DELETE FROM newsletter_subscribers WHERE clerk_id = ?").bind(clerkId).run();
+        return new Response(JSON.stringify({ success: true, deleted: result.meta.changes > 0 }), { headers });
       }
 
       // > Newsletter: Unsubscribe (public — uses token from email link)
