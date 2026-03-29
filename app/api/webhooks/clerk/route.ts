@@ -118,16 +118,17 @@ export async function POST(req: Request) {
 
         try {
             // 1. Lookup user in Worker to get email before deleting
+            console.log(`[Clerk Webhook] Attempting lookup in worker: ${WORKER_URL}/api/newsletter/lookup?clerk_id=${id}`);
             const lookupRes = await fetch(`${WORKER_URL}/api/newsletter/lookup?clerk_id=${id}`, {
                 headers: { Authorization: `Bearer ${WORKER_SECRET}` }
             });
 
-            console.log(`[Clerk Webhook] Lookup status for ${id}: ${lookupRes.status}`);
+            console.log(`[Clerk Webhook] Lookup result status: ${lookupRes.status}`);
 
             if (lookupRes.ok) {
                 const userData: any = await lookupRes.json();
+                console.log(` [Clerk Webhook] Found user data in DB:`, JSON.stringify(userData));
                 const email = userData.email;
-                console.log(`[Clerk Webhook] Found user email: ${email}`);
 
                 if (email) {
                     // 2. Send Goodbye Email
@@ -142,22 +143,22 @@ export async function POST(req: Request) {
                     `;
 
                     await sendEmail(email, subject, emailBody);
-                    console.log(`[Clerk Webhook] Goodbye email sent to ${email}`);
+                    console.log(`[Clerk Webhook] Goodbye email successfully sent to ${email}`);
                 }
             } else {
-                console.warn(`[Clerk Webhook] Could not find user with Clerk ID ${id} in newsletter DB. (Status: ${lookupRes.status})`);
-                const errorText = await lookupRes.text();
-                console.warn(`[Clerk Webhook] Lookup error details: ${errorText}`);
+                const errText = await lookupRes.text();
+                console.warn(` [Clerk Webhook] FAILED to find user ${id} in newsletter DB. Status: ${lookupRes.status}, Error: ${errText}`);
+                console.warn(` [Clerk Webhook] This is expected for users who signed up BEFORE the automation was added, or if the D1 migration failed.`);
             }
 
-            // 3. Remove from Worker database
+            // 3. Remove from Worker database (Cleanup anyway)
             const deleteRes = await fetch(`${WORKER_URL}/api/newsletter/subscriber?clerk_id=${id}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${WORKER_SECRET}` }
             });
 
             if (deleteRes.ok) {
-                console.log(`[Clerk Webhook] ${id} removed from newsletter database.`);
+                console.log(`[Clerk Webhook] User ${id} records purged from newsletter database.`);
             }
 
         } catch (error) {
