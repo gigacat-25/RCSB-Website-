@@ -37,6 +37,12 @@ const nextConfig = {
         hostname: "assets.mixkit.co",
         pathname: "/**",
       },
+      // AWS S3 multi-region uploads
+      {
+        protocol: "https",
+        hostname: "*.s3.ap-south-1.amazonaws.com",
+        pathname: "/**",
+      },
     ],
   },
   async headers() {

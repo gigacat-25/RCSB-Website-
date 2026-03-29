@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { BookOpenIcon, UserIcon, ArrowRightIcon, CalendarIcon } from "@heroicons/react/24/outline";
 
 export default function FeaturedContent() {
@@ -67,12 +68,14 @@ export default function FeaturedContent() {
                   className="group relative flex flex-col md:flex-row premium-card animate-fade-up"
                   style={{ animationDelay: `${idx * 200}ms` }}
                 >
-                  <div className="md:w-2/5 h-64 md:h-auto overflow-hidden">
+                  <div className="md:w-2/5 h-64 md:h-auto overflow-hidden relative">
                     <div className="absolute inset-0 bg-brand-blue/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                    <img
+                    <Image
                       src={fixImageUrl(event.image_url)}
                       alt={event.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 20vw"
+                      className="object-cover group-hover:scale-110 transition-transform duration-1000"
                     />
                   </div>
                   <div className="md:w-3/5 p-10 flex flex-col justify-center bg-white">
@@ -119,10 +122,12 @@ export default function FeaturedContent() {
                 >
                   <div className="relative h-72 overflow-hidden rounded-[2.5rem] mb-8 shadow-premium group-hover:shadow-2xl transition-all duration-500">
                     <div className="absolute inset-0 bg-brand-blue/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                    <img
+                    <Image
                       src={fixImageUrl(blog.image_url)}
                       alt={blog.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover group-hover:scale-110 transition-transform duration-1000"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 z-20"></div>
                   </div>

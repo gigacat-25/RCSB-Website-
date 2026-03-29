@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { apiFetch } from "@/lib/api";
 
 export default async function LeadershipPreview() {
@@ -31,10 +32,12 @@ export default async function LeadershipPreview() {
               <div key={idx} className="group animate-fade-up" style={{ animationDelay: `${idx * 150}ms` }}>
                 <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden mb-8 shadow-premium group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-700">
                   <div className="absolute inset-0 bg-brand-blue/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                  <img
+                  <Image
                     src={member.image_url || "/favicon.png"}
                     alt={member.name}
-                    className={`w-full h-full transition-transform duration-1000 ${member.image_url ? 'object-cover group-hover:scale-110' : 'object-contain p-12 bg-white/50 group-hover:scale-110'}`}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    className={`transition-transform duration-1000 ${member.image_url ? 'object-cover group-hover:scale-110' : 'object-contain p-12 bg-white/50 group-hover:scale-110'}`}
                   />
                   <div className="absolute inset-x-4 bottom-4 glass p-6 rounded-[1.5rem] opacity-0 group-hover:opacity-100 translate-y-10 group-hover:translate-y-0 transition-all duration-500 z-20">
                     <p className="text-brand-blue text-[11px] italic font-medium leading-relaxed">"{member.bio || "Leading with empathy and impact."}"</p>

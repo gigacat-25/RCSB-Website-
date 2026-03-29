@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function RecentProjects() {
   const [projects, setProjects] = useState<any[]>([]);
@@ -77,10 +78,12 @@ export default function RecentProjects() {
               >
                 <div className="relative h-80 overflow-hidden">
                   <div className="absolute inset-0 bg-brand-blue/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                  <img
+                  <Image
                     src={fixImageUrl(project.image_url)}
                     alt={project.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover group-hover:scale-110 transition-transform duration-1000"
                   />
                   <div className="absolute top-6 left-6 glass px-4 py-2 text-[10px] font-black uppercase tracking-widest text-brand-blue z-20 rounded-full">
                     {project.category}

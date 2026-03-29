@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { ChevronLeftIcon, ChevronRightIcon, CameraIcon } from "@heroicons/react/24/outline";
 
 interface GallerySlide {
@@ -160,10 +161,13 @@ export default function EventGallery() {
                 className="absolute inset-0 cursor-grab active:cursor-grabbing"
               >
                 <div className="relative h-full w-full rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl border border-white/10 group/card">
-                  <img
+                  <Image
                     src={current.image_url}
                     alt={current.title}
-                    className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover/card:scale-110"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 1200px"
+                    className="object-cover transition-transform duration-[2000ms] group-hover/card:scale-110"
+                    priority={currentIndex === 0}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/20 to-transparent" />
 

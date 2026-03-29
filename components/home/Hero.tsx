@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Hero() {
   return (
@@ -16,11 +17,16 @@ export default function Hero() {
           <source src={`${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/hero-bg.mp4`} type="video/mp4" />
         </video>
 
-        {/* Fallback Static Image if Video fails to load (CSS fallback) */}
-        <div
-          className="absolute inset-0 bg-cover bg-center -z-10"
-          style={{ backgroundImage: 'url("/images/hero-fallback.png")' }}
-        />
+        {/* Fallback Static Image if Video fails to load */}
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/images/hero-fallback.png"
+            alt="RCSB Hero Background"
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
 
         {/* Layered Overlays for Depth */}
         <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm" />

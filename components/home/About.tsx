@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export default function About() {
   const [memberCount, setMemberCount] = useState(50);
@@ -34,12 +35,14 @@ export default function About() {
 
           {/* Visual Side */}
           <div className="relative animate-fade-up lg:col-span-7">
-            <div className="relative z-10 rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-premium group">
-              <div className="absolute inset-0 bg-brand-blue/20 group-hover:bg-transparent transition-colors duration-700" />
-              <img
+            <div className="relative z-10 rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-premium group aspect-[4/3] md:aspect-video">
+              <div className="absolute inset-0 bg-brand-blue/20 group-hover:bg-transparent transition-colors duration-700 z-10" />
+              <Image
                 src={aboutImage}
                 alt="Rotaract Team in Action"
-                className="w-full h-auto object-contain transition-transform duration-1000 group-hover:scale-105"
+                fill
+                sizes="(max-width: 1024px) 100vw, 60vw"
+                className="object-cover transition-transform duration-1000 group-hover:scale-105"
               />
             </div>
 
