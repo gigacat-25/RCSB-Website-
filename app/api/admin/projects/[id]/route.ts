@@ -44,7 +44,7 @@ export async function DELETE(
   try {
     const user = await currentUser();
     const email = user?.primaryEmailAddress?.emailAddress;
-    const isUserAdmin = isAdmin(email);
+    const isUserAdmin = isAdmin(email, user?.publicMetadata?.role);
 
     // 1. Fetch existing project to check ownership
     const existing = await apiFetch(`/api/projects/${params.id}`);
