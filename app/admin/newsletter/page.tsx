@@ -377,14 +377,15 @@ Guidelines:
                 <button
                     onClick={handleSync}
                     disabled={status === "loading"}
-                    className="group flex items-center gap-3 px-6 py-4 bg-slate-900 hover:bg-brand-blue text-white rounded-2xl transition-all shadow-lg hover:-translate-y-1 disabled:opacity-50"
+                    className="group relative flex items-center gap-4 px-8 py-5 bg-slate-900 hover:bg-brand-blue text-white rounded-2xl transition-all shadow-xl hover:-translate-y-1 hover:shadow-blue-500/25 disabled:opacity-50 overflow-hidden"
                 >
-                    <div className="text-left leading-tight">
-                        <p className="text-[10px] font-black uppercase tracking-widest opacity-60 group-hover:opacity-100">Sync Members</p>
-                        <p className="text-xs font-bold whitespace-nowrap">Subscribe All Web Users</p>
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-white/5 to-blue-500/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                    <div className="text-left">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400 group-hover:text-white/80 transition-colors">Sync Members</p>
+                        <p className="text-sm font-black whitespace-nowrap mt-0.5">Subscribe Web Users</p>
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                    <div className="w-10 h-10 rounded-xl bg-white/10 group-hover:bg-white/20 flex items-center justify-center transition-all group-hover:rotate-12">
+                        <svg className="w-5 h-5 text-brand-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                     </div>
                 </button>
             </div>
@@ -537,9 +538,9 @@ Guidelines:
                                             <button
                                                 type="button"
                                                 onClick={() => handleUnsubscribe(u.email, u.token)}
-                                                className="w-full px-3 py-1.5 bg-slate-100 hover:bg-brand-cranberry hover:text-white text-brand-cranberry font-bold rounded-lg text-xs transition-all text-center"
+                                                className="w-full px-4 py-2 bg-red-50 hover:bg-red-500 text-red-600 hover:text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all border border-red-100 hover:border-red-500 hover:shadow-lg hover:shadow-red-500/20"
                                             >
-                                                Unsubscribe
+                                                Unsubscribe Member
                                             </button>
                                         </li>
                                     ))}
@@ -586,9 +587,9 @@ Guidelines:
                                             <button
                                                 type="button"
                                                 onClick={() => handleResync(u.email)}
-                                                className="w-full px-3 py-1.5 bg-slate-100 hover:bg-brand-blue hover:text-white text-brand-blue font-bold rounded-lg text-xs transition-all"
+                                                className="w-full px-4 py-2 bg-blue-50 hover:bg-brand-blue text-brand-blue hover:text-white font-black rounded-xl text-[10px] uppercase tracking-widest transition-all border border-blue-100 hover:border-brand-blue hover:shadow-lg hover:shadow-blue-500/20"
                                             >
-                                                Force Resync
+                                                ✨ Force Resync
                                             </button>
                                         </li>
                                     ))}
@@ -621,9 +622,9 @@ Guidelines:
                             </div>
                             <button
                                 onClick={() => setShowPreview(false)}
-                                className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors"
+                                className="w-12 h-12 rounded-2xl bg-white shadow-lg border border-slate-100 flex items-center justify-center text-slate-600 hover:text-red-500 hover:bg-red-50 transition-all active:scale-95 group"
                             >
-                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" /></svg>
+                                <svg className="w-6 h-6 transform transition-transform group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                             </button>
                         </div>
 
