@@ -59,13 +59,13 @@ export default function Hero() {
           <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-6 animate-fade-up" style={{ animationDelay: "400ms" }}>
             <Link
               href="/projects"
-              className="group text-center px-6 py-4 md:px-10 md:py-5 bg-brand-gold text-brand-blue font-black rounded-2xl hover:bg-white transition-all shadow-[0_20px_40px_rgba(247,168,27,0.3)] hover:shadow-[0_25px_50px_rgba(255,255,255,0.4)] hover:-translate-y-1 active:translate-y-0"
+              className="premium-button text-center px-10 py-5 bg-brand-gold text-brand-blue font-bold rounded-2xl transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 active:scale-95 font-heading text-lg"
             >
               Latest Projects
             </Link>
             <Link
               href="/contact"
-              className="group text-center px-6 py-4 md:px-10 md:py-5 bg-white/10 backdrop-blur-md border border-white/30 text-white font-black rounded-2xl hover:bg-white/20 transition-all hover:-translate-y-1 active:translate-y-0"
+              className="premium-button-outline text-center px-10 py-5 bg-white/10 backdrop-blur-md border border-white/30 text-white font-bold rounded-2xl hover:bg-white/20 transition-all hover:-translate-y-1 active:scale-95 font-heading text-lg"
             >
               Join Our Tribe
             </Link>

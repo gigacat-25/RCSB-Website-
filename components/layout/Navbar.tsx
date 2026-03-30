@@ -9,101 +9,67 @@ const navLinks = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About Us" },
   { href: "/projects", label: "Projects" },
+  { href: "/awards", label: "Awards" },
   { href: "/blogs", label: "Blogs" },
   { href: "/team", label: "Leadership" },
   { href: "/contact", label: "Contact Us" },
 ];
 
-function AuthSection({ mobile = false, scrolled = false }: { mobile?: boolean, scrolled?: boolean }) {
+function AuthSection({ scrolled = false }: { scrolled?: boolean }) {
   const { isSignedIn, isLoaded, user } = useUser();
   const { openSignIn, openSignUp, signOut, openUserProfile } = useClerk();
-  const userEmail = user?.primaryEmailAddress?.emailAddress;
-  const isUserAdmin = isAdmin(userEmail, user?.publicMetadata?.role);
 
-  if (!isLoaded) return (
-    <div className={`flex items-center gap-2 ${mobile ? "w-full" : ""}`}>
-      <div className="w-4 h-4 border-2 border-brand-gold/30 border-t-brand-gold rounded-full animate-spin" />
-      <span className="text-[10px] font-bold uppercase tracking-widest text-brand-gold/50">Initializing...</span>
-    </div>
-  );
+  if (!isLoaded) {
+    return <div className="w-4 h-4 border-2 border-brand-gold/30 border-t-brand-gold rounded-full animate-spin" />;
+  }
 
   if (isSignedIn) {
-    return mobile ? (
-      <div className="flex flex-col gap-2 w-full">
+    return (
+      <div className="flex items-center gap-4">
         <Link
           href="/admin"
-          className="w-full text-center py-3 rounded-lg text-sm font-bold bg-brand-gold text-brand-blue hover:bg-white transition-colors border border-brand-gold"
+          className={`text-[11px] font-black uppercase tracking-[0.25em] whitespace-nowrap transition-colors ${
+            scrolled ? "text-brand-blue hover:text-brand-azure" : "text-brand-gold hover:text-yellow-300"
+          }`}
         >
-          {isUserAdmin ? "Admin Dashboard" : "My Dashboard"}
+          My Dashboard
         </Link>
+
         <button
           onClick={() => openUserProfile()}
-          className="w-full flex items-center justify-center gap-3 px-2 py-3 text-brand-blue font-semibold hover:bg-gray-100 rounded-lg transition-colors"
+          className="w-9 h-9 rounded-full overflow-hidden border-2 border-brand-gold/40 hover:border-brand-gold transition-colors shrink-0"
         >
-          <img src={user?.imageUrl} alt="Profile" className="w-8 h-8 rounded-full" />
-          <span>Manage Account</span>
+          <img src={user?.imageUrl} alt="Profile" className="w-full h-full object-cover" />
         </button>
-      </div>
-    ) : (
-      <div className="flex items-center gap-6">
-        <Link
-          href="/admin"
-          className="text-xs font-bold text-brand-gold uppercase tracking-widest hover:text-brand-azure transition-colors"
+
+        <button
+          onClick={() => signOut()}
+          className={`text-[11px] font-bold uppercase tracking-[0.2em] whitespace-nowrap transition-colors ${
+            scrolled ? "text-brand-gray hover:text-brand-blue" : "text-white/60 hover:text-white"
+          }`}
         >
-          {isUserAdmin ? "Admin Dashboard" : "My Dashboard"}
-        </Link>
-        <div className="flex items-center gap-4">
-          <button onClick={() => openUserProfile()} className="hover:scale-105 transition-transform">
-            <img src={user?.imageUrl} alt="Profile" className="w-8 h-8 rounded-full border-2 border-brand-azure" />
-          </button>
-          <button
-            onClick={() => signOut()}
-            className="text-sm font-medium opacity-60 hover:opacity-100 transition-opacity"
-          >
-            Sign Out
-          </button>
-        </div>
+          Sign Out
+        </button>
       </div>
     );
   }
 
-  return mobile ? (
-    <div className="flex flex-col gap-4 w-full">
+  return (
+    <div className="flex items-center gap-5">
       <button
         onClick={() => openSignIn()}
-        className="w-full py-4 text-white hover:text-brand-gold font-bold transition-colors"
-      >
-        Sign In
-      </button>
-      <button
-        onClick={() => openSignUp()}
-        className="w-full py-4 text-brand-blue bg-brand-gold rounded-full font-bold shadow-xl active:scale-95 transition-all"
-      >
-        Join Swarna Bengaluru
-      </button>
-    </div>
-  ) : (
-    <div className="flex items-center gap-8">
-      <button
-        onClick={() => openSignIn()}
-        className={`text-[11px] font-black uppercase tracking-[0.25em] transition-all duration-300 relative group
-          ${scrolled ? "text-brand-blue/80 hover:text-brand-blue" : "text-white/80 hover:text-white"}`}
+        className={`text-[11px] font-black uppercase tracking-[0.25em] whitespace-nowrap transition-colors ${
+          scrolled ? "text-brand-blue hover:text-brand-azure" : "text-white hover:text-brand-gold"
+        }`}
       >
         Log In
-        <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-brand-gold transition-all duration-300 group-hover:w-full" />
       </button>
 
       <button
         onClick={() => openSignUp()}
-        className="relative group px-8 py-3 overflow-hidden rounded-full transition-all duration-500"
+        className="bg-brand-gold text-brand-blue text-[11px] font-black uppercase tracking-[0.2em] px-7 py-2.5 rounded-full hover:bg-yellow-400 transition-colors whitespace-nowrap shadow-md active:scale-95"
       >
-        <div className="absolute inset-0 bg-brand-gold transition-transform duration-500 group-hover:scale-105" />
-        <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
-        <span className="relative z-10 text-[11px] font-black uppercase tracking-[0.2em] text-brand-blue">
-          Join Us
-        </span>
-        {/* Subtle glow effect */}
-        <div className="absolute inset-0 shadow-[0_0_20px_rgba(247,168,27,0.3)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        Join Us
       </button>
     </div>
   );
@@ -120,105 +86,145 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => { setOpen(false); }, [pathname]);
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
-  // Don't show public navbar on admin routes
   if (pathname?.startsWith("/admin")) return null;
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
-      ? "bg-white/70 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.05)] py-2 border-b border-white/20"
-      : "bg-transparent py-5"
-      }`}>
-      <div className="container-custom flex items-center justify-between">
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        scrolled
+          ? "bg-white/90 backdrop-blur-md shadow-sm py-3 border-b border-gray-100"
+          : "bg-transparent py-4"
+      }`}
+    >
+      <div className="max-w-screen-xl mx-auto px-8 flex items-center justify-between">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center group relative">
-          <div className="absolute -inset-2 bg-brand-gold/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <Link href="/" className="shrink-0">
           <img
             src="/logo.png"
-            alt="Rotaract Swarna Bengaluru Logo"
-            className={`h-20 w-auto object-contain transition-all duration-500 ${scrolled ? "scale-90" : "scale-100"}`}
+            alt="Rotaract Swarna Bengaluru"
+            className="h-16 md:h-20 w-auto object-contain"
           />
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-10">
-          <ul className="flex items-center gap-8">
-            {navLinks.map(({ href, label }) => {
-              const isActive = pathname === href;
-              return (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    className={`text-[13px] font-bold uppercase tracking-[0.15em] transition-all duration-300 relative group py-2 ${isActive
-                      ? (scrolled ? "text-brand-blue" : "text-white")
-                      : (scrolled ? "text-brand-gray/80 hover:text-brand-blue" : "text-white/70 hover:text-white")
-                      }`}
-                  >
-                    {label}
-                    <span className={`absolute bottom-0 left-0 h-[2px] bg-brand-gold transition-all duration-300 rounded-full ${isActive ? "w-full" : "w-0 group-hover:w-full"}`} />
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-
-          <div className="pl-10 relative">
-            <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-[1px] h-6 bg-current opacity-10 transition-colors ${scrolled ? 'text-brand-blue' : 'text-white'}`} />
-            <AuthSection scrolled={scrolled} />
-          </div>
+        {/* Desktop Nav Links — Center */}
+        <nav className="hidden lg:flex items-center gap-8 xl:gap-10">
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`relative text-[12px] font-bold uppercase tracking-[0.15em] whitespace-nowrap transition-colors duration-200 group ${
+                  isActive
+                    ? scrolled ? "text-brand-blue" : "text-white"
+                    : scrolled
+                    ? "text-brand-gray hover:text-brand-blue"
+                    : "text-white/60 hover:text-white"
+                }`}
+              >
+                {link.label}
+                <span
+                  className={`absolute -bottom-1 left-0 h-[2px] bg-brand-gold rounded-full transition-all duration-300 ${
+                    isActive ? "w-full" : "w-0 group-hover:w-full"
+                  }`}
+                />
+              </Link>
+            );
+          })}
         </nav>
 
-        {/* Mobile Menu Toggle */}
+        {/* Auth — Right */}
+        <div className="hidden lg:flex items-center gap-5">
+          <div className={`h-5 w-px ${scrolled ? "bg-gray-300" : "bg-white/25"}`} />
+          <AuthSection scrolled={scrolled} />
+        </div>
+
+        {/* Mobile Toggle */}
         <button
           onClick={() => setOpen(!open)}
-          className="md:hidden p-3 text-brand-blue glass rounded-2xl focus:outline-none hover:scale-105 active:scale-95 transition-all"
+          className={`lg:hidden p-2 rounded-lg transition-colors ${
+            scrolled ? "text-brand-blue hover:bg-gray-100" : "text-white hover:bg-white/10"
+          }`}
           aria-label="Toggle menu"
         >
-          <div className="w-6 flex flex-col gap-[6px]">
-            <span className={`block h-[2px] bg-current rounded-full transition-all duration-300 ${open ? "rotate-45 translate-y-[8px] w-6" : "w-6"}`} />
+          <div className="w-6 flex flex-col gap-[5px]">
+            <span className={`block h-[2px] bg-current rounded-full transition-all duration-300 ${open ? "rotate-45 translate-y-[7px] w-6" : "w-6"}`} />
             <span className={`block h-[2px] bg-current rounded-full transition-all duration-300 ${open ? "opacity-0" : "w-4"}`} />
-            <span className={`block h-[2px] bg-current rounded-full transition-all duration-300 ${open ? "-rotate-45 -translate-y-[8px] w-6" : "w-5"}`} />
+            <span className={`block h-[2px] bg-current rounded-full transition-all duration-300 ${open ? "-rotate-45 -translate-y-[7px] w-6" : "w-5"}`} />
           </div>
         </button>
       </div>
 
-      {/* Mobile Navigation Dropdown */}
-      <div className={`md:hidden absolute top-0 left-0 right-0 h-screen transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${open ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"
-        }`}>
-        <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-2xl" />
-        <div className="relative h-full flex flex-col items-center justify-center p-8">
+      {/* Mobile Drawer */}
+      <div
+        className={`lg:hidden fixed inset-0 bg-slate-950/97 backdrop-blur-2xl transition-all duration-500 ${
+          open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <div className="flex flex-col items-center justify-center h-full gap-8 p-8 relative">
           <button
             onClick={() => setOpen(false)}
-            className="absolute top-6 right-6 p-4 text-white hover:rotate-90 transition-transform duration-300"
+            className="absolute top-5 right-6 text-white/50 hover:text-white text-4xl leading-none"
           >
-            <span className="text-4xl leading-none">&times;</span>
+            &times;
           </button>
 
-          <nav className="flex flex-col items-center gap-8 w-full max-w-xs">
-            {navLinks.map(({ href, label }, idx) => {
-              const isActive = pathname === href;
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  style={{ transitionDelay: `${idx * 50}ms` }}
-                  className={`text-2xl font-heading font-bold transition-all duration-500 ${isActive
-                    ? "text-brand-gold scale-110"
-                    : "text-white/60 hover:text-white"
-                    } ${open ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
-                >
-                  {label}
-                </Link>
-              );
-            })}
-            <div className={`mt-10 w-full pt-10 border-t border-white/10 ${open ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"} transition-all duration-1000 delay-300`}>
-              <AuthSection mobile />
-            </div>
-          </nav>
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`text-2xl font-bold uppercase tracking-widest transition-colors ${
+                  isActive ? "text-brand-gold" : "text-white/60 hover:text-white"
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+
+          <div className="w-full max-w-xs pt-8 border-t border-white/10 flex flex-col gap-3">
+            <MobileAuth />
+          </div>
         </div>
       </div>
     </header>
+  );
+}
+
+function MobileAuth() {
+  const { isSignedIn, isLoaded } = useUser();
+  const { openSignIn, openSignUp, signOut } = useClerk();
+
+  if (!isLoaded) return null;
+
+  if (isSignedIn) {
+    return (
+      <>
+        <Link href="/admin" className="w-full text-center py-3 rounded-xl text-sm font-bold bg-brand-gold text-brand-blue">
+          My Dashboard
+        </Link>
+        <button onClick={() => signOut()} className="w-full text-center py-3 rounded-xl text-sm font-bold text-red-400 border border-red-900/30">
+          Sign Out
+        </button>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <button onClick={() => openSignIn()} className="w-full py-3 text-white font-bold uppercase tracking-widest text-xs border border-white/20 rounded-xl">
+        Sign In
+      </button>
+      <button onClick={() => openSignUp()} className="w-full py-3 text-brand-blue bg-brand-gold rounded-xl font-bold uppercase tracking-widest text-xs">
+        Join Us
+      </button>
+    </>
   );
 }

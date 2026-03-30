@@ -4,11 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { isAdmin, isSuperAdmin } from "@/lib/admin";
-import { DocumentTextIcon, UsersIcon, EnvelopeIcon, Squares2X2Icon, BookOpenIcon, HandRaisedIcon, ClockIcon, ShieldCheckIcon, CogIcon, NewspaperIcon } from "@heroicons/react/24/outline";
+import { DocumentTextIcon, UsersIcon, EnvelopeIcon, Squares2X2Icon, BookOpenIcon, HandRaisedIcon, ClockIcon, ShieldCheckIcon, CogIcon, NewspaperIcon, TrophyIcon } from "@heroicons/react/24/outline";
 
 const navItems = [
   { name: "Dashboard", href: "/admin", icon: Squares2X2Icon },
   { name: "Projects & Events", href: "/admin/projects", icon: DocumentTextIcon },
+  { name: "Awards", href: "/admin/awards", icon: TrophyIcon },
   { name: "Blogs", href: "/admin/blogs", icon: BookOpenIcon },
   { name: "Team Members", href: "/admin/team", icon: UsersIcon },
   { name: "Past Presidents", href: "/admin/past-presidents", icon: ClockIcon },

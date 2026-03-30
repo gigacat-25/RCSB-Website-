@@ -48,6 +48,10 @@ export default function Footer() {
                 <span className="w-1 h-1 bg-brand-gold rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
                 Impact Portfolio
               </Link></li>
+              <li><Link href="/awards" className="text-[13px] text-white/60 hover:text-white transition-all hover:translate-x-2 inline-flex items-center gap-2 group">
+                <span className="w-1 h-1 bg-brand-gold rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                Awards & Milestones
+              </Link></li>
               <li><Link href="/contact" className="text-[13px] text-white/60 hover:text-white transition-all hover:translate-x-2 inline-flex items-center gap-2 group">
                 <span className="w-1 h-1 bg-brand-gold rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
                 Contact Us

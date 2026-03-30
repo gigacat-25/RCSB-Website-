@@ -110,7 +110,10 @@ function AddProjectForm() {
           <ArrowLeftIcon className="w-4 h-4" /> Back to {userIsAdmin ? "Projects" : "Dashboard"}
         </Link>
         <h2 className="text-3xl font-heading font-bold text-brand-blue">
-          {userIsAdmin ? (formData.type === 'blog' ? 'Add New Blog Post' : 'Add New Project') : 'Share Your Story'}
+          {userIsAdmin ? (
+            formData.type === 'blog' ? 'Add New Blog Post' : 
+            formData.type === 'award' ? 'Add New Award' : 'Add New Project'
+          ) : 'Share Your Story'}
         </h2>
         <p className="text-brand-gray mt-1">
           {userIsAdmin ? 'Create a new club initiative or story to showcase.' : 'Inspire others by documenting your experience.'}
@@ -126,7 +129,9 @@ function AddProjectForm() {
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Project Title *</label>
+            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">
+              {formData.type === 'award' ? 'Award Title *' : 'Project Title *'}
+            </label>
             <input
               type="text"
               name="title"
@@ -166,6 +171,11 @@ function AddProjectForm() {
               <option>Club Service</option>
               <option>International Service</option>
               <option>Leadership</option>
+              <option>Environment</option>
+              <option>Education</option>
+              <option>District Award</option>
+              <option>Zonal Award</option>
+              <option>Club Award</option>
             </select>
           </div>
         </div>
@@ -182,6 +192,7 @@ function AddProjectForm() {
               >
                 <option value="project">Project</option>
                 <option value="event">Upcoming Event</option>
+                <option value="award">Award / Milestone</option>
               </select>
             </div>
           ) : null}
@@ -217,7 +228,9 @@ function AddProjectForm() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Short Description *</label>
+          <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">
+            {formData.type === 'award' ? 'Award Summary *' : 'Short Description *'}
+          </label>
           <textarea
             name="description"
             value={formData.description}
@@ -225,7 +238,7 @@ function AddProjectForm() {
             required
             rows={2}
             className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
-            placeholder="A brief summary of the project for the cards..."
+            placeholder={formData.type === 'award' ? "A brief summary of the recognition..." : "A brief summary of the project for the cards..."}
           ></textarea>
         </div>
 
@@ -446,22 +459,26 @@ function AddProjectForm() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 ${formData.type === 'award' ? 'items-end' : ''}`}>
           {/* RSVP Link */}
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">RSVP / Ticket Link (Optional)</label>
-            <input
-              type="url"
-              name="rsvp_link"
-              value={(formData as any).rsvp_link || ""}
-              onChange={handleChange}
-              className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
-              placeholder="e.g. https://forms.gle/..."
-            />
-          </div>
+          {formData.type !== 'award' && (
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">RSVP / Ticket Link (Optional)</label>
+              <input
+                type="url"
+                name="rsvp_link"
+                value={(formData as any).rsvp_link || ""}
+                onChange={handleChange}
+                className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
+                placeholder="e.g. https://forms.gle/..."
+              />
+            </div>
+          )}
 
           <div className="space-y-2">
-            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Event Date (Optional)</label>
+            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">
+              {formData.type === 'award' ? 'Recognition Date' : 'Event Date (Optional)'}
+            </label>
             <input
               type="date"
               name="event_date"
@@ -473,14 +490,16 @@ function AddProjectForm() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Full Article Content (Markdown)</label>
+          <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">
+            {formData.type === 'award' ? 'Detailed Citation' : 'Full Article Content (Markdown)'}
+          </label>
           <textarea
             name="content"
             value={formData.content}
             onChange={handleChange}
             rows={8}
             className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all font-mono text-sm"
-            placeholder="Write the full case study here..."
+            placeholder={formData.type === 'award' ? "Write the detailed recognition text or citation here..." : "Write the full case study here..."}
           ></textarea>
         </div>
 
@@ -490,7 +509,7 @@ function AddProjectForm() {
             disabled={loading}
             className="px-8 py-3 bg-brand-blue text-white font-bold rounded-full hover:bg-blue-900 transition-colors disabled:opacity-50"
           >
-            {loading ? "Publishing..." : (userIsAdmin ? "Publish Project" : "Share Story")}
+            {loading ? "Publishing..." : (userIsAdmin ? (formData.type === 'award' ? "Publish Award" : "Publish Project") : "Share Story")}
           </button>
         </div>
       </form>

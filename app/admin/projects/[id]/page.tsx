@@ -130,7 +130,9 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
           <Link href="/admin/projects" className="inline-flex items-center gap-2 text-brand-gray hover:text-brand-blue mb-4 transition-colors font-semibold text-sm">
             <ArrowLeftIcon className="w-4 h-4" /> Back to Projects
           </Link>
-          <h2 className="text-3xl font-heading font-bold text-brand-blue">Edit Project</h2>
+          <h2 className="text-3xl font-heading font-bold text-brand-blue">
+            {formData.type === 'award' ? 'Edit Award' : formData.type === 'blog' ? 'Edit Blog Post' : 'Edit Project'}
+          </h2>
           <p className="text-brand-gray mt-1">Update the details for "{formData.title}"</p>
         </div>
 
@@ -146,7 +148,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             onClick={handleDelete}
             className="px-6 py-2 bg-red-50 text-red-600 hover:bg-red-100 font-bold rounded-full transition-colors border border-red-200"
           >
-            Delete Project
+            {formData.type === 'award' ? 'Delete Award' : 'Delete Project'}
           </button>
         </div>
       </div>
@@ -160,7 +162,9 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Project Title *</label>
+            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">
+              {formData.type === 'award' ? 'Award Title *' : 'Project Title *'}
+            </label>
             <input
               type="text"
               name="title"
@@ -198,6 +202,11 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
               <option>Club Service</option>
               <option>International Service</option>
               <option>Leadership</option>
+              <option>Environment</option>
+              <option>Education</option>
+              <option>District Award</option>
+              <option>Zonal Award</option>
+              <option>Club Award</option>
             </select>
           </div>
         </div>
@@ -213,6 +222,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             >
               <option value="project">Project</option>
               <option value="event">Upcoming Event</option>
+              <option value="award">Award / Milestone</option>
             </select>
           </div>
 
@@ -244,7 +254,9 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Short Description *</label>
+          <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">
+            {formData.type === 'award' ? 'Award Summary *' : 'Short Description *'}
+          </label>
           <textarea
             name="description"
             value={formData.description}
@@ -252,6 +264,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             required
             rows={2}
             className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
+            placeholder={formData.type === 'award' ? "A brief summary of the recognition..." : "A brief summary of the project for the cards..."}
           ></textarea>
         </div>
 
@@ -472,22 +485,26 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 ${formData.type === 'award' ? 'items-end' : ''}`}>
           {/* RSVP Link */}
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">RSVP / Ticket Link (Optional)</label>
-            <input
-              type="url"
-              name="rsvp_link"
-              value={(formData as any).rsvp_link || ""}
-              onChange={handleChange}
-              className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
-              placeholder="e.g. https://forms.gle/..."
-            />
-          </div>
+          {formData.type !== 'award' && (
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">RSVP / Ticket Link (Optional)</label>
+              <input
+                type="url"
+                name="rsvp_link"
+                value={(formData as any).rsvp_link || ""}
+                onChange={handleChange}
+                className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
+                placeholder="e.g. https://forms.gle/..."
+              />
+            </div>
+          )}
 
           <div className="space-y-2">
-            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Event Date (Optional)</label>
+            <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">
+              {formData.type === 'award' ? 'Recognition Date' : 'Event Date (Optional)'}
+            </label>
             <input
               type="date"
               name="event_date"
@@ -499,12 +516,14 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Full Article Content (Markdown)</label>
+          <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">
+            {formData.type === 'award' ? 'Detailed Citation' : 'Full Article Content (Markdown)'}
+          </label>
           <textarea
             name="content"
             value={formData.content}
             onChange={handleChange}
-            rows={8}
+            placeholder={formData.type === 'award' ? "Write the detailed recognition text or citation here..." : "Write the full case study here..."}
             className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all font-mono text-sm"
           ></textarea>
         </div>
