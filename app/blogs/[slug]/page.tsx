@@ -14,7 +14,7 @@ export const revalidate = 0;
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   try {
     const data = await apiFetch("/api/projects");
-    const blog = data.find((p: any) => p.slug === params.slug);
+    const blog = data.find((p: any) => p.slug === params.slug && p.status !== 'trash');
     if (!blog) return {};
 
     const fixImageUrl = (url: string | null | undefined) => {
@@ -47,7 +47,7 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
 
   try {
     const data = await apiFetch("/api/projects");
-    blog = data.find((p: any) => p.slug === params.slug);
+    blog = data.find((p: any) => p.slug === params.slug && p.status !== 'trash');
   } catch (error) {
     console.error("Failed to fetch blog:", error);
   }

@@ -12,7 +12,7 @@ export const revalidate = 0;
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   try {
     const data = await apiFetch("/api/projects");
-    const award = data.find((p: any) => p.slug === params.slug && p.type === 'award');
+    const award = data.find((p: any) => p.slug === params.slug && p.type === 'award' && p.status !== 'trash');
     if (!award) return {};
 
     const fixImageUrl = (url: string | null | undefined) => {
@@ -45,7 +45,7 @@ export default async function AwardDetailPage({ params }: { params: { slug: stri
 
   try {
     const data = await apiFetch("/api/projects");
-    award = data.find((p: any) => p.slug === params.slug && p.type === 'award');
+    award = data.find((p: any) => p.slug === params.slug && p.type === 'award' && p.status !== 'trash');
   } catch (error) {
     console.error("Failed to fetch award:", error);
   }

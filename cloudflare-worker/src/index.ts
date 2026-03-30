@@ -1,3 +1,11 @@
+declare global {
+  interface Env {
+    DB: D1Database;
+    MEDIA_BUCKET: R2Bucket;
+    WORKER_SECRET: string;
+  }
+}
+
 export interface Env {
   DB: D1Database;
   MEDIA_BUCKET: R2Bucket;
@@ -39,12 +47,47 @@ export default {
 
       if (request.method === "GET" && url.pathname === "/api/projects") {
         const author = url.searchParams.get("author");
-        if (author) {
-          const results = await env.DB.prepare("SELECT p.*, (SELECT COUNT(*) FROM comments c WHERE c.project_id = p.id) as comment_count FROM projects p WHERE p.author_email = ? ORDER BY p.created_at DESC")
-            .bind(author).all();
-          return new Response(JSON.stringify(results.results), { headers });
+        const showTrash = url.searchParams.get("show_trash") === "true";
+        const authHeader = request.headers.get("Authorization");
+        const isAuthorized = authHeader === `Bearer ${env.WORKER_SECRET}`;
+        const SUPER_ADMIN = "rscbadmin@rotract.com";
+
+        // [AUTO-PURGE] Clean up items older than 30 days if requested by admin
+        if (isAuthorized && showTrash) {
+          try {
+            await env.DB.prepare(`
+              DELETE FROM projects 
+              WHERE status = 'trash' 
+              AND datetime(updated_at) < datetime('now', '-30 days')
+            `).run();
+          } catch (e) {
+            console.error("Auto-purge failed:", e);
+          }
         }
-        const results = await env.DB.prepare("SELECT p.*, (SELECT COUNT(*) FROM comments c WHERE c.project_id = p.id) as comment_count FROM projects p ORDER BY p.created_at DESC").all();
+
+        // Base query with status filtering
+        let query = "SELECT p.*, (SELECT COUNT(*) FROM comments c WHERE c.project_id = p.id) as comment_count FROM projects p";
+        let params: any[] = [];
+        let conditions: string[] = [];
+
+        // Condition 1: Visibility (Always hide trash for public, allow for authorized if requested)
+        if (!isAuthorized || (isAuthorized && !showTrash)) {
+          conditions.push("(p.status IS NULL OR LOWER(p.status) != 'trash')");
+        }
+
+        // Condition 2: Author filter
+        if (author) {
+          conditions.push("p.author_email = ?");
+          params.push(author);
+        }
+
+        if (conditions.length > 0) {
+          query += " WHERE " + conditions.join(" AND ");
+        }
+
+        query += " ORDER BY p.created_at DESC";
+
+        const results = await env.DB.prepare(query).bind(...params).all();
         return new Response(JSON.stringify(results.results), { headers });
       }
 
@@ -262,11 +305,14 @@ export default {
           const admin = await env.DB.prepare("SELECT role FROM authorized_admins WHERE email = ?")
             .bind(userEmail).first() as { role: string } | null;
 
-          if (!admin && project.author_email !== userEmail) {
-            return new Response(JSON.stringify({ error: "Unauthorized: Email not in authorized_admins." }), { status: 403, headers });
+          // MASTER ADMIN OVERRIDE: Hardcoded master admin always has access
+          const isMasterAdmin = userEmail.toLowerCase() === "rscbadmin@rotract.com";
+
+          if (!admin && !isMasterAdmin && project.author_email !== userEmail) {
+            return new Response(JSON.stringify({ error: "Unauthorized: Access Denied." }), { status: 403, headers });
           }
 
-          if (admin && admin.role !== 'admin' && project.author_email !== userEmail) {
+          if (admin && admin.role !== 'admin' && !isMasterAdmin && project.author_email !== userEmail) {
             return new Response(JSON.stringify({ error: "Forbidden: You can only manage your own content." }), { status: 403, headers });
           }
 

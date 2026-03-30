@@ -12,7 +12,7 @@ export const revalidate = 0;
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   try {
     const data = await apiFetch("/api/projects");
-    const project = data.find((p: any) => p.slug === params.slug);
+    const project = data.find((p: any) => p.slug === params.slug && p.status !== 'trash');
     if (!project) return {};
 
     const fixImageUrl = (url: string | null | undefined) => {
@@ -45,7 +45,7 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
 
   try {
     const data = await apiFetch("/api/projects");
-    project = data.find((p: any) => p.slug === params.slug);
+    project = data.find((p: any) => p.slug === params.slug && p.status !== 'trash');
   } catch (error) {
     console.error("Failed to fetch project:", error);
   }

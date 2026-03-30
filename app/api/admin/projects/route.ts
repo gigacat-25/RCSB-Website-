@@ -82,7 +82,7 @@ export async function GET() {
     const isUserAdmin = isAdmin(email, user?.publicMetadata?.role);
 
     // If not admin, only fetch their own stories
-    const baseEndpoint = isUserAdmin ? "/api/projects" : `/api/projects?author=${encodeURIComponent(email || "")}`;
+    const baseEndpoint = isUserAdmin ? "/api/projects?show_trash=true" : `/api/projects?author=${encodeURIComponent(email || "")}&show_trash=true`;
     const endpoint = `${baseEndpoint}${baseEndpoint.includes('?') ? '&' : '?'}t=${Date.now()}`;
     let projects = await apiFetch(endpoint, { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
 

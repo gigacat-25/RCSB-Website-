@@ -28,13 +28,20 @@ export default function AdminSidebar() {
 
   return (
     <aside className="w-64 bg-brand-blue text-white h-screen flex flex-col fixed left-0 top-0 overflow-y-auto custom-scrollbar">
-      <div className="p-6">
-        <h2 className="text-2xl font-heading font-bold text-brand-gold">
-          {userIsAdmin ? "RCSB Admin" : "RCSB Community"}
-        </h2>
-        <p className="text-xs text-blue-200 mt-1 uppercase tracking-widest">
-          {userIsAdmin ? "Management Suite" : "Contributor Portal"}
-        </p>
+      <div className="p-8 flex flex-col items-center">
+        <Link href="/" className="group mb-8">
+          <div className="bg-white p-3 rounded-2xl shadow-xl shadow-black/20 group-hover:scale-105 transition-transform">
+            <img src="/logo.png" alt="RCSB Logo" className="h-12 w-auto" />
+          </div>
+        </Link>
+        <div className="text-center">
+          <h2 className="text-xl font-heading font-black text-brand-gold tracking-tight">
+            {userIsAdmin ? "RCSB Admin" : "RCSB Community"}
+          </h2>
+          <p className="text-[10px] text-blue-300 font-bold mt-1 uppercase tracking-[0.2em] opacity-80">
+            {userIsAdmin ? "Management Suite" : "Contributor Portal"}
+          </p>
+        </div>
       </div>
 
       <nav className="flex-1 mt-6 px-4">

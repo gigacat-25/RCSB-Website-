@@ -39,7 +39,9 @@ export default function BlogsPage() {
         const res = await fetch("/api/projects"); // Use the public endpoint
         const data = await res.json();
         // The public endpoint returns all projects/events/blogs
-        const blogsData = Array.isArray(data) ? data.filter((p: any) => p.type === "blog") : [];
+        const blogsData = Array.isArray(data) 
+          ? data.filter((p: any) => p.type === "blog" && p.status !== "trash") 
+          : [];
         setBlogs(blogsData);
         setFilteredBlogs(blogsData);
       } catch (error) {

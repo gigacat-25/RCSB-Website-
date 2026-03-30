@@ -14,8 +14,8 @@ export default function AwardsPage() {
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
-          // Filter only for entries of type 'award'
-          setAwards(data.filter((p: any) => p.type === "award"));
+          // Filter only for entries of type 'award' and NOT in trash
+          setAwards(data.filter((p: any) => p.type === "award" && p.status !== "trash"));
         } else {
           setAwards([]);
         }
