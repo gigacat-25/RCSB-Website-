@@ -87,27 +87,43 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [open]);
 
   if (pathname?.startsWith("/admin")) return null;
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? "bg-white/90 backdrop-blur-md shadow-sm py-3 border-b border-gray-100"
-          : "bg-transparent py-4"
-      }`}
-    >
-      <div className="max-w-screen-xl mx-auto px-8 flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 z-50">
+      {/* Background Layer — Handles Glassmorphism & Scrolled State */}
+      <div 
+        className={`absolute inset-0 transition-all duration-500 -z-10 ${
+          scrolled || open
+            ? "bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100"
+            : "bg-transparent"
+        }`}
+        style={{
+          height: scrolled ? '72px' : '88px'
+        }}
+      />
 
+      <div className={`max-w-screen-xl mx-auto px-6 md:px-8 flex items-center justify-between transition-all duration-500 ${
+        scrolled ? "h-[72px]" : "h-[88px]"
+      }`}>
         {/* Logo */}
-        <Link href="/" className="shrink-0">
+        <Link href="/" className="shrink-0 relative z-50">
           <img
             src="/logo.png"
             alt="Rotaract Swarna Bengaluru"
-            className="h-16 md:h-20 w-auto object-contain"
+            className={`transition-all duration-500 object-contain ${
+              scrolled ? "h-12 md:h-14" : "h-16 md:h-20"
+            }`}
           />
         </Link>
 
@@ -147,8 +163,10 @@ export default function Navbar() {
         {/* Mobile Toggle */}
         <button
           onClick={() => setOpen(!open)}
-          className={`lg:hidden p-2 rounded-lg transition-colors ${
-            scrolled ? "text-brand-blue hover:bg-gray-100" : "text-white hover:bg-white/10"
+          className={`lg:hidden p-2 rounded-lg transition-colors relative z-50 ${
+            open 
+              ? "text-white" // Menu is dark, so X should be white
+              : (scrolled ? "text-brand-blue hover:bg-gray-100" : "text-white hover:bg-white/10")
           }`}
           aria-label="Toggle menu"
         >
@@ -160,37 +178,39 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Drawer Overlay */}
       <div
-        className={`lg:hidden fixed inset-0 bg-slate-950/97 backdrop-blur-2xl transition-all duration-500 ${
-          open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        className={`lg:hidden fixed inset-0 bg-[#0a0f1e]/98 backdrop-blur-2xl transition-all duration-500 z-40 ${
+          open ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"
         }`}
       >
-        <div className="flex flex-col items-center justify-center h-full gap-8 p-8 relative">
-          <button
-            onClick={() => setOpen(false)}
-            className="absolute top-5 right-6 text-white/50 hover:text-white text-4xl leading-none"
-          >
-            &times;
-          </button>
-
-          {navLinks.map((link) => {
+        <div className="flex flex-col items-center justify-center min-h-screen gap-8 p-8">
+          {navLinks.map((link, idx) => {
             const isActive = pathname === link.href;
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-2xl font-bold uppercase tracking-widest transition-colors ${
-                  isActive ? "text-brand-gold" : "text-white/60 hover:text-white"
+                onClick={() => setOpen(false)}
+                className={`text-2xl font-black uppercase tracking-[0.2em] transition-all duration-300 ${
+                  isActive ? "text-brand-gold scale-110" : "text-white/60 hover:text-white"
                 }`}
+                style={{
+                  transitionDelay: `${idx * 50}ms`
+                }}
               >
                 {link.label}
               </Link>
             );
           })}
 
-          <div className="w-full max-w-xs pt-8 border-t border-white/10 flex flex-col gap-3">
+          <div className="w-full max-w-xs mt-4 pt-10 border-t border-white/10 flex flex-col gap-4">
             <MobileAuth />
+          </div>
+          
+          <div className="mt-8 flex flex-col items-center gap-2 opacity-40">
+             <img src="/logo.png" alt="RCSB" className="h-10 grayscale invert brightness-0" />
+             <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-white">Swarna Bengaluru</p>
           </div>
         </div>
       </div>
