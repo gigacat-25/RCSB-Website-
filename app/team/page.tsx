@@ -102,11 +102,11 @@ export default function TeamPage() {
                         alt={member.name}
                         className={`w-full h-full transition-transform duration-1000 ${member.image_url ? 'object-cover group-hover:scale-110' : 'object-contain p-12 bg-white/50 group-hover:scale-110'}`}
                       />
-                      {member.bio && (
-                        <div className="absolute inset-x-4 bottom-4 glass p-8 rounded-[1.5rem] opacity-0 group-hover:opacity-100 translate-y-10 group-hover:translate-y-0 transition-all duration-500 z-20">
-                          <p className="text-brand-blue text-[12px] italic font-medium leading-relaxed">"{member.bio}"</p>
-                        </div>
-                      )}
+                      <div className="absolute inset-x-4 bottom-4 glass p-6 md:p-8 rounded-[1.5rem] opacity-0 group-hover:opacity-100 translate-y-10 group-hover:translate-y-0 transition-all duration-500 z-20 text-center">
+                        <p className="text-brand-blue text-[11px] md:text-[12px] italic font-medium leading-relaxed">
+                          "{member.bio || "Leading with empathy and impact."}"
+                        </p>
+                      </div>
                     </div>
                     <div className="px-4">
                       <h3 className="text-2xl md:text-3xl font-heading font-black text-brand-blue mb-2 group-hover:text-brand-azure transition-colors">{member.name}</h3>

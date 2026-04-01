@@ -1,6 +1,17 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
+import { 
+  GlobeAltIcon, 
+  HeartIcon, 
+  BeakerIcon,
+  SparklesIcon, 
+  UserGroupIcon, 
+  AcademicCapIcon, 
+  CurrencyDollarIcon, 
+  GlobeAmericasIcon,
+  BriefcaseIcon
+} from "@heroicons/react/24/outline";
 
 export const runtime = 'edge';
 
@@ -10,11 +21,62 @@ export const metadata: Metadata = {
 };
 
 export default function AboutPage() {
+    const focusAreas = [
+        { 
+            title: "Promoting Peace", 
+            desc: "Dialogue, empathy, and conflict resolution for resilient communities.",
+            icon: GlobeAltIcon,
+            color: "text-blue-500",
+            bg: "bg-blue-50"
+        },
+        { 
+            title: "Fighting Disease", 
+            desc: "Prevention, awareness, and access to healthcare through local initiatives.",
+            icon: BeakerIcon,
+            color: "text-red-500",
+            bg: "bg-red-50"
+        },
+        { 
+            title: "Clean Water & Sanitation", 
+            desc: "WASH projects that improve public health outcomes.",
+            icon: SparklesIcon,
+            color: "text-cyan-500",
+            bg: "bg-cyan-50"
+        },
+        { 
+            title: "Saving Mothers & Children", 
+            desc: "Nutrition, prenatal care, and immunization support for healthier families.",
+            icon: UserGroupIcon,
+            color: "text-rose-500",
+            bg: "bg-rose-50"
+        },
+        { 
+            title: "Supporting Education", 
+            desc: "Access to learning, literacy, and skill-building for students and youth.",
+            icon: AcademicCapIcon,
+            color: "text-brand-gold",
+            bg: "bg-yellow-50"
+        },
+        { 
+            title: "Growing Local Economies", 
+            desc: "Entrepreneurship, employability, and sustainable development.",
+            icon: BriefcaseIcon,
+            color: "text-emerald-500",
+            bg: "bg-emerald-50"
+        },
+        { 
+            title: "Protecting the Environment", 
+            desc: "Tree planting, waste management, and climate action initiatives.",
+            icon: GlobeAmericasIcon,
+            color: "text-green-500",
+            bg: "bg-green-50"
+        }
+    ];
+
     return (
         <div className="min-h-screen bg-brand-light">
             {/* Header */}
             <section className="relative flex flex-col justify-center min-h-[400px] md:min-h-[480px] pt-28 md:pt-36 pb-16 overflow-hidden bg-[#0a1835] border-b border-brand-gold/10">
-                {/* Premium Line Grid */}
                 <div className="absolute inset-0 pointer-events-none">
                     <div
                         className="absolute w-full h-full"
@@ -30,7 +92,6 @@ export default function AboutPage() {
                     />
                 </div>
 
-                {/* Ambient Color Glows */}
                 <div className="absolute -top-20 right-1/4 w-[600px] h-[600px] bg-brand-gold/10 rounded-full blur-[120px] pointer-events-none" />
                 <div className="absolute -bottom-40 left-1/4 w-[600px] h-[600px] bg-brand-azure/10 rounded-full blur-[120px] pointer-events-none" />
                 <div className="container-custom relative z-10 text-white">
@@ -48,7 +109,6 @@ export default function AboutPage() {
 
             <div className="container-custom max-w-5xl py-16 md:py-24">
 
-                {/* Section 1: About Rotaract */}
                 <section className="mb-20 animate-fade-up" style={{ animationDelay: '100ms' }}>
                     <h2 className="text-3xl font-heading font-bold text-brand-blue mb-6 border-b-2 border-brand-azure/20 pb-4">About Rotaract</h2>
                     <div className="flex flex-col md:flex-row gap-8 items-center bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
@@ -87,7 +147,6 @@ export default function AboutPage() {
                     </div>
                 </section>
 
-                {/* Section 2: About RCSB */}
                 <section className="mb-20 animate-fade-up" style={{ animationDelay: '200ms' }}>
                     <h2 className="text-3xl font-heading font-bold text-brand-blue mb-6 border-b-2 border-brand-azure/20 pb-4">About Rotaract Club of Swarna Bengaluru</h2>
                     <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group flex flex-col md:flex-row-reverse gap-8 items-center">
@@ -140,36 +199,46 @@ export default function AboutPage() {
                     </div>
                 </section>
 
-                {/* Section 3: Rotary's Seven Areas of Focus */}
-                <section className="mb-20 animate-fade-up" style={{ animationDelay: '300ms' }}>
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl font-heading font-bold text-brand-blue mb-4">Rotary's Seven Areas of Focus</h2>
-                        <p className="text-lg text-brand-gray/80">What we champion through Rotaract</p>
+                <section className="mb-24 animate-fade-up" style={{ animationDelay: '300ms' }}>
+                    <div className="text-center mb-16 md:mb-20">
+                        <span className="text-[10px] font-black text-brand-gold uppercase tracking-[0.4em] mb-4 block">Our Impact</span>
+                        <h2 className="text-4xl md:text-5xl font-heading font-black text-brand-blue mb-6">Mastering Impact Across <br/> Seven <span className="text-brand-gold italic">Key Areas.</span></h2>
+                        <p className="text-lg text-brand-gray/60 max-w-2xl mx-auto font-light leading-relaxed">
+                            Through Rotaract, we champion the core causes that make the world a better, safer, and cleaner place for everyone.
+                        </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {[
-                            { title: "Promoting Peace", desc: "Dialogue, empathy, and conflict resolution for resilient communities." },
-                            { title: "Fighting Disease", desc: "Prevention, awareness, and access to healthcare through local initiatives." },
-                            { title: "Clean Water & Sanitation", desc: "WASH projects that improve public health outcomes." },
-                            { title: "Saving Mothers & Children", desc: "Nutrition, prenatal care, and immunization support for healthier families." },
-                            { title: "Supporting Education", desc: "Access to learning, literacy, and skill-building for students and youth." },
-                            { title: "Growing Local Economies", desc: "Entrepreneurship, employability, and sustainable development." },
-                            { title: "Protecting the Environment", desc: "Tree planting, waste management, and climate action initiatives." }
-                        ].map((area, i) => (
-                            <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 relative overflow-hidden group">
-                                <div className="absolute top-0 right-0 w-24 h-24 bg-brand-gold/5 rounded-bl-full -z-10 group-hover:bg-brand-azure/5 transition-colors" />
-                                <div className="w-12 h-12 rounded-2xl bg-brand-light flex items-center justify-center text-brand-blue font-heading font-black text-xl mb-4 group-hover:bg-brand-blue group-hover:text-white transition-colors duration-300">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+                        {focusAreas.map((area, i) => (
+                            <div 
+                                key={i} 
+                                className="bg-white p-8 md:p-10 rounded-[2.5rem] shadow-sm border border-slate-100/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden group"
+                            >
+                                <div className="absolute -top-4 -right-2 text-[120px] font-black text-slate-50 group-hover:text-brand-gold/5 transition-colors duration-500 select-none">
                                     {i + 1}
                                 </div>
-                                <h3 className="text-lg font-heading font-bold text-brand-blue mb-3">{area.title}</h3>
-                                <p className="text-sm text-brand-gray/80 leading-relaxed font-medium">{area.desc}</p>
+
+                                <div className={`w-16 h-16 rounded-2xl ${area.bg} flex items-center justify-center ${area.color} mb-8 group-hover:scale-110 transition-transform duration-500 shadow-inner`}>
+                                    <area.icon className="w-8 h-8 stroke-[1.5]" />
+                                </div>
+
+                                <h3 className="text-xl font-heading font-black text-brand-blue mb-4 group-hover:text-brand-azure transition-colors">
+                                    {area.title}
+                                </h3>
+                                
+                                <p className="text-brand-gray/70 leading-relaxed font-light text-sm md:text-base mb-6">
+                                    {area.desc}
+                                </p>
+
+                                <div className="flex items-center gap-2 pt-4 border-t border-slate-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${area.color}`}>Focus Area {i+1}</span>
+                                    <div className={`h-1 flex-1 rounded-full ${area.bg}`} />
+                                </div>
                             </div>
                         ))}
                     </div>
                 </section>
 
-                {/* Section 4: Call to Action */}
                 <section className="text-center animate-fade-up" style={{ animationDelay: '400ms' }}>
                     <div className="bg-brand-blue p-10 md:p-16 rounded-[3rem] relative overflow-hidden shadow-2xl">
                         <div className="absolute inset-0 opacity-10 bg-[url('https://rotaractjpnagar.org/shapes/blob.svg')] bg-no-repeat bg-center bg-cover" />
@@ -199,7 +268,6 @@ export default function AboutPage() {
                         Rotaract Club of Swarna Bengaluru empowers young professionals to create positive change through community service, leadership development, and building lasting friendships in Bengaluru.
                     </div>
                 </section>
-
             </div>
         </div>
     );

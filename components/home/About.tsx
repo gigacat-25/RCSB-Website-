@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { UserGroupIcon, SparklesIcon } from "@heroicons/react/24/outline";
 
 export default function About() {
   const [memberCount, setMemberCount] = useState(50);
@@ -24,6 +25,7 @@ export default function About() {
       })
       .catch(err => console.error("Could not load about photo:", err));
   }, []);
+
   return (
     <section className="py-20 md:py-32 bg-white relative overflow-hidden">
       {/* Decorative Background Elements */}
@@ -79,23 +81,28 @@ export default function About() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 pt-4">
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-brand-light flex items-center justify-center text-brand-blue">
-                  <span className="font-heading font-bold text-xl leading-none">01</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 md:gap-10 pt-6">
+              <div className="group space-y-5 animate-fade-up" style={{ animationDelay: "300ms" }}>
+                <div className="w-14 h-14 rounded-2xl bg-brand-azure/10 flex items-center justify-center text-brand-azure group-hover:bg-brand-azure group-hover:text-white transition-all duration-500 shadow-sm">
+                  <UserGroupIcon className="w-7 h-7 stroke-[1.5]" />
                 </div>
                 <div>
-                  <h4 className="font-heading font-bold text-xl mb-2">Leadership</h4>
-                  <p className="text-xs text-brand-gray/60 font-medium leading-relaxed uppercase tracking-wider">Mentoring the next generation of changemakers.</p>
+                  <h4 className="font-heading font-black text-xl text-brand-blue mb-2 group-hover:text-brand-azure transition-colors">Leadership</h4>
+                  <p className="text-xs text-brand-gray/60 font-black leading-relaxed uppercase tracking-[0.1em]">
+                    Mentoring the next <br /> generation of changemakers.
+                  </p>
                 </div>
               </div>
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center text-brand-gold">
-                  <span className="font-heading font-bold text-xl leading-none">02</span>
+
+              <div className="group space-y-5 animate-fade-up" style={{ animationDelay: "400ms" }}>
+                <div className="w-14 h-14 rounded-2xl bg-brand-gold/10 flex items-center justify-center text-brand-gold group-hover:bg-brand-gold group-hover:text-brand-blue transition-all duration-500 shadow-sm">
+                  <SparklesIcon className="w-7 h-7 stroke-[1.5]" />
                 </div>
                 <div>
-                  <h4 className="font-heading font-bold text-xl mb-2">Impact</h4>
-                  <p className="text-xs text-brand-gray/60 font-medium leading-relaxed uppercase tracking-wider">Executing service projects that matter to Bengaluru.</p>
+                  <h4 className="font-heading font-black text-xl text-brand-blue mb-2 group-hover:text-brand-gold transition-colors">Impact</h4>
+                  <p className="text-xs text-brand-gray/60 font-black leading-relaxed uppercase tracking-[0.1em]">
+                    Executing service projects <br /> that matter to Bengaluru.
+                  </p>
                 </div>
               </div>
             </div>
