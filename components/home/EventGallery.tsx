@@ -45,7 +45,7 @@ export default function EventGallery() {
           const allSlides: GallerySlide[] = [];
           data.forEach(item => {
             // Only include actual content items, not settings, and skip trash
-            if (!["project", "blog", "event"].includes(item.type) || item.status === "trash") return;
+            if (!["project", "blog", "event"].includes(item.type) || item.status === "trash" || (item.category || "").toUpperCase() === "SYSTEM") return;
 
             const time = new Date(item.created_at || 0).getTime();
 

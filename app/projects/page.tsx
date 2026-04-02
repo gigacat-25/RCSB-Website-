@@ -13,7 +13,12 @@ export default function ProjectsPage() {
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
-          setProjects(data.filter((p: any) => p.type !== "blog" && p.type !== "system_setting" && p.status !== "trash"));
+          setProjects(data.filter((p: any) => 
+            p.type !== "blog" && 
+            p.type !== "system_setting" && 
+            (p.category || "").toUpperCase() !== "SYSTEM" &&
+            p.status !== "trash"
+          ));
         } else {
           setProjects([]);
         }

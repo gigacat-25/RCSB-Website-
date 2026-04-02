@@ -16,8 +16,9 @@ export default function FeaturedContent() {
         const res = await fetch(`/api/projects?t=${new Date().getTime()}`);
         const data = await res.json();
 
-        setBlogs((data || []).filter((p: any) => p.type === "blog").slice(0, 3));
-        setEvents((data || []).filter((p: any) => p.type === "event" && p.status === "upcoming").slice(0, 2));
+        const filteredData = (data || []).filter((p: any) => (p.category || "").toUpperCase() !== "SYSTEM" && p.status !== "trash");
+        setBlogs(filteredData.filter((p: any) => p.type === "blog").slice(0, 3));
+        setEvents(filteredData.filter((p: any) => p.type === "event" && p.status === "upcoming").slice(0, 2));
       } catch (err) {
         console.error("Failed to fetch featured content:", err);
       } finally {

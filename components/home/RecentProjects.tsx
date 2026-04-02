@@ -13,7 +13,12 @@ export default function RecentProjects() {
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
-          setProjects(data.filter((p: any) => p.type !== "blog" && p.status !== "trash").slice(0, 3));
+          setProjects(data.filter((p: any) => 
+            p.type !== "blog" && 
+            p.type !== "system_setting" && 
+            (p.category || "").toUpperCase() !== "SYSTEM" &&
+            p.status !== "trash"
+          ).slice(0, 3));
         } else {
           setProjects([]);
         }
