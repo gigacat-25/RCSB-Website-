@@ -1,5 +1,5 @@
 export const API_URL = process.env.NEXT_PUBLIC_CLOUDFLARE_API_URL || "https://rcsb-api-worker.impact1-iceas.workers.dev";
-export const API_SECRET = process.env.CLOUDFLARE_WORKER_SECRET || "RCSB_Admin_Secure_Key_2026";
+export const API_SECRET = process.env.CLOUDFLARE_WORKER_SECRET;
 
 /**
  * Helper to fetch data from the Cloudflare Worker API.

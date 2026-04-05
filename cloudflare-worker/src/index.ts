@@ -50,7 +50,7 @@ export default {
         const showTrash = url.searchParams.get("show_trash") === "true";
         const authHeader = request.headers.get("Authorization");
         const isAuthorized = authHeader === `Bearer ${env.WORKER_SECRET}`;
-        const SUPER_ADMIN = "rscbadmin@rotract.com";
+        const SUPER_ADMIN = "rscbadmin@rotaract.com";
 
         // [AUTO-PURGE] Clean up items older than 30 days if requested by admin
         if (isAuthorized && showTrash) {
@@ -306,7 +306,7 @@ export default {
             .bind(userEmail).first() as { role: string } | null;
 
           // MASTER ADMIN OVERRIDE: Hardcoded master admin always has access
-          const isMasterAdmin = userEmail.toLowerCase() === "rscbadmin@rotract.com";
+          const isMasterAdmin = userEmail.toLowerCase() === "rscbadmin@rotaract.com";
 
           if (!admin && !isMasterAdmin && project.author_email !== userEmail) {
             return new Response(JSON.stringify({ error: "Unauthorized: Access Denied." }), { status: 403, headers });
