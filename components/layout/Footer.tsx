@@ -12,7 +12,7 @@ export default function Footer() {
   if (pathname?.startsWith("/admin")) return null;
 
   return (
-    <footer className="bg-slate-950 text-white pt-24 pb-12 relative overflow-hidden">
+    <footer className="bg-slate-950 text-white pt-8 pb-12 relative overflow-hidden">
       {/* Decorative background Elements */}
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-blue via-brand-gold to-brand-azure" />
       <div className="absolute top-0 right-0 w-96 h-96 bg-brand-blue/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />

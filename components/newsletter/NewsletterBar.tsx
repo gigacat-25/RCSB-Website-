@@ -30,27 +30,26 @@ export default function NewsletterBar() {
     }
 
     return (
-        <div className="bg-brand-blue/20 border-y border-white/5 py-12 mb-16 relative group overflow-hidden">
-            {/* Decorative glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-brand-gold/5 blur-[120px] rounded-full pointer-events-none" />
+        <div className="border-b border-white/5 py-5 mb-4 relative overflow-hidden">
+            {/* Subtle glow */}
+            <div className="absolute top-1/2 left-1/4 w-64 h-8 bg-brand-gold/5 blur-[60px] rounded-full pointer-events-none" />
 
             <div className="container-custom relative z-10">
-                <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
-                    <div className="max-w-xl text-center lg:text-left">
-                        <h3 className="text-2xl md:text-3xl font-heading font-black text-white mb-3">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="text-center sm:text-left shrink-0">
+                        <p className="text-sm font-heading font-black text-white">
                             Subscribe to <span className="text-brand-gold italic">Updates</span>
-                        </h3>
-                        <p className="text-white/60 text-sm md:text-base font-light">
-                            Get the latest news about our community projects and upcoming events.
-                            No spam, just impact.
+                        </p>
+                        <p className="text-white/40 text-xs font-light mt-0.5">
+                            Latest news &amp; events. No spam, just impact.
                         </p>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="w-full max-w-md">
-                        <div className="flex flex-col sm:flex-row gap-3">
+                    <form onSubmit={handleSubmit} className="w-full max-w-sm">
+                        <div className="flex gap-2">
                             <div className="relative flex-1">
-                                <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-white/30">
-                                    <EnvelopeIcon className="w-5 h-5" />
+                                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-white/25">
+                                    <EnvelopeIcon className="w-4 h-4" />
                                 </div>
                                 <input
                                     type="email"
@@ -58,29 +57,29 @@ export default function NewsletterBar() {
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="Enter your email address"
                                     required
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-white/30 focus:outline-none focus:border-brand-gold/50 transition-all text-sm"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-9 pr-3 text-white placeholder-white/25 focus:outline-none focus:border-brand-gold/40 transition-all text-xs"
                                 />
                             </div>
                             <button
                                 type="submit"
                                 disabled={status === "loading"}
-                                className={`px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all shadow-xl
+                                className={`px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all shrink-0
                   ${status === "done"
                                         ? "bg-green-500 text-white"
-                                        : "bg-brand-gold text-brand-blue hover:bg-white hover:shadow-brand-gold/20"
+                                        : "bg-brand-gold text-brand-blue hover:bg-white"
                                     } disabled:opacity-50`}
                             >
-                                {status === "loading" ? "..." : status === "done" ? "✓ Done" : "Subscribe"}
+                                {status === "loading" ? "…" : status === "done" ? "✓" : "Subscribe"}
                             </button>
                         </div>
                         {status === "error" && (
-                            <p className="text-brand-cranberry text-[10px] uppercase font-black tracking-widest mt-3 text-center lg:text-left">
-                                Something went wrong. Please try again.
+                            <p className="text-brand-cranberry text-[10px] uppercase font-black tracking-widest mt-1.5">
+                                Something went wrong. Try again.
                             </p>
                         )}
                         {status === "done" && (
-                            <p className="text-green-400 text-[10px] uppercase font-black tracking-widest mt-3 text-center lg:text-left">
-                                Success! You're on the list.
+                            <p className="text-green-400 text-[10px] uppercase font-black tracking-widest mt-1.5">
+                                You're on the list!
                             </p>
                         )}
                     </form>
