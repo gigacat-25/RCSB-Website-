@@ -1,18 +1,26 @@
-export const runtime = 'edge';
 import { NextResponse } from "next/server";
 import { apiFetch } from "@/lib/api";
 import { currentUser } from "@clerk/nextjs/server";
-import { isAdmin, SUPER_ADMIN } from "@/lib/admin";
+import { isAdmin, SUPER_ADMIN, isAuthorized } from "@/lib/admin";
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const project = await apiFetch(`/api/projects/${params.id}`);
+    const id = params.id;
+    if (!id) {
+      return NextResponse.json({ error: "No project ID provided" }, { status: 400 });
+    }
+    const project = await apiFetch(`/api/projects/${id}`);
     return NextResponse.json(project);
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 404 });
+    console.error(`[GET /api/admin/projects/${params.id}] Error:`, error);
+    // If it's a 404 from the API, we keep it as 404
+    if (error.message.includes("404")) {
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    }
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
@@ -39,21 +47,41 @@ export async function PUT(
       return NextResponse.json({ error: "Record not found." }, { status: 404 });
     }
 
-    // 2. Permission Check:
+    // 2. Permission Check (Dual-check: Admin Role or Owner)
     const isOwner = existing && existing.author_email === email;
-    if (!isUserAdmin && !isOwner) {
+    const isUserAuthorized = await isAuthorized(email, user?.publicMetadata?.role);
+
+    if (!isUserAuthorized && !isOwner) {
       return NextResponse.json({ error: "Unauthorized: Access Denied." }, { status: 403 });
     }
 
     // Pass body to worker
+    // [FIX] Ensure gallery_urls and featured_links are strings before sending to Worker
+    // This prevents D1_TYPE_ERROR: Type 'object' not supported
+    const processedBody = { ...body };
+    if (processedBody.gallery_urls && typeof processedBody.gallery_urls !== 'string') {
+      processedBody.gallery_urls = JSON.stringify(processedBody.gallery_urls);
+    }
+    if (processedBody.featured_links && typeof processedBody.featured_links !== 'string') {
+      processedBody.featured_links = JSON.stringify(processedBody.featured_links);
+    }
+
+    // THE KEY FIX: The Worker uses `author_email` to check authorization.
+    // - Admins editing ANY content → send SUPER_ADMIN to bypass the Worker's ownership check.
+    // - Regular users editing their OWN content → send their own email (ownership match).
+    const authorEmailForWorker = isUserAuthorized ? SUPER_ADMIN : email;
+
     const result = await apiFetch(`/api/projects/${params.id}`, {
       method: "PUT",
-      body: JSON.stringify({ ...body, author_email: body.author_email || email }),
+      body: JSON.stringify({ ...processedBody, author_email: authorEmailForWorker }),
     });
     return NextResponse.json(result);
   } catch (error: any) {
-    console.error("[PUT /api/admin/projects/[id]] Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error(`[PUT /api/admin/projects/${params.id}] Failure:`, error);
+    return NextResponse.json({ 
+      error: `Failed to update project: ${error.message}`,
+      details: error.message 
+    }, { status: 500 });
   }
 }
 
@@ -81,9 +109,11 @@ export async function DELETE(
       return NextResponse.json({ success: true, message: "Item was already removed." });
     }
 
-    // 2. Permission Check:
+    // 2. Permission Check (Dual-check: Admin Role or Owner)
     const isOwner = existing && existing.author_email === email;
-    if (!isUserAdmin && !isOwner) {
+    const isUserAuthorized = await isAuthorized(email, user?.publicMetadata?.role);
+
+    if (!isUserAuthorized && !isOwner) {
       return NextResponse.json({ error: "Access Denied: You do not have permission to delete this." }, { status: 403 });
     }
 
@@ -124,7 +154,10 @@ export async function DELETE(
     return NextResponse.json(result);
 
   } catch (error: any) {
-    console.error("[DELETE /api/admin/projects/[id]] Failure:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error(`[DELETE /api/admin/projects/${params.id}] Failure:`, error);
+    return NextResponse.json({ 
+      error: `Failed to delete project: ${error.message}`,
+      details: error.message 
+    }, { status: 500 });
   }
 }

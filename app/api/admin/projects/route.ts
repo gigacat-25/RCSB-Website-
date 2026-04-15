@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+// export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
@@ -14,19 +14,26 @@ export async function POST(request: Request) {
     const user = await currentUser();
     email = user?.primaryEmailAddress?.emailAddress;
     const body = await request.json();
-
-    // Authorization logic:
-    // 1. Admin can do anything.
-    // 2. Blogger can ONLY create 'blog' type.
-    const isUserAdmin = isAdmin(email, user?.publicMetadata?.role);
-    const userRole = getUserRole(email, user?.publicMetadata?.role);
-
-    if (!isUserAdmin && body.type !== "blog") {
+    const userRole = user?.publicMetadata?.role;
+    
+    // [SECURITY FIX] Check both Clerk and Database authorization
+    const isUserAuthorized = await isAuthorized(email, userRole);
+    
+    if (!isUserAuthorized && body.type !== "blog") {
       return NextResponse.json({ error: "Unauthorized: Only Admins can manage projects/events." }, { status: 403 });
     }
 
     // Attach author_email for tracking ownership
     const payload = { ...body, author_email: email };
+
+    // [FIX] Ensure gallery_urls and featured_links are strings before sending to Worker
+    // This prevents D1_TYPE_ERROR: Type 'object' not supported
+    if (payload.gallery_urls && typeof payload.gallery_urls !== 'string') {
+      payload.gallery_urls = JSON.stringify(payload.gallery_urls);
+    }
+    if (payload.featured_links && typeof payload.featured_links !== 'string') {
+      payload.featured_links = JSON.stringify(payload.featured_links);
+    }
 
     const result = await apiFetch("/api/projects", {
       method: "POST",

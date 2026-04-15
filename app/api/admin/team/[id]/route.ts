@@ -1,8 +1,8 @@
-export const runtime = 'edge';
+// export const runtime = 'edge';
 import { NextResponse } from "next/server";
 import { apiFetch } from "@/lib/api";
 import { currentUser } from "@clerk/nextjs/server";
-import { isAdmin, SUPER_ADMIN } from "@/lib/admin";
+import { isAdmin, SUPER_ADMIN, isAuthorized } from "@/lib/admin";
 
 export async function GET(
   request: Request,
@@ -23,7 +23,8 @@ export async function PUT(
   try {
     const user = await currentUser();
     const email = user?.primaryEmailAddress?.emailAddress;
-    if (!isAdmin(email, user?.publicMetadata?.role)) {
+    const isUserAuthorized = await isAuthorized(email, user?.publicMetadata?.role);
+    if (!isUserAuthorized) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
@@ -46,7 +47,8 @@ export async function DELETE(
   try {
     const user = await currentUser();
     const email = user?.primaryEmailAddress?.emailAddress;
-    if (!isAdmin(email, user?.publicMetadata?.role)) {
+    const isUserAuthorized = await isAuthorized(email, user?.publicMetadata?.role);
+    if (!isUserAuthorized) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 

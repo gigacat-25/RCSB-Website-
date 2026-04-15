@@ -274,10 +274,10 @@ export default {
           body.type || 'project',
           body.status || 'completed',
           body.author_email || null,
-          body.gallery_urls || "[]",
+          typeof body.gallery_urls === 'string' ? body.gallery_urls : JSON.stringify(body.gallery_urls || []),
           body.rsvp_link || null,
           body.event_date || null,
-          body.featured_links || "[]"
+          typeof body.featured_links === 'string' ? body.featured_links : JSON.stringify(body.featured_links || [])
         ).run();
         return new Response(JSON.stringify({ success: true }), { headers });
       }
@@ -329,10 +329,10 @@ export default {
               body.content || "",
               body.type || 'project',
               body.status || 'completed',
-              body.gallery_urls || "[]",
+              typeof body.gallery_urls === 'string' ? body.gallery_urls : JSON.stringify(body.gallery_urls || []),
               body.rsvp_link || null,
               body.event_date || null,
-              body.featured_links || "[]",
+              typeof body.featured_links === 'string' ? body.featured_links : JSON.stringify(body.featured_links || []),
               id
             ).run();
             return new Response(JSON.stringify({ success: true }), { headers });
