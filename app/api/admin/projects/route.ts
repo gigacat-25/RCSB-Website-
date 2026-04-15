@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 import { apiFetch } from "@/lib/api";
 
 import { currentUser } from "@clerk/nextjs/server";
-import { isAdmin, getUserRole } from "@/lib/admin";
+import { isAdmin, getUserRole, isAuthorized } from "@/lib/admin";
 
 export async function POST(request: Request) {
   let email: string | undefined | null = null;

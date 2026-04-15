@@ -15,17 +15,23 @@ export function isAdmin(email?: string | null, roleMetadata?: any) {
  * Checks if a user is authorized in the Cloudflare Worker's database.
  * Use this as a fallback when Clerk roles are not yet set.
  */
-export async function isAuthorized(email?: string | null, roleMetadata?: any) {
+export async function isAuthorized(email?: string | null, roleMetadata?: any): Promise<boolean> {
   if (!email) return false;
   
-  // 1. Check local/Clerk indicators (fast)
+  // 1. Check local/Clerk indicators (fast path)
   if (isAdmin(email, roleMetadata)) return true;
 
-  // 2. Check Worker Database (slow but source of truth for "given access")
+  // 2. Check Worker Database (source of truth for dashboard-granted access)
   try {
-    const { apiFetch } = await import("./api");
-    const check = await apiFetch(`/api/authorized-admins/check?email=${encodeURIComponent(email)}`);
-    return !!(check && check.role);
+    const workerUrl = process.env.NEXT_PUBLIC_CLOUDFLARE_API_URL || "";
+    const workerSecret = process.env.CLOUDFLARE_WORKER_SECRET || "";
+    const res = await fetch(
+      `${workerUrl}/api/authorized-admins/check?email=${encodeURIComponent(email)}`,
+      { headers: { Authorization: `Bearer ${workerSecret}` } }
+    );
+    if (!res.ok) return false;
+    const data = await res.json() as { role?: string };
+    return !!(data && data.role);
   } catch (error) {
     console.error("Database authorization check failed:", error);
     return false;
