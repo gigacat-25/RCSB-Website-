@@ -7,6 +7,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import Providers from "./providers";
 import SubscribePopup from "@/components/newsletter/SubscribePopup";
 import AutoSubscribeOnLogin from "@/components/newsletter/AutoSubscribeOnLogin";
+import CookieConsent from "@/components/layout/CookieConsent";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://rcsb-website.pages.dev"),
@@ -70,6 +71,7 @@ export default function RootLayout({
             <main className="flex-1">{children}</main>
             <Footer />
             <SubscribePopup />
+            <CookieConsent />
           </Providers>
         </body>
       </html>

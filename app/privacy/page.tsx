@@ -37,12 +37,17 @@ export default function PrivacyPolicyPage() {
                             We implement reasonable security measures to protect the personal information submitted through our website. However, please be aware that no transmission of data over the internet or electronic storage is completely secure, and we cannot guarantee absolute absolute security.
                         </p>
 
-                        <h3 className="text-2xl font-black text-brand-blue font-heading mt-8 mb-4">4. Third-Party Links</h3>
+                        <h3 className="text-2xl font-black text-brand-blue font-heading mt-8 mb-4">4. Cookies</h3>
+                        <p>
+                            Our website uses cookies to improve your browsing experience. Cookies are small data files stored on your device that help us remember your preferences, analyze site traffic, and deliver personalized content. You can manage or disable cookies through your browser settings, though some features of the site may not function properly as a result.
+                        </p>
+
+                        <h3 className="text-2xl font-black text-brand-blue font-heading mt-8 mb-4">5. Third-Party Links</h3>
                         <p>
                             Our website may contain links to external sites not operated by us (such as social media profiles or event platforms). We have no control over the content or privacy practices of these sites and encourage you to review their respective privacy policies.
                         </p>
 
-                        <h3 className="text-2xl font-black text-brand-blue font-heading mt-8 mb-4">5. Changes to This Policy</h3>
+                        <h3 className="text-2xl font-black text-brand-blue font-heading mt-8 mb-4">6. Changes to This Policy</h3>
                         <p>
                             We may update our Privacy Policy periodically. We will notify visitors of any changes by updating the "Last Updated" date at the top of this page. We encourage you to review this policy periodically.
                         </p>
