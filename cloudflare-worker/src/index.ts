@@ -10,6 +10,7 @@ export interface Env {
   DB: D1Database;
   MEDIA_BUCKET: R2Bucket;
   WORKER_SECRET: string;
+  SITE_URL?: string;
 }
 
 // D1 Migration — run once in Cloudflare dashboard > D1 > your DB > Console:
@@ -636,4 +637,31 @@ export default {
       }), { status: 500, headers });
     }
   },
+
+  // --- AUTOMATED CRON JOB ---
+  // This runs automatically based on the schedule set in wrangler.toml (e.g., once a day)
+  async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
+    console.log("[Cron] Checking for upcoming event reminders...");
+    const siteUrl = env.SITE_URL || "https://rcsb-website.pages.dev";
+    
+    try {
+      const res = await fetch(`${siteUrl}/api/newsletter/reminders`, {
+        method: "POST",
+        headers: {
+          "x-internal-key": env.WORKER_SECRET,
+        },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        console.log("[Cron] Reminder check completed:", data);
+      } else {
+        const errText = await res.text();
+        console.error("[Cron] Reminder check failed:", errText);
+      }
+    } catch (err) {
+      console.error("[Cron] Network error during reminder check:", err);
+    }
+  },
 };
+

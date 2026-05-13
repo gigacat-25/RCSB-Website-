@@ -112,3 +112,88 @@ Return ONLY a JSON object with "subject" and "body".`;
 
     return JSON.parse(generatedText) as { subject: string; body: string };
 }
+export async function generateNewsletterReminder(project: {
+    title: string;
+    description: string;
+    type: string;
+    slug: string;
+    image_url?: string;
+    event_date: string;
+    rsvp_link?: string;
+}) {
+    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb-website.pages.dev";
+    const apiKey = process.env.GROQ_API_KEY;
+
+    if (!apiKey) {
+        throw new Error("GROQ_API_KEY not configured");
+    }
+
+    const { title, description, type, slug, image_url, event_date, rsvp_link } = project;
+    const section = type === "event" ? "events" : (type === "blog" ? "blogs" : "projects");
+
+    const eDate = new Date(event_date);
+    const today = new Date();
+    const diffTime = eDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) return null; // Already passed
+
+    const absImageUrl = image_url ? (image_url.startsWith("http") ? image_url : `${SITE_URL}${image_url}`) : "";
+    const imageTag = absImageUrl ? `<img src="${absImageUrl}" alt="${title}" style="width:100%; border-radius:12px; margin-bottom:24px; border: 1px solid rgba(255,215,0,0.1);" />` : "";
+
+    const prompt = `You are a professional communications officer for the Rotaract Club of Swarna Bengaluru (RCSB). 
+Please write an urgent, high-energy REMINDER email for our upcoming ${type}.
+
+Title: ${title}
+Details: ${description}
+Official Website: ${SITE_URL}
+Official Link: ${SITE_URL}/${section}/${slug}
+RSVP Link: ${rsvp_link || "N/A"}
+Countdown: EXACTLY ${diffDays} DAYS REMAINING.
+
+Guidelines:
+1. The subject MUST emphasize the urgency (e.g., "Only ${diffDays} Days Left!", "Time is Running Out!", "Final Call for ${title}").
+2. The body MUST start with the countdown: "Tick-tock! 🕒 Only ${diffDays} days remain until ${title}."
+3. Encourage immediate action/registration. Use a "FOMO" (Fear Of Missing Out) approach but keep it professional.
+4. **Buttons**: Use this EXACT HTML for the registration button: 
+   <div style="margin: 32px 0; text-align: center;">
+     <a href="${rsvp_link || `${SITE_URL}/${section}/${slug}`}" style="background-color: #C9982A; color: #0a0f1e; padding: 16px 32px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 15px; display: inline-block; letter-spacing: 1px; text-transform: uppercase;">Register Now →</a>
+   </div>
+5. **Media Usage**: include this image tag at the top: ${imageTag}
+6. Keep the email concise and punchy.
+7. Output ONLY a valid JSON object with keys "subject" and "body".`;
+
+    const systemPrompt = `You are a professional copywriter for RCSB. You specialize in high-conversion reminder emails.
+Return ONLY a JSON object with "subject" and "body".`;
+
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            model: 'llama-3.3-70b-versatile',
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: prompt }
+            ],
+            temperature: 0.8,
+            response_format: { type: "json_object" }
+        }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(`AI Reminder Generation failed: ${errorData}`);
+    }
+
+    const data = await response.json();
+    const generatedText = data.choices[0]?.message?.content;
+
+    if (!generatedText) {
+        throw new Error("No content returned from AI");
+    }
+
+    return JSON.parse(generatedText) as { subject: string; body: string };
+}

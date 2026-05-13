@@ -16,3 +16,9 @@ bucket_name = "rcsb-media"
 [vars]
 WORKER_SECRET = "RCSB_Admin_Secure_Key_2026"
 R2_PUBLIC_URL = "https://media.rcsb.in"
+SITE_URL = "https://rcsb-website.pages.dev"
+
+
+[triggers]
+crons = ["0 9 * * *"] # Runs every day at 9 AM
+

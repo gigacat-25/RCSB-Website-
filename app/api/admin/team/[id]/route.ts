@@ -1,4 +1,4 @@
-// export const runtime = 'edge';
+export const runtime = 'edge';
 import { NextResponse } from "next/server";
 import { apiFetch } from "@/lib/api";
 import { currentUser } from "@clerk/nextjs/server";
