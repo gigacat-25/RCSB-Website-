@@ -83,9 +83,28 @@ export async function POST(request: Request) {
 
         console.log(`[Contact] Notification sent to ${adminEmails.length} admin(s):`, adminEmails);
       }
+
+      // 3. Send "Thank You" email to the user (non-blocking)
+      if (email) {
+        const userSubject = "Thank you for contacting Rotaract Swarna Bengaluru!";
+        const userBody = `
+          <p>Hi ${name || "there"},</p>
+          <p>Thank you for reaching out to us! We have received your inquiry regarding <strong>${reason || "General Inquiry"}</strong>.</p>
+          <p>Our team has been notified and we will get back to you shortly.</p>
+          <div style="margin-top:24px; padding:16px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+            <p style="margin:0 0 8px; color:#9aaabb; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:2px;">Your Message Preview</p>
+            <p style="margin:0; color:#e0e8f0; font-size:14px; font-style:italic;">"${message}"</p>
+          </div>
+          <p style="margin-top:24px;">Best regards,<br/><strong>Rotaract Club of Swarna Bengaluru</strong></p>
+        `;
+
+        sendEmail(email, userSubject, userBody).catch(err => 
+          console.error("[Contact] User thank-you email failed:", err)
+        );
+      }
     } catch (emailErr) {
       // Never block the user's form submission
-      console.error("[Contact] Admin notification failed:", emailErr);
+      console.error("[Contact] Email dispatch process failed:", emailErr);
     }
 
     return NextResponse.json(result);
