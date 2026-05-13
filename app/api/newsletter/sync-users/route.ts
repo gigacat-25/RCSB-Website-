@@ -4,13 +4,19 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import { isAdmin } from "@/lib/admin";
 
 export async function POST(request: Request) {
-    const { userId } = await auth();
+    const WORKER_SECRET = process.env.CLOUDFLARE_WORKER_SECRET!;
+    const internalKey = request.headers.get("x-internal-key");
+    const isInternalCall = internalKey === WORKER_SECRET;
     const client = await clerkClient();
-    const user = userId ? await client.users.getUser(userId) : null;
-    const email = user?.primaryEmailAddress?.emailAddress;
 
-    if (!isAdmin(email, user?.publicMetadata?.role)) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!isInternalCall) {
+        const { userId } = await auth();
+        const user = userId ? await client.users.getUser(userId) : null;
+        const email = user?.primaryEmailAddress?.emailAddress;
+
+        if (!isAdmin(email, user?.publicMetadata?.role)) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
     }
 
     try {

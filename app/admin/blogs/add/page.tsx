@@ -109,21 +109,8 @@ function AddBlogContent() {
         throw new Error(errorData.error || errorData.details || "Failed to create blog post");
       }
 
-      if (confirm(`Successfully published! Would you like to automatically draft and send a newsletter email to your subscribers about this?`)) {
-        const urlParams = new URLSearchParams({
-          autoDraft: "true",
-          projectTitle: formData.title,
-          projectDetails: formData.description,
-          projectType: formData.type || "blog",
-          projectSlug: formData.slug,
-          imageUrl: formData.image_url,
-          eventDate: formData.event_date || "",
-          rsvpLink: formData.rsvp_link || ""
-        });
-        router.push(`/admin/newsletter?${urlParams.toString()}`);
-      } else {
-        router.push("/admin/blogs");
-      }
+      alert("Successfully published! The AI is now drafting a newsletter and sending it to all subscribers in the background.");
+      router.push("/admin/blogs");
       router.refresh();
     } catch (err: any) {
       setError(err.message);

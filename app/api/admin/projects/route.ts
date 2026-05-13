@@ -40,31 +40,53 @@ export async function POST(request: Request) {
       body: JSON.stringify(payload),
     });
 
-    // If a new event or blog is created, announce it via newsletter
-    if (result.success && (body.type === 'event' || body.type === 'blog')) {
+    // If a new event, blog or project is created, announce it via newsletter
+    if (result.success && (body.type === 'event' || body.type === 'blog' || body.type === 'project')) {
       const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
-      const typeLabel = body.type === 'event' ? 'New Event' : 'New Blog Post';
+      
+      // Perform AI generation and newsletter sending in the background
+      (async () => {
+        try {
+          console.log(`[Automation] Generating AI newsletter for ${body.type}: ${body.title}`);
+          const { generateNewsletterContent } = await import("@/lib/newsletter-utils");
+          
+          const aiContent = await generateNewsletterContent({
+            title: body.title,
+            description: body.description,
+            type: body.type,
+            slug: body.slug,
+            image_url: body.image_url,
+            event_date: body.event_date,
+            rsvp_link: body.rsvp_link
+          });
 
-      fetch(`${SITE_URL}/api/newsletter/send`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-internal-key": process.env.CLOUDFLARE_WORKER_SECRET || "",
-        },
-        body: JSON.stringify({
-          subject: `${typeLabel}: ${body.title}`,
-          body: `
-            <p>Hello! 👋</p>
-            <p>We've just published a ${body.type === 'event' ? 'new event' : 'new blog post'}: <strong>"${body.title}"</strong>.</p>
-            <p>${body.description}</p>
-            <p>
-              <a href="${SITE_URL}/projects/${body.slug}" style="color:#C9982A;font-weight:bold;">
-                Read more on our website →
-              </a>
-            </p>
-          `,
-        }),
-      }).catch(err => console.error("Newsletter auto-send failed:", err));
+          console.log(`[Automation] Sending AI-generated newsletter: ${aiContent.subject}`);
+
+          // Sync members automatically before sending
+          console.log(`[Automation] Syncing web users to subscriber list...`);
+          await fetch(`${SITE_URL}/api/newsletter/sync-users`, {
+            method: "POST",
+            headers: {
+              "x-internal-key": process.env.CLOUDFLARE_WORKER_SECRET || "",
+            },
+          }).catch(err => console.error("[Automation] Sync failed (continuing anyway):", err));
+
+          await fetch(`${SITE_URL}/api/newsletter/send`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-internal-key": process.env.CLOUDFLARE_WORKER_SECRET || "",
+            },
+            body: JSON.stringify({
+              subject: aiContent.subject,
+              body: aiContent.body,
+            }),
+          });
+          console.log(`[Automation] Newsletter broadcast initiated successfully.`);
+        } catch (err) {
+          console.error("[Automation] Newsletter auto-send failed:", err);
+        }
+      })();
     }
 
     return NextResponse.json(result);
