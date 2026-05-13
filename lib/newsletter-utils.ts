@@ -11,8 +11,11 @@ export async function generateNewsletterContent(project: {
     const apiKey = process.env.GROQ_API_KEY;
 
     if (!apiKey) {
+        console.error("[AI Newsletter] Missing GROQ_API_KEY");
         throw new Error("GROQ_API_KEY not configured");
     }
+
+    console.log(`[AI Newsletter] Generating content for: ${title} (${type})`);
 
     const { title, description, type, slug, image_url, event_date, rsvp_link } = project;
     const section = type === "event" ? "events" : (type === "blog" ? "blogs" : "projects");
@@ -88,7 +91,8 @@ Return ONLY a JSON object with "subject" and "body".`;
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
+            model: 'llama-3.1-8b-instant',
+
             messages: [
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: prompt }
@@ -173,7 +177,8 @@ Return ONLY a JSON object with "subject" and "body".`;
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
+            model: 'llama-3.1-8b-instant',
+
             messages: [
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: prompt }
