@@ -15,9 +15,9 @@ export async function generateNewsletterContent(project: {
         throw new Error("GROQ_API_KEY not configured");
     }
 
+    const { title, description, type, slug, image_url, event_date, rsvp_link } = project;
     console.log(`[AI Newsletter] Generating content for: ${title} (${type})`);
 
-    const { title, description, type, slug, image_url, event_date, rsvp_link } = project;
     const section = type === "event" ? "events" : (type === "blog" ? "blogs" : "projects");
 
     let dateContext = "";
