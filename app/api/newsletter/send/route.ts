@@ -29,53 +29,65 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  try {
-    const { subject, body } = await req.json();
-    if (!subject || !body) {
-      return NextResponse.json({ error: "subject and body are required" }, { status: 400 });
-    }
+    try {
+        const { subject, body, targetEmails } = await req.json();
+        if (!subject || !body) {
+            return NextResponse.json({ error: "subject and body are required" }, { status: 400 });
+        }
 
-    console.log("[Newsletter] Gmail Send Request:", { subject });
+        console.log("[Newsletter] Gmail Send Request:", { subject, selective: !!targetEmails });
 
-    if (!GMAIL_REFRESH_TOKEN || GMAIL_REFRESH_TOKEN.includes('put_your')) {
-      console.error("[Newsletter] GMAIL_REFRESH_TOKEN is missing or placeholder.");
-      return NextResponse.json({
-        success: false,
-        sent: 0,
-        errors: ["Gmail API is not configured correctly. Check .env.local"]
-      });
-    }
+        if (!GMAIL_REFRESH_TOKEN || GMAIL_REFRESH_TOKEN.includes('put_your')) {
+            console.error("[Newsletter] GMAIL_REFRESH_TOKEN is missing or placeholder.");
+            return NextResponse.json({
+                success: false,
+                sent: 0,
+                errors: ["Gmail API is not configured correctly. Check .env.local"]
+            });
+        }
 
-    // 1. Get Google Access Token
-    console.log("[Newsletter] Refreshing Gmail Access Token...");
-    const accessToken = await getGmailAccessToken();
+        // 1. Get Google Access Token
+        console.log("[Newsletter] Refreshing Gmail Access Token...");
+        const accessToken = await getGmailAccessToken();
 
-    // 2. Fetch subscribers from Worker
-    console.log("[Newsletter] Fetching subscribers from Worker...");
-    const subsRes = await fetch(`${WORKER_URL}/api/newsletter/subscribers`, {
-      headers: { Authorization: `Bearer ${WORKER_SECRET}` },
-    });
+        // 2. Fetch subscribers from Worker
+        console.log("[Newsletter] Fetching subscribers from Worker...");
+        const subsRes = await fetch(`${WORKER_URL}/api/newsletter/subscribers`, {
+            headers: { Authorization: `Bearer ${WORKER_SECRET}` },
+        });
 
-    if (!subsRes.ok) {
-      const errText = await subsRes.text();
-      throw new Error(`Failed to fetch subscribers: ${errText}`);
-    }
+        if (!subsRes.ok) {
+            const errText = await subsRes.text();
+            throw new Error(`Failed to fetch subscribers: ${errText}`);
+        }
 
-    const subscribers: { email: string; name: string | null; token: string }[] = await subsRes.json();
-    console.log(`[Newsletter] Found ${subscribers.length} subscribers.`);
+        let subscribers: { email: string; name: string | null; token: string }[] = await subsRes.json();
+        console.log(`[Newsletter] Found ${subscribers.length} total subscribers.`);
 
-    if (!subscribers.length) {
-      return NextResponse.json({ success: true, sent: 0, message: "No subscribers found." });
-    }
+        // Filter if targetEmails is provided
+        if (targetEmails && Array.isArray(targetEmails) && targetEmails.length > 0) {
+            const dbEmails = new Set(subscribers.map(s => s.email));
+            const targetedDbSubs = subscribers.filter(sub => targetEmails.includes(sub.email));
+            
+            // Add custom emails not in DB
+            const customSubs = targetEmails
+                .filter((email: string) => !dbEmails.has(email))
+                .map((email: string) => ({ email, name: null, token: "" }));
+            
+            subscribers = [...targetedDbSubs, ...customSubs];
+            console.log(`[Newsletter] Filtered to ${subscribers.length} targeted subscribers.`);
+        }
 
-    // 3. Send via Gmail API
-    let sent = 0;
-    const errors: string[] = [];
+        if (!subscribers.length) {
+            return NextResponse.json({ success: true, sent: 0, message: "No subscribers found." });
+        }
 
-    for (const sub of subscribers) {
-      if (!sub.token) continue;
+        // 3. Send via Gmail API
+        let sent = 0;
+        const errors: string[] = [];
 
-      const unsubUrl = `${SITE_URL}/unsubscribe?token=${sub.token}`;
+        for (const sub of subscribers) {
+            const unsubUrl = sub.token ? `${SITE_URL}/unsubscribe?token=${sub.token}` : undefined;
       const html = buildEmailHtml(subject, body, unsubUrl);
       const raw = createRawEmail(sub.email, EMAIL_FROM, subject, html);
 

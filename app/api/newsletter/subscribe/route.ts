@@ -27,8 +27,17 @@ export async function POST(req: NextRequest) {
 
         const data = await res.json();
 
-        // 3. Send "Welcome" email to the subscriber (non-blocking)
+        // 3. Trigger n8n automation (New Subscriber)
         if (res.ok && body.email) {
+            const { triggerN8NWebhook } = await import("@/lib/newsletter-utils");
+            triggerN8NWebhook("user_subscribed", {
+                email: body.email,
+                name: body.name || null,
+                subscribed_at: new Date().toISOString(),
+                source: "website_footer"
+            }).catch(err => console.error("[Newsletter Subscribe] n8n trigger failed:", err));
+
+            // Optional: Internal welcome email (can be removed if n8n handles it)
             const userSubject = "Welcome to the RCSB Newsletter!";
             const userBody = `
                 <p>Hi ${body.name || "there"},</p>

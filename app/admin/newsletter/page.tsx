@@ -1,7 +1,7 @@
 "use client";
 export const runtime = 'edge';
 
-import { useState, useEffect, Suspense, useRef } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useUser } from "@clerk/nextjs";
 import { isAdmin } from "@/lib/admin";
 import { useSearchParams } from "next/navigation";
@@ -26,100 +26,42 @@ function NewsletterForm() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [showPreview, setShowPreview] = useState(false);
-    const [contextMedia, setContextMedia] = useState<{ imageUrl?: string; eventDate?: string; rsvpLink?: string }>({});
-    const hasAutoDrafted = useRef(false);
+    const [sendMode, setSendMode] = useState<"all" | "selected">("all");
+    const [selectedEmails, setSelectedEmails] = useState<Set<string>>(new Set());
+    const [customEmailsInput, setCustomEmailsInput] = useState("");
+    const [recipientSearch, setRecipientSearch] = useState("");
+    
+    // Track if auto-draft has been triggered to prevent loops
+    const [hasAutoDrafted, setHasAutoDrafted] = useState(false);
 
     useEffect(() => {
-        const autoDraft = searchParams.get("autoDraft");
-        if (autoDraft === "true" && !hasAutoDrafted.current) {
-            hasAutoDrafted.current = true;
-
-            const title = searchParams.get("projectTitle") || "";
-            const details = searchParams.get("projectDetails") || "";
-            const type = searchParams.get("projectType") || "project";
-            const slug = searchParams.get("projectSlug") || "";
-            const imageUrl = searchParams.get("imageUrl") || "";
-            const eventDate = searchParams.get("eventDate") || "";
-            const rsvpLink = searchParams.get("rsvpLink") || "";
-
-            setContextMedia({ imageUrl, eventDate, rsvpLink });
-
-            const section = type === "event" ? "events" : (type === "blog" ? "blogs" : "projects");
-
-            let dateContext = "";
-            if (eventDate) {
-                const eDate = new Date(eventDate);
-                const today = new Date();
-                const diffTime = eDate.getTime() - today.getTime();
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                if (diffDays > 0) {
-                    dateContext = `\nThe event is scheduled for ${eDate.toLocaleDateString()}. It is exactly ${diffDays} days away. Make sure to mention this countdown/urgency in the email.`;
-                } else if (diffDays === 0) {
-                    dateContext = `\nThe event is scheduled for today! Emphasize that it's happening today in the email.`;
-                } else {
-                    dateContext = `\nThe event was on ${eDate.toLocaleDateString()}. Write the email in past tense as a recap or highlight of the successful event.`;
-                }
-            }
-
-            const absImageUrl = imageUrl ? (imageUrl.startsWith("http") ? imageUrl : `https://rcsb-website.pages.dev${imageUrl}`) : "";
-            const imageTag = absImageUrl ? `<img src="${absImageUrl}" alt="${title}" style="width:100%; border-radius:12px; margin-bottom:24px; border: 1px solid rgba(255,215,0,0.1);" />` : "";
-
-            let imageContext = "";
-            if (imageTag) {
-                imageContext = `\nCRITICAL: You MUST include this EXACT cover image tag at the very top of your body: ${imageTag}`;
-            }
-
-            let rsvpContext = "";
-            if (rsvpLink) {
-                rsvpContext = `\nThere is an RSVP link for this event: ${rsvpLink}. Create a large, prominent RSVP button that points to this exact link with the text "RSVP Now" or "Get Your Tickets".`;
-            }
-
-            const prompt = `You are a professional communications officer for the Rotaract Club of Swarna Bengaluru (RCSB). 
-Please write a highly engaging, branded HTML email newsletter announcing the following ${type}.
-
-Title: ${title}
-Details: ${details}
-Official Website: https://rcsb-website.pages.dev
-Official Email: rota.rcbs@gmail.com
-Link to view on site: https://rcsb-website.pages.dev/${section}/${slug}
-
-CONTEXTUAL DATA:
-${dateContext}${imageContext}${rsvpContext}
-
-Guidelines:
-1. Always start the email body with a professional header: "Rotaract Club of Swarna Bengaluru".
-2. Use a sophisticated, warm, and community-focused tone.
-3. **Buttons**: Any primary link (like a feedback form or "Read More") MUST be a styled button. Use this EXACT HTML: 
-   <div style="margin: 32px 0; text-align: center;">
-     <a href="URL_HERE" style="background-color: #C9982A; color: #0a0f1e; padding: 16px 32px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 15px; display: inline-block; letter-spacing: 1px; text-transform: uppercase;">BUTTON_TEXT_HERE</a>
-   </div>
-4. **Media Usage**: Do NOT use placeholder images. Only use the image tag provided in the context above. If no image tag is provided, do not include an image.
-5. Ensure the Call-To-Action (CTA) text is interesting and compelling.
-6. **Note**: Do not repeat the physical address or social media links in the body; they are already handled by our permanent email footer.
-7. Output ONLY a valid JSON object with keys "subject" and "body". Use semantic HTML tags in the body.`;
-
+        const autoDraftPrompt = searchParams.get("autoDraftPrompt");
+        if (autoDraftPrompt && !hasAutoDrafted && !isGenerating && !subject && !body) {
+            setAiPrompt(autoDraftPrompt);
+            setHasAutoDrafted(true);
+            
+            // We need to call the AI generator, but we can't easily call handleGenerateAI 
+            // directly without redefining it or breaking dependencies, so we duplicate the simple fetch logic here or use a helper.
             setIsGenerating(true);
             fetch("/api/newsletter/generate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prompt }),
+                body: JSON.stringify({ prompt: autoDraftPrompt })
             })
-                .then(async res => {
-                    const data = await res.json();
-                    if (!res.ok) throw new Error(data.details || data.error || "Generation failed");
-                    return data;
-                })
-                .then(data => {
-                    if (data.subject) setSubject(data.subject);
-                    if (data.body) setBody(data.body);
-                })
-                .catch(err => {
-                    console.error("Auto draft failed:", err);
-                    alert(`AI Generation failed: ${err.message}`);
-                })
-                .finally(() => setIsGenerating(false));
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) throw new Error(data.error);
+                setSubject(data.subject);
+                setBody(data.body);
+            })
+            .catch(err => {
+                alert("Failed to auto-draft: " + err.message);
+            })
+            .finally(() => {
+                setIsGenerating(false);
+            });
         }
-    }, [searchParams]);
+    }, [searchParams, hasAutoDrafted, isGenerating, subject, body]);
 
     useEffect(() => {
         fetch("/api/newsletter/subscribers-count")
@@ -159,18 +101,44 @@ Guidelines:
     async function handleSend(e: React.FormEvent) {
         e.preventDefault();
         if (!subject.trim() || !body.trim()) return;
+
+        const customEmailsList = customEmailsInput
+            .split(/[\n,;]+/)
+            .map(email => email.trim())
+            .filter(email => email.includes("@"));
+
+        if (sendMode === "selected" && selectedEmails.size === 0 && customEmailsList.length === 0) {
+            alert("Please select at least one subscriber or enter a valid custom email to send to.");
+            return;
+        }
+
+        const totalSelected = sendMode === "selected" ? selectedEmails.size + customEmailsList.length : (subCount ?? 0);
+
+        const confirmMsg = sendMode === "selected"
+            ? `Send this email to ${totalSelected} recipient${totalSelected !== 1 ? "s" : ""}?`
+            : `Broadcast this email to ALL ${subCount ?? ""} subscribers?`;
+
+        if (!confirm(confirmMsg)) return;
+
         setStatus("loading");
         setResult(null);
         try {
+            const payload: any = { subject, body };
+            if (sendMode === "selected") {
+                payload.targetEmails = Array.from(new Set([...Array.from(selectedEmails), ...customEmailsList]));
+            }
             const res = await fetch("/api/newsletter/send", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ subject, body }),
+                body: JSON.stringify(payload),
             });
             const data = await res.json();
             if (res.ok) {
                 setStatus("done");
                 setResult(data);
+                if (sendMode === "selected") {
+                    setCustomEmailsInput(""); // Clear the input field on success
+                }
             } else {
                 setStatus("error");
                 setResult({ sent: 0, total: 0, errors: [data.error || "Unknown server error"] });
@@ -289,12 +257,6 @@ Guidelines:
         let finalPrompt = "";
         const isRefining = subject.trim() || body.trim();
 
-        const { imageUrl, rsvpLink } = contextMedia;
-        const absImageUrl = imageUrl ? (imageUrl.startsWith("http") ? imageUrl : `https://rcsb-website.pages.dev${imageUrl}`) : "";
-        const imageTag = absImageUrl ? `<img src="${absImageUrl}" style="width:100%; border-radius:12px; margin-bottom:24px;" />` : "";
-        const imageInstruction = imageTag ? `\nCRITICAL: You MUST include this EXACT cover image tag at the VERY TOP of the email body: ${imageTag}` : "";
-        const rsvpInstruction = rsvpLink ? `\nThere is an RSVP/Link: ${rsvpLink}. Make a proper gold button for it.` : "";
-
         if (isRefining && aiPrompt.trim()) {
             // Refinement Mode
             finalPrompt = `You are a professional communications officer for the Rotaract Club of Swarna Bengaluru.
@@ -304,29 +266,25 @@ CURRENT SUBJECT: ${subject}
 CURRENT BODY: ${body}
 
 MY REQUEST: ${aiPrompt}
-${imageInstruction}${rsvpInstruction}
 
 STRICT GUIDELINES:
 1. Apply the requested changes while maintaining the branding.
-2. If a cover image tag is provided above, ensure it is at the very top.
-3. Use proper buttons for links. Use semantic HTML.
-4. Output ONLY a valid JSON object with "subject" and "body".`;
+2. Use proper buttons for links. Use semantic HTML.
+3. Output ONLY a valid JSON object with "subject" and "body".`;
         } else {
             // Normal Draft Mode
             finalPrompt = aiPrompt.trim()
-                ? aiPrompt + imageInstruction + rsvpInstruction
+                ? aiPrompt
                 : `You are the communications officer for the Rotaract Club of Swarna Bengaluru. 
 Please rewrite the following details into a highly engaging newsletter.
 
 Subject: ${subject}
 Details: ${body}
-${imageInstruction}${rsvpInstruction}
 
 Guidelines:
-1. Include the cover image at the top if provided.
-2. Use professional buttons for CTAs.
-3. Do not repeat footer details.
-4. Output ONLY a JSON object with "subject" and "body".`;
+1. Use professional buttons for CTAs.
+2. Do not repeat footer details.
+3. Output ONLY a JSON object with "subject" and "body".`;
         }
 
         if (!finalPrompt.trim()) return;
@@ -448,21 +406,147 @@ Guidelines:
                         />
                     </div>
 
-                    <div className="pt-4">
+                    {/* Send Mode Toggle */}
+                    <div className="pt-4 space-y-4">
+                        <div className="flex items-center gap-3 p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl">
+                            <label className="text-xs font-black text-brand-blue uppercase tracking-[0.2em] ml-1">Send Mode:</label>
+                            <div className="flex gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => { setSendMode("all"); setSelectedEmails(new Set()); }}
+                                    className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                                        sendMode === "all"
+                                            ? "bg-brand-blue text-white shadow-lg shadow-blue-500/20"
+                                            : "bg-white text-slate-500 border-2 border-slate-200 hover:border-brand-blue/30"
+                                    }`}
+                                >
+                                    📢 All Subscribers
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setSendMode("selected")}
+                                    className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                                        sendMode === "selected"
+                                            ? "bg-brand-gold text-white shadow-lg shadow-brand-gold/20"
+                                            : "bg-white text-slate-500 border-2 border-slate-200 hover:border-brand-gold/30"
+                                    }`}
+                                >
+                                    🎯 Selected People
+                                </button>
+                            </div>
+                        </div>
+
+                        {sendMode === "selected" && (
+                            <div className="p-5 bg-brand-gold/5 border-2 border-brand-gold/20 rounded-2xl space-y-4">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-black text-brand-gold uppercase tracking-[0.2em]">
+                                        Custom Emails (Comma separated)
+                                    </label>
+                                    <textarea
+                                        value={customEmailsInput}
+                                        onChange={(e) => setCustomEmailsInput(e.target.value)}
+                                        placeholder="e.g. guest@example.com, speaker@example.com"
+                                        rows={2}
+                                        className="w-full bg-white border border-brand-gold/30 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-brand-gold"
+                                    />
+                                </div>
+
+                                <div>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <label className="text-xs font-black text-brand-gold uppercase tracking-[0.2em]">
+                                            Select Existing Subscribers ({selectedEmails.size} selected)
+                                        </label>
+                                        <div className="flex gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => setSelectedEmails(new Set(filteredSubscribers.map(s => s.email)))}
+                                                className="px-3 py-1.5 bg-white border border-brand-gold/30 text-brand-gold rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-brand-gold/10 transition-all"
+                                            >
+                                                Select All
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setSelectedEmails(new Set())}
+                                                className="px-3 py-1.5 bg-white border border-slate-200 text-slate-500 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all"
+                                            >
+                                                Clear All
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <input
+                                        type="text"
+                                        placeholder="Search subscribers to select..."
+                                        value={recipientSearch}
+                                        onChange={(e) => setRecipientSearch(e.target.value)}
+                                        className="w-full mb-3 bg-white border border-brand-gold/30 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-brand-gold"
+                                    />
+
+                                    <div className="bg-white border-2 border-slate-200 rounded-xl overflow-y-auto max-h-48 p-2">
+                                        {filteredSubscribers.filter(s => 
+                                            s.email?.toLowerCase().includes(recipientSearch.toLowerCase()) ||
+                                            s.name?.toLowerCase().includes(recipientSearch.toLowerCase())
+                                        ).length === 0 ? (
+                                            <div className="p-4 text-xs font-medium text-slate-400 text-center">
+                                                No subscribers found.
+                                            </div>
+                                        ) : (
+                                            <ul className="divide-y divide-slate-100">
+                                                {filteredSubscribers
+                                                    .filter(s => 
+                                                        s.email?.toLowerCase().includes(recipientSearch.toLowerCase()) ||
+                                                        s.name?.toLowerCase().includes(recipientSearch.toLowerCase())
+                                                    )
+                                                    .map((u, i) => (
+                                                    <li key={i} className="flex items-center gap-3 p-2.5 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer"
+                                                        onClick={() => {
+                                                            setSelectedEmails(prev => {
+                                                                const next = new Set(prev);
+                                                                if (next.has(u.email)) next.delete(u.email);
+                                                                else next.add(u.email);
+                                                                return next;
+                                                            });
+                                                        }}
+                                                    >
+                                                        <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all flex-shrink-0 ${
+                                                            selectedEmails.has(u.email)
+                                                                ? "bg-brand-gold border-brand-gold text-white"
+                                                                : "border-slate-300 bg-white"
+                                                        }`}>
+                                                            {selectedEmails.has(u.email) && (
+                                                                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}>
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                                </svg>
+                                                            )}
+                                                        </div>
+                                                        <span className="text-sm font-medium text-slate-700 break-all">{u.email}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         <button
                             type="submit"
-                            disabled={status === "loading"}
-                            className="w-full bg-brand-blue hover:bg-brand-azure text-white font-black py-5 rounded-2xl transition-all shadow-xl shadow-blue-900/20 disabled:opacity-60 flex items-center justify-center gap-3 uppercase tracking-[0.2em] text-sm"
+                            disabled={status === "loading" || (sendMode === "selected" && selectedEmails.size === 0)}
+                            className={`w-full font-black py-5 rounded-2xl transition-all shadow-xl disabled:opacity-60 flex items-center justify-center gap-3 uppercase tracking-[0.2em] text-sm ${
+                                sendMode === "selected"
+                                    ? "bg-brand-gold hover:bg-yellow-500 text-white shadow-brand-gold/20"
+                                    : "bg-brand-blue hover:bg-brand-azure text-white shadow-blue-900/20"
+                            }`}
                         >
                             {status === "loading" ? (
                                 <>
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    Processing Agent...
+                                    Sending...
                                 </>
+                            ) : sendMode === "selected" ? (
+                                <span>🎯 Send to {selectedEmails.size} Selected Subscriber{selectedEmails.size !== 1 ? "s" : ""}</span>
                             ) : (
-                                <>
-                                    <span>📤 Broadcast to {subCount ?? "All"} Subscribers</span>
-                                </>
+                                <span>📤 Broadcast to {subCount ?? "All"} Subscribers</span>
                             )}
                         </button>
                     </div>

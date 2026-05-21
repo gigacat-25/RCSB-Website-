@@ -306,13 +306,9 @@ export default function AdminProjectsPage() {
                               <PencilIcon className="w-5 h-5" />
                             </Link>
                             <Link
-                              href={`/admin/newsletter?autoDraft=true&projectTitle=${encodeURIComponent(
-                                item.title
-                              )}&projectDetails=${encodeURIComponent(
-                                item.description || ""
-                              )}&projectType=${item.type || "project"}&projectSlug=${item.slug}`}
+                              href={`/admin/newsletter?autoDraftPrompt=${encodeURIComponent(`Write a newsletter email about our project titled "${item.title}". Category: ${item.category}. Description: ${item.description || ''}. Cover image: ${item.image_url || ''}.`)}`}
                               className="p-2 text-brand-gold hover:bg-yellow-50 rounded-lg transition-colors flex items-center justify-center"
-                              title="Blast Email to Subscribers"
+                              title="Draft Newsletter for this Project"
                             >
                               <NewspaperIcon className="w-5 h-5" />
                             </Link>

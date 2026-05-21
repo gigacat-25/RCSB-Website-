@@ -202,3 +202,34 @@ Return ONLY a JSON object with "subject" and "body".`;
 
     return JSON.parse(generatedText) as { subject: string; body: string };
 }
+export async function triggerN8NWebhook(type: "blog_published" | "user_subscribed", data: any) {
+    const webhookUrl = process.env.N8N_WEBHOOK_URL;
+    if (!webhookUrl) {
+        console.warn("[n8n] N8N_WEBHOOK_URL not configured. Skipping automation.");
+        return;
+    }
+
+    try {
+        console.log(`[n8n] Triggering webhook for ${type}...`);
+        const response = await fetch(webhookUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                trigger: type,
+                timestamp: new Date().toISOString(),
+                data: data
+            }),
+        });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(`n8n Webhook failed: ${errText}`);
+        }
+
+        console.log(`[n8n] Webhook triggered successfully for ${type}`);
+    } catch (err) {
+        console.error(`[n8n] Error triggering webhook for ${type}:`, err);
+    }
+}

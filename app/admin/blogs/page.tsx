@@ -284,13 +284,9 @@ export default function AdminBlogsPage() {
                               <PencilIcon className="w-5 h-5" />
                             </Link>
                             <Link
-                              href={`/admin/newsletter?autoDraft=true&projectTitle=${encodeURIComponent(
-                                item.title
-                              )}&projectDetails=${encodeURIComponent(
-                                item.description || ""
-                              )}&projectType=blog&projectSlug=${item.slug}`}
+                              href={`/admin/newsletter?autoDraftPrompt=${encodeURIComponent(`Write a newsletter email about our blog post titled "${item.title}". Category: ${item.category}. Description: ${item.description || ''}. Cover image: ${item.image_url || ''}.`)}`}
                               className="p-2 text-brand-gold hover:bg-yellow-50 rounded-lg transition-colors flex items-center justify-center"
-                              title="Share Story with Subscribers"
+                              title="Draft Newsletter for this Blog"
                             >
                               <NewspaperIcon className="w-5 h-5" />
                             </Link>

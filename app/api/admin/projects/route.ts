@@ -40,52 +40,7 @@ export async function POST(request: Request) {
       body: JSON.stringify(payload),
     });
 
-    // If a new event, blog or project is created, announce it via newsletter
-    if (result.success && (body.type === 'event' || body.type === 'blog' || body.type === 'project')) {
-      const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
-      const WORKER_SECRET = process.env.CLOUDFLARE_WORKER_SECRET || "";
 
-      try {
-        console.log(`[Automation] Generating AI newsletter for ${body.type}: ${body.title}`);
-        const { generateNewsletterContent } = await import("@/lib/newsletter-utils");
-        
-        const aiContent = await generateNewsletterContent({
-          title: body.title,
-          description: body.description,
-          type: body.type,
-          slug: body.slug,
-          image_url: body.image_url,
-          event_date: body.event_date,
-          rsvp_link: body.rsvp_link
-        });
-
-        console.log(`[Automation] Sending AI-generated newsletter: ${aiContent.subject}`);
-
-        // Sync members automatically before sending
-        console.log(`[Automation] Syncing web users to subscriber list...`);
-        await fetch(`${SITE_URL}/api/newsletter/sync-users`, {
-          method: "POST",
-          headers: {
-            "x-internal-key": WORKER_SECRET,
-          },
-        }).catch(err => console.error("[Automation] Sync failed (continuing anyway):", err));
-
-        await fetch(`${SITE_URL}/api/newsletter/send`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-internal-key": WORKER_SECRET,
-          },
-          body: JSON.stringify({
-            subject: aiContent.subject,
-            body: aiContent.body,
-          }),
-        });
-        console.log(`[Automation] Newsletter broadcast initiated successfully.`);
-      } catch (err) {
-        console.error("[Automation] Newsletter auto-send failed:", err);
-      }
-    }
 
     return NextResponse.json(result);
   } catch (error: any) {
