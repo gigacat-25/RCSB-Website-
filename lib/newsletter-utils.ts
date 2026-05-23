@@ -124,7 +124,7 @@ export async function generateNewsletterReminder(project: {
     image_url?: string;
     event_date: string;
     rsvp_link?: string;
-}) {
+}, daysRemainingOverride?: number) {
     const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb-website.pages.dev";
     const apiKey = process.env.GROQ_API_KEY;
 
@@ -138,9 +138,11 @@ export async function generateNewsletterReminder(project: {
     const eDate = new Date(event_date);
     const today = new Date();
     const diffTime = eDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const calculatedDiffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    const diffDays = daysRemainingOverride !== undefined ? daysRemainingOverride : calculatedDiffDays;
 
-    if (diffDays < 0) return null; // Already passed
+    if (diffDays < 0 && daysRemainingOverride === undefined) return null; // Already passed
 
     const absImageUrl = image_url ? (image_url.startsWith("http") ? image_url : `${SITE_URL}${image_url}`) : "";
     const imageTag = absImageUrl ? `<img src="${absImageUrl}" alt="${title}" style="width:100%; border-radius:12px; margin-bottom:24px; border: 1px solid rgba(255,215,0,0.1);" />` : "";

@@ -1,8 +1,11 @@
+import { WorkflowEntrypoint, WorkflowEvent, WorkflowStep } from "cloudflare:workers";
+
 declare global {
   interface Env {
     DB: D1Database;
     MEDIA_BUCKET: R2Bucket;
     WORKER_SECRET: string;
+    EVENT_REMINDER_WORKFLOW: any;
   }
 }
 
@@ -11,6 +14,7 @@ export interface Env {
   MEDIA_BUCKET: R2Bucket;
   WORKER_SECRET: string;
   SITE_URL?: string;
+  EVENT_REMINDER_WORKFLOW: any;
 }
 
 // D1 Migration — run once in Cloudflare dashboard > D1 > your DB > Console:
@@ -262,7 +266,7 @@ export default {
           }), { status: 409, headers });
         }
 
-        await env.DB.prepare(
+        const result = await env.DB.prepare(
           "INSERT INTO projects (title, slug, category, year, description, image_url, content, type, status, author_email, gallery_urls, rsvp_link, event_date, featured_links) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         ).bind(
           body.title || "Untitled",
@@ -280,6 +284,22 @@ export default {
           body.event_date || null,
           typeof body.featured_links === 'string' ? body.featured_links : JSON.stringify(body.featured_links || [])
         ).run();
+
+        const insertedId = result.meta.last_row_id;
+
+        // Trigger Cloudflare Workflow automatically in the background
+        if (env.EVENT_REMINDER_WORKFLOW && (body.type === 'blog' || body.type === 'project' || body.type === 'event')) {
+          try {
+            await env.EVENT_REMINDER_WORKFLOW.create({
+              id: `event-${insertedId}`,
+              params: { eventId: insertedId, type: body.type }
+            });
+            console.log(`[Workflow] Spawned workflow for event-${insertedId} (type: ${body.type})`);
+          } catch (err: any) {
+            console.error(`[Workflow] Failed to trigger workflow:`, err.message);
+          }
+        }
+
         return new Response(JSON.stringify({ success: true }), { headers });
       }
 
@@ -336,11 +356,54 @@ export default {
               typeof body.featured_links === 'string' ? body.featured_links : JSON.stringify(body.featured_links || []),
               id
             ).run();
+
+            // Manage Workflow instance on update
+            if (env.EVENT_REMINDER_WORKFLOW) {
+              const numId = parseInt(id);
+              try {
+                const existing = await env.EVENT_REMINDER_WORKFLOW.get(`event-${numId}`);
+                if (existing) {
+                  await existing.terminate();
+                  console.log(`[Workflow] Terminated existing workflow for event-${numId}`);
+                }
+              } catch (e) {
+                // Not found
+              }
+
+              // If post is still active, spin up new workflow
+              if (body.status !== 'trash' && body.status !== 'draft' && (body.type === 'blog' || body.type === 'project' || body.type === 'event')) {
+                try {
+                  await env.EVENT_REMINDER_WORKFLOW.create({
+                    id: `event-${numId}`,
+                    params: { eventId: numId, type: body.type }
+                  });
+                  console.log(`[Workflow] Spawned updated workflow for event-${numId} (type: ${body.type})`);
+                } catch (err: any) {
+                  console.error(`[Workflow] Failed to spawn updated workflow:`, err.message);
+                }
+              }
+            }
+
             return new Response(JSON.stringify({ success: true }), { headers });
           }
 
           if (request.method === "DELETE") {
             await env.DB.prepare("DELETE FROM projects WHERE id=?").bind(id).run();
+
+            // Terminate Workflow on delete
+            if (env.EVENT_REMINDER_WORKFLOW) {
+              const numId = parseInt(id);
+              try {
+                const existing = await env.EVENT_REMINDER_WORKFLOW.get(`event-${numId}`);
+                if (existing) {
+                  await existing.terminate();
+                  console.log(`[Workflow] Terminated workflow for deleted event-${numId}`);
+                }
+              } catch (e) {
+                // Ignore
+              }
+            }
+
             return new Response(JSON.stringify({ success: true }), { headers });
           }
         }
@@ -514,7 +577,7 @@ export default {
         }
 
         const formData = await request.formData();
-        const file = formData.get("file") as File;
+        const file = formData.get("file") as unknown as File;
         if (!file) {
           return new Response(JSON.stringify({ error: "No file provided" }), { status: 400, headers });
         }
@@ -664,4 +727,187 @@ export default {
     }
   },
 };
+
+// --- CLOUDFLARE WORKFLOW FOR EVENT REMINDERS ---
+interface EventReminderParams {
+  eventId: number;
+  type?: string;
+}
+
+export class EventReminderWorkflow extends WorkflowEntrypoint<Env, EventReminderParams> {
+  async run(event: WorkflowEvent<EventReminderParams>, step: WorkflowStep) {
+    const { eventId, type } = event.payload || {};
+    console.log(`[Workflow] Started EventReminderWorkflow. Payload: ${JSON.stringify(event.payload)}`);
+
+    if (!eventId) {
+      console.warn("[Workflow] Error: eventId is missing in the payload. Stopping workflow.");
+      return;
+    }
+
+    const ONE_DAY = 24 * 60 * 60 * 1000;
+
+    // 1. --- MILESTONE 1: Immediate Creation Notification ---
+    await step.do("Send initial creation email", async () => {
+      const siteUrl = this.env.SITE_URL || "https://rcsb-website.pages.dev";
+      const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-internal-key": this.env.WORKER_SECRET,
+        },
+        body: JSON.stringify({ eventId, isNewPost: true }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to send initial creation email: ${errorText}`);
+      }
+      return { status: "sent" };
+    });
+
+    // Blogs do not have event dates or reminders. Exit workflow.
+    if (type === 'blog') {
+      console.log(`[Workflow] Blog creation email sent. Exiting workflow for blog ID: ${eventId}`);
+      return;
+    }
+
+    // Retrieve event details to process reminders
+    let eventDetails = await step.do("Fetch event details", async () => {
+      return await getEventFromDb(this.env.DB, eventId);
+    });
+
+    if (!eventDetails || eventDetails.status === "trash" || !eventDetails.event_date) {
+      console.log(`[Workflow] Event/Project ${eventId} has no event date or is inactive. Exiting.`);
+      return;
+    }
+
+    let eventTime = new Date(eventDetails.event_date).getTime();
+
+    // 2. --- MILESTONE 2: Send email every 2 days until 2 days near event ---
+    let twoDaysNear = eventTime - 2 * ONE_DAY;
+
+    while (Date.now() < twoDaysNear) {
+      // Sleep for 2 days or until we hit the 2-days-near mark (whichever is sooner)
+      let nextSleepTarget = Math.min(Date.now() + 2 * ONE_DAY, twoDaysNear);
+      console.log(`[Workflow] Sleeping until next 2-day milestone: ${new Date(nextSleepTarget).toISOString()}`);
+      await step.sleepUntil("Wait for next 2-day milestone", new Date(nextSleepTarget));
+
+      // Re-fetch event details
+      eventDetails = await step.do("Re-fetch event details after 2-day sleep", async () => {
+        return await getEventFromDb(this.env.DB, eventId);
+      });
+
+      if (!eventDetails || eventDetails.status === "trash" || !eventDetails.event_date) {
+        console.log(`[Workflow] Event ${eventId} became inactive or date was cleared. Exiting.`);
+        return;
+      }
+
+      eventTime = new Date(eventDetails.event_date).getTime();
+      twoDaysNear = eventTime - 2 * ONE_DAY;
+
+      const daysRemaining = Math.max(1, Math.round((eventTime - Date.now()) / ONE_DAY));
+
+      // Send periodic update reminder
+      await step.do("Send periodic update reminder", async () => {
+        const siteUrl = this.env.SITE_URL || "https://rcsb-website.pages.dev";
+        const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-internal-key": this.env.WORKER_SECRET,
+          },
+          body: JSON.stringify({ eventId, daysRemaining }),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Failed to send periodic reminder: ${errorText}`);
+        }
+        return { status: "sent", daysRemaining };
+      });
+    }
+
+    // 3. --- MILESTONE 3: Send email every day when 2 days near ---
+    while (Date.now() < eventTime) {
+      let nextSleepTarget = Math.min(Date.now() + ONE_DAY, eventTime);
+      console.log(`[Workflow] Sleeping until next daily milestone: ${new Date(nextSleepTarget).toISOString()}`);
+      await step.sleepUntil("Wait for daily milestone", new Date(nextSleepTarget));
+
+      // Re-verify event details
+      eventDetails = await step.do("Re-verify event details during countdown", async () => {
+        return await getEventFromDb(this.env.DB, eventId);
+      });
+
+      if (!eventDetails || eventDetails.status === "trash" || !eventDetails.event_date) {
+        console.log(`[Workflow] Event ${eventId} became inactive during countdown. Exiting.`);
+        return;
+      }
+
+      eventTime = new Date(eventDetails.event_date).getTime();
+      const daysRemaining = Math.max(1, Math.round((eventTime - Date.now()) / ONE_DAY));
+
+      // Send daily countdown reminder
+      await step.do("Send daily countdown reminder", async () => {
+        const siteUrl = this.env.SITE_URL || "https://rcsb-website.pages.dev";
+        const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-internal-key": this.env.WORKER_SECRET,
+          },
+          body: JSON.stringify({ eventId, daysRemaining }),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Failed to send daily countdown: ${errorText}`);
+        }
+        return { status: "sent", daysRemaining };
+      });
+    }
+
+    // 4. --- MILESTONE 4: Post-Event Recap (4 days after event) ---
+    const recapTime = eventTime + 4 * ONE_DAY;
+    if (Date.now() < recapTime) {
+      console.log(`[Workflow] Sleeping until 4 days post-event: ${new Date(recapTime).toISOString()}`);
+      await step.sleepUntil("Wait for 4-day post-event recap", new Date(recapTime));
+
+      eventDetails = await step.do("Re-fetch event details for recap", async () => {
+        return await getEventFromDb(this.env.DB, eventId);
+      });
+
+      if (!eventDetails || eventDetails.status === "trash") {
+        console.log(`[Workflow] Event ${eventId} is deleted. Skipping post-event recap.`);
+        return;
+      }
+
+      // Send post-event recap
+      await step.do("Send post-event recap", async () => {
+        const siteUrl = this.env.SITE_URL || "https://rcsb-website.pages.dev";
+        const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-internal-key": this.env.WORKER_SECRET,
+          },
+          body: JSON.stringify({ eventId, isPostEvent: true }),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Failed to send post-event recap: ${errorText}`);
+        }
+        return { status: "sent" };
+      });
+    }
+  }
+}
+
+// Helper function to query D1 database inside workflow steps
+async function getEventFromDb(db: D1Database, eventId: number) {
+  return await db
+    .prepare("SELECT status, type, event_date, title, slug FROM projects WHERE id = ?")
+    .bind(eventId)
+    .first<{ status: string; type: string; event_date: string | null; title: string; slug: string }>();
+}
 

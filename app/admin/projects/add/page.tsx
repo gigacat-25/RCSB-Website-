@@ -80,14 +80,7 @@ function AddProjectForm() {
         throw new Error(errorData.error || errorData.details || "Failed to create project");
       }
 
-      if (userIsAdmin) {
-        const draftNewsletter = confirm(`✅ "${formData.title}" published successfully!\n\nWould you like to draft a newsletter email for this project now?`);
-        if (draftNewsletter) {
-          const autoDraftPrompt = `Write a newsletter email about our project titled "${formData.title}". Category: ${formData.category}. Description: ${formData.description}. Cover image: ${formData.image_url || ""}.`;
-          router.push(`/admin/newsletter?autoDraftPrompt=${encodeURIComponent(autoDraftPrompt)}`);
-          return;
-        }
-      } else {
+      if (!userIsAdmin) {
         alert(`Successfully published!`);
       }
 
