@@ -50,6 +50,8 @@ export async function generateNewsletterContent(project: {
     image_url?: string;
     event_date?: string;
     rsvp_link?: string;
+    content?: string;
+    author_email?: string;
 }) {
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
@@ -78,10 +80,11 @@ async function generateEventNewsletter(project: {
     image_url?: string;
     event_date?: string;
     rsvp_link?: string;
+    content?: string;
 }, isRecap: boolean) {
     const apiKey = process.env.GROQ_API_KEY!;
     const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb-website.pages.dev";
-    const { title, description, slug, image_url, event_date, rsvp_link } = project;
+    const { title, description, slug, image_url, event_date, rsvp_link, content } = project;
 
     let dateContext = "";
     if (event_date) {
@@ -103,7 +106,8 @@ async function generateEventNewsletter(project: {
 Please write a highly engaging, branded HTML email newsletter ${isRecap ? 'highlighting the recap of' : 'announcing'} our event.
 
 Title: ${title}
-Details: ${description}
+Summary/Description: ${description}
+${content ? `Full Event Details/Context:\n${content}\n` : ""}
 
 URLs (FOR BUTTON LINKS ONLY. DO NOT WRITE THEM OUT AS TEXT IN THE EMAIL BODY):
 - Official Website: ${SITE_URL}
@@ -117,12 +121,13 @@ ${rsvpContext}
 Guidelines:
 1. Always start the email body with a professional header: "Rotaract Club of Swarna Bengaluru".
 2. Tone: ${isRecap ? 'Warm, proud, reflective, and grateful to all attendees.' : 'Exciting, inviting, and welcoming.'}
-3. **NO Hardcoded / Raw Links**: Do NOT include raw URLs, raw link text, or standard blue anchor links in the text. All calls to action or navigation links MUST be formatted as styled gold buttons. Never write something like "visit our website at ${SITE_URL}".
-4. **Buttons**: Any primary link (like RSVP or Read More) MUST be a styled button. Use this EXACT HTML: 
+3. **Body Text**: Explain what the event is about. Based on the 'Summary/Description' and any 'Full Event Details' provided, write an engaging paragraph or two summarizing the event agenda, topics, or key highlights.
+4. **NO Hardcoded / Raw Links**: Do NOT include raw URLs, raw link text, or standard blue anchor links in the text. All calls to action or navigation links MUST be formatted as styled gold buttons. Never write something like "visit our website at ${SITE_URL}".
+5. **Buttons**: Any primary link (like RSVP or Read More) MUST be a styled button. Use this EXACT HTML: 
    <div style="margin: 32px 0; text-align: center;">
      <a href="URL_HERE" style="background-color: #C9982A; color: #0a0f1e; padding: 16px 32px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 15px; display: inline-block; letter-spacing: 1px; text-transform: uppercase;">BUTTON_TEXT_HERE</a>
    </div>
-5. Output ONLY a valid JSON object with keys "subject" and "body". Use semantic HTML tags in the body.`;
+6. Output ONLY a valid JSON object with keys "subject" and "body". Use semantic HTML tags in the body.`;
 
     const systemPrompt = `You are a professional copywriter for RCSB. Write an ${isRecap ? 'event recap' : 'upcoming event invitation'} email. Return ONLY a JSON object with "subject" and "body". Never print raw text links or default anchor links.`;
     
@@ -134,10 +139,14 @@ async function generateBlogNewsletter(project: {
     description: string;
     slug: string;
     image_url?: string;
+    content?: string;
+    event_date?: string;
+    author_email?: string;
 }) {
     const apiKey = process.env.GROQ_API_KEY!;
     const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb-website.pages.dev";
-    const { title, description, slug, image_url } = project;
+    const { title, description, slug, image_url, content, event_date, author_email } = project;
+    const authorName = event_date || (author_email ? author_email.split('@')[0] : "") || "RCSB Editorial Team";
 
     const absImageUrl = image_url ? (image_url.startsWith("http") ? image_url : `${SITE_URL}${image_url}`) : "";
     const imageTag = absImageUrl ? `<img src="${absImageUrl}" alt="${title}" style="width:100%; border-radius:12px; margin-bottom:24px; border: 1px solid rgba(255,215,0,0.1);" />` : "";
@@ -146,7 +155,9 @@ async function generateBlogNewsletter(project: {
 Please write an engaging, editorial-style HTML email newsletter sharing our latest blog post / story.
 
 Title: ${title}
-Details: ${description}
+Author: ${authorName}
+Summary/Intro: ${description}
+${content ? `Full Blog Post Content:\n${content}\n` : ""}
 
 URLs (FOR BUTTON LINKS ONLY. DO NOT WRITE THEM OUT AS TEXT IN THE EMAIL BODY):
 - Official Website: ${SITE_URL}
@@ -160,13 +171,17 @@ Guidelines:
 2. Tone: Narrative, engaging, thoughtful, and editorial.
 3. **DO NOT treat this as an event**: Do NOT mention dates, RSVP links, invitations, or "You're invited". It is a blog post / story publication.
 4. **Subject Line**: The subject line must announce a new blog story, editorial, or article (e.g., "New Story: [Title]" or "Read Our Latest Article: [Title]"). NEVER use words like "Invited", "Invitation", "Register", "RSVP", or dates/countdowns in the subject.
-5. **Body Text**: The email must announce a new blog story has been published (e.g., "We are excited to share our latest article...", "A new story has been published on our blog..."). Do NOT invite people to an event or write in an RSVP context.
-6. **NO Hardcoded / Raw Links**: Do NOT include raw URLs, raw link text, or standard blue anchor links in the text. All links MUST be formatted as styled gold buttons. Never write something like "visit our website at ${SITE_URL}".
-7. **Buttons**: Provide a prominent "Read Full Article" or "Read Story" button pointing to ${SITE_URL}/blogs/${slug}. Use this EXACT HTML:
+5. **Header Block**: Underneath the main logo or professional header, design a beautiful headline section for the blog post. This should include:
+   - A small uppercase label/category badge: "BLOG STORY" or "EDITORIAL"
+   - The main title of the blog post as a bold header/heading (<h1> or similar styled tags)
+   - A clear credit line: "Written by ${authorName}" or "By ${authorName}" in smaller styled text
+6. **Body Text**: Summarize what the blog post is about. Based on the 'Summary/Intro' and the 'Full Blog Post Content' provided, write an engaging 2-3 paragraph overview describing the topics covered, key thoughts/arguments, or narratives in the article. Provide enough detail to make it interesting to read but encourage them to click the button for the full story. Do NOT invite people to an event or write in an RSVP context.
+7. **NO Hardcoded / Raw Links**: Do NOT include raw URLs, raw link text, or standard blue anchor links in the text. All links MUST be formatted as styled gold buttons. Never write something like "visit our website at ${SITE_URL}".
+8. **Buttons**: Provide a prominent "Read Full Article" or "Read Story" button pointing to ${SITE_URL}/blogs/${slug}. Use this EXACT HTML:
    <div style="margin: 32px 0; text-align: center;">
      <a href="${SITE_URL}/blogs/${slug}" style="background-color: #C9982A; color: #0a0f1e; padding: 16px 32px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 15px; display: inline-block; letter-spacing: 1px; text-transform: uppercase;">Read Full Story</a>
    </div>
-8. Output ONLY a valid JSON object with keys "subject" and "body". Use semantic HTML tags in the body.`;
+9. Output ONLY a valid JSON object with keys "subject" and "body". Use semantic HTML tags in the body.`;
 
     const systemPrompt = `You are a professional copywriter for RCSB. Write a blog announcement newsletter. Do not include event details, RSVP, or invitations. Never print raw text links or default anchor links. Return ONLY a JSON object with "subject" and "body".`;
     
@@ -178,10 +193,11 @@ async function generateAwardNewsletter(project: {
     description: string;
     slug: string;
     image_url?: string;
+    content?: string;
 }) {
     const apiKey = process.env.GROQ_API_KEY!;
     const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb-website.pages.dev";
-    const { title, description, slug, image_url } = project;
+    const { title, description, slug, image_url, content } = project;
 
     const absImageUrl = image_url ? (image_url.startsWith("http") ? image_url : `${SITE_URL}${image_url}`) : "";
     const imageTag = absImageUrl ? `<img src="${absImageUrl}" alt="${title}" style="width:100%; border-radius:12px; margin-bottom:24px; border: 1px solid rgba(255,215,0,0.1);" />` : "";
@@ -190,7 +206,8 @@ async function generateAwardNewsletter(project: {
 Please write a celebratory, prestigious HTML email newsletter announcing an award or milestone recognition.
 
 Title: ${title}
-Details: ${description}
+Summary/Citation: ${description}
+${content ? `Full Award Details:\n${content}\n` : ""}
 
 URLs (FOR BUTTON LINKS ONLY. DO NOT WRITE THEM OUT AS TEXT IN THE EMAIL BODY):
 - Official Website: ${SITE_URL}
@@ -204,7 +221,7 @@ Guidelines:
 2. Tone: Proud, celebratory, prestigious, and grateful to club members, sponsors, and partners.
 3. **DO NOT treat this as an event**: Do NOT mention future event dates, RSVP buttons, or ticketing. This is an announcement of an award or recognition we have received.
 4. **Subject Line**: The subject line must celebrate the award or recognition (e.g., "Proud Moment: RCSB Receives [Title]" or "We Won! Announcing [Title]"). NEVER use words like "Invited", "Invitation", "Register", "RSVP", or dates/countdowns in the subject.
-5. **Body Text**: The email must celebrate the recognition or award received by the club (e.g., "We are thrilled to announce that our club has been recognized with...", "Proud to share that RCSB has received..."). Do NOT invite people to an event or write in an RSVP context.
+5. **Body Text**: Explain what the award or recognition is about. Based on the 'Summary/Citation' and 'Full Award Details' provided, write an engaging overview describing the achievement, what it recognizes, and what this milestone means to the club. Do NOT invite people to an event or write in an RSVP context.
 6. **NO Hardcoded / Raw Links**: Do NOT include raw URLs, raw link text, or standard blue anchor links in the text. All links MUST be formatted as styled gold buttons. Never write something like "visit our website at ${SITE_URL}".
 7. **Buttons**: Provide a prominent "View Award Details" or "Read Full Citation" button pointing to ${SITE_URL}/awards/${slug}. Use this EXACT HTML:
    <div style="margin: 32px 0; text-align: center;">
@@ -222,10 +239,11 @@ async function generateProjectNewsletter(project: {
     description: string;
     slug: string;
     image_url?: string;
+    content?: string;
 }) {
     const apiKey = process.env.GROQ_API_KEY!;
     const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb-website.pages.dev";
-    const { title, description, slug, image_url } = project;
+    const { title, description, slug, image_url, content } = project;
 
     const absImageUrl = image_url ? (image_url.startsWith("http") ? image_url : `${SITE_URL}${image_url}`) : "";
     const imageTag = absImageUrl ? `<img src="${absImageUrl}" alt="${title}" style="width:100%; border-radius:12px; margin-bottom:24px; border: 1px solid rgba(255,215,0,0.1);" />` : "";
@@ -234,7 +252,8 @@ async function generateProjectNewsletter(project: {
 Please write an inspiring, impact-driven HTML email newsletter highlighting a completed project initiative.
 
 Title: ${title}
-Details: ${description}
+Summary/Overview: ${description}
+${content ? `Full Project Details/Content:\n${content}\n` : ""}
 
 URLs (FOR BUTTON LINKS ONLY. DO NOT WRITE THEM OUT AS TEXT IN THE EMAIL BODY):
 - Official Website: ${SITE_URL}
@@ -248,7 +267,7 @@ Guidelines:
 2. Tone: Impactful, inspiring, service-minded, and community-focused.
 3. **DO NOT treat this as an event**: Do NOT mention future event dates, ticket links, or RSVP. This is a showcase of a project that has been successfully completed.
 4. **Subject Line**: The subject line must announce the successful completion or showcase of the project (e.g., "Project Completed: [Title]" or "Making a Difference: [Title]"). NEVER use words like "Invited", "Invitation", "Register", "RSVP", or dates/countdowns in the subject.
-5. **Body Text**: The email must showcase the completed community project (e.g., "We are pleased to share the success and impact of our project...", "Showcasing our latest service initiative..."). Do NOT invite people to an event or write in an RSVP context.
+5. **Body Text**: Explain what the project is about. Based on the 'Summary/Overview' and the 'Full Project Details/Content' provided, write an inspiring overview describing the project's goals, execution, its impact on the community, and key figures/outcomes. Do NOT invite people to an event or write in an RSVP context.
 6. **NO Hardcoded / Raw Links**: Do NOT include raw URLs, raw link text, or standard blue anchor links in the text. All links MUST be formatted as styled gold buttons. Never write something like "visit our website at ${SITE_URL}".
 7. **Buttons**: Provide a prominent "Read Case Study" or "View Project Details" button pointing to ${SITE_URL}/projects/${slug}. Use this EXACT HTML:
    <div style="margin: 32px 0; text-align: center;">

@@ -57,7 +57,9 @@ export async function POST(request: Request) {
                     slug: project.slug,
                     image_url: project.image_url,
                     event_date: project.event_date,
-                    rsvp_link: project.rsvp_link
+                    rsvp_link: project.rsvp_link,
+                    content: project.content,
+                    author_email: project.author_email
                 });
             } else if (isPostEvent) {
                 // Post-event recap: use standard generateNewsletterContent (which automatically writes recap if event is in the past)
@@ -69,7 +71,9 @@ export async function POST(request: Request) {
                     slug: project.slug,
                     image_url: project.image_url,
                     event_date: project.event_date,
-                    rsvp_link: project.rsvp_link
+                    rsvp_link: project.rsvp_link,
+                    content: project.content,
+                    author_email: project.author_email
                 });
             } else {
                 // Pre-event reminder: use generateNewsletterReminder
