@@ -27,3 +27,18 @@ name = "event-reminder-workflow"
 binding = "EVENT_REMINDER_WORKFLOW"
 class_name = "EventReminderWorkflow"
 
+[[workflows]]
+name = "blog-announcement-workflow"
+binding = "BLOG_ANNOUNCEMENT_WORKFLOW"
+class_name = "BlogAnnouncementWorkflow"
+
+[[workflows]]
+name = "award-announcement-workflow"
+binding = "AWARD_ANNOUNCEMENT_WORKFLOW"
+class_name = "AwardAnnouncementWorkflow"
+
+[[workflows]]
+name = "project-announcement-workflow"
+binding = "PROJECT_ANNOUNCEMENT_WORKFLOW"
+class_name = "ProjectAnnouncementWorkflow"
+

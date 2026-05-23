@@ -1,89 +1,4 @@
-export async function generateNewsletterContent(project: {
-    title: string;
-    description: string;
-    type: string;
-    slug: string;
-    image_url?: string;
-    event_date?: string;
-    rsvp_link?: string;
-}) {
-    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb-website.pages.dev";
-    const apiKey = process.env.GROQ_API_KEY;
-
-    if (!apiKey) {
-        console.error("[AI Newsletter] Missing GROQ_API_KEY");
-        throw new Error("GROQ_API_KEY not configured");
-    }
-
-    const { title, description, type, slug, image_url, event_date, rsvp_link } = project;
-    console.log(`[AI Newsletter] Generating content for: ${title} (${type})`);
-
-    const section = type === "event" ? "events" : (type === "blog" ? "blogs" : "projects");
-
-    let dateContext = "";
-    if (event_date) {
-        const eDate = new Date(event_date);
-        const today = new Date();
-        const diffTime = eDate.getTime() - today.getTime();
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        if (diffDays > 0) {
-            dateContext = `\nThe event is scheduled for ${eDate.toLocaleDateString()}. It is exactly ${diffDays} days away. Make sure to mention this countdown/urgency in the email.`;
-        } else if (diffDays === 0) {
-            dateContext = `\nThe event is scheduled for today! Emphasize that it's happening today in the email.`;
-        } else {
-            dateContext = `\nThe event was on ${eDate.toLocaleDateString()}. Write the email in past tense as a recap or highlight of the successful event.`;
-        }
-    }
-
-    const absImageUrl = image_url ? (image_url.startsWith("http") ? image_url : `${SITE_URL}${image_url}`) : "";
-    const imageTag = absImageUrl ? `<img src="${absImageUrl}" alt="${title}" style="width:100%; border-radius:12px; margin-bottom:24px; border: 1px solid rgba(255,215,0,0.1);" />` : "";
-
-    let imageContext = "";
-    if (imageTag) {
-        imageContext = `\nCRITICAL: You MUST include this EXACT cover image tag at the very top of your body: ${imageTag}`;
-    }
-
-    let rsvpContext = "";
-    if (rsvp_link) {
-        rsvpContext = `\nThere is an RSVP link for this event: ${rsvp_link}. Create a large, prominent RSVP button that points to this exact link with the text "RSVP Now" or "Get Your Tickets".`;
-    }
-
-    const prompt = `You are a professional communications officer for the Rotaract Club of Swarna Bengaluru (RCSB). 
-Please write a highly engaging, branded HTML email newsletter announcing the following ${type}.
-
-Title: ${title}
-Details: ${description}
-Official Website: ${SITE_URL}
-Official Email: rota.rcbs@gmail.com
-Link to view on site: ${SITE_URL}/${section}/${slug}
-
-CONTEXTUAL DATA:
-${dateContext}${imageContext}${rsvpContext}
-
-Guidelines:
-1. Always start the email body with a professional header: "Rotaract Club of Swarna Bengaluru".
-2. Use a sophisticated, warm, and community-focused tone.
-3. **Buttons**: Any primary link (like a feedback form or "Read More") MUST be a styled button. Use this EXACT HTML: 
-   <div style="margin: 32px 0; text-align: center;">
-     <a href="URL_HERE" style="background-color: #C9982A; color: #0a0f1e; padding: 16px 32px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 15px; display: inline-block; letter-spacing: 1px; text-transform: uppercase;">BUTTON_TEXT_HERE</a>
-   </div>
-4. **Media Usage**: Do NOT use placeholder images. Only use the image tag provided in the context above. If no image tag is provided, do not include an image.
-5. Ensure the Call-To-Action (CTA) text is interesting and compelling.
-6. **Note**: Do not repeat the physical address or social media links in the body; they are already handled by our permanent email footer.
-7. Output ONLY a valid JSON object with keys "subject" and "body". Use semantic HTML tags in the body.`;
-
-    const systemPrompt = `You are a professional copywriter for the Rotaract Club of Swarna Bengaluru (RCSB). 
-The user will provide project details and any necessary media links.
-
-STRICT GUIDELINES:
-1. **NO Hallucinations**: Do NOT use placeholder URLs (like via.placeholder.com). If a cover image URL is provided in the prompt, use it EXACTLY.
-2. **Proper Buttons**: Primary Call-To-Actions (e.g. Feedback forms, RSVP, "Read More") MUST be a styled button. 
-   Use this HTML: <div style="margin: 24px 0; text-align: center;"><a href="URL" style="background-color: #C9982A; color: #0a0f1e; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; display: inline-block;">BUTTON TEXT</a></div>
-3. **Minimal HTML**: Do NOT include <style>, <head>, or <html> tags. Write only the inner content for a container.
-4. **Branding**: Maintain a warm, community-driven tone. No headers (handled by wrapper).
-
-Return ONLY a JSON object with "subject" and "body".`;
-
+async function callGroq(systemPrompt: string, prompt: string, apiKey: string) {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -92,7 +7,6 @@ Return ONLY a JSON object with "subject" and "body".`;
         },
         body: JSON.stringify({
             model: 'llama-3.3-70b-versatile',
-
             messages: [
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: prompt }
@@ -114,8 +28,239 @@ Return ONLY a JSON object with "subject" and "body".`;
         throw new Error("No content returned from AI");
     }
 
-    return JSON.parse(generatedText) as { subject: string; body: string };
+    const parsed = JSON.parse(generatedText);
+    let subject = "";
+    let body = "";
+    for (const key of Object.keys(parsed)) {
+        const lowerKey = key.toLowerCase();
+        if (lowerKey === "subject" || lowerKey === "subject_line") {
+            subject = parsed[key];
+        } else if (lowerKey === "body" || lowerKey === "content" || lowerKey === "email_body") {
+            body = parsed[key];
+        }
+    }
+    return { subject, body };
 }
+
+export async function generateNewsletterContent(project: {
+    title: string;
+    description: string;
+    type: string;
+    slug: string;
+    image_url?: string;
+    event_date?: string;
+    rsvp_link?: string;
+}) {
+    const apiKey = process.env.GROQ_API_KEY;
+    if (!apiKey) {
+        throw new Error("GROQ_API_KEY not configured");
+    }
+
+    const { type } = project;
+
+    if (type === "blog") {
+        return generateBlogNewsletter(project);
+    } else if (type === "award") {
+        return generateAwardNewsletter(project);
+    } else if (type === "project") {
+        return generateProjectNewsletter(project);
+    } else {
+        const eDate = project.event_date ? new Date(project.event_date) : null;
+        const isRecap = eDate ? (eDate.getTime() < Date.now()) : false;
+        return generateEventNewsletter(project, isRecap);
+    }
+}
+
+async function generateEventNewsletter(project: {
+    title: string;
+    description: string;
+    slug: string;
+    image_url?: string;
+    event_date?: string;
+    rsvp_link?: string;
+}, isRecap: boolean) {
+    const apiKey = process.env.GROQ_API_KEY!;
+    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb-website.pages.dev";
+    const { title, description, slug, image_url, event_date, rsvp_link } = project;
+
+    let dateContext = "";
+    if (event_date) {
+        const eDate = new Date(event_date);
+        dateContext = isRecap 
+            ? `\nThe event was held on ${eDate.toLocaleDateString()}. Write the email in past tense as a recap or highlight of the successful event. Do NOT ask people to RSVP or register.`
+            : `\nThe event is scheduled for ${eDate.toLocaleDateString()}. It is an upcoming event. Encourage people to register and attend.`;
+    }
+
+    const absImageUrl = image_url ? (image_url.startsWith("http") ? image_url : `${SITE_URL}${image_url}`) : "";
+    const imageTag = absImageUrl ? `<img src="${absImageUrl}" alt="${title}" style="width:100%; border-radius:12px; margin-bottom:24px; border: 1px solid rgba(255,215,0,0.1);" />` : "";
+    
+    let rsvpContext = "";
+    if (rsvp_link && !isRecap) {
+        rsvpContext = `\nThere is an RSVP link for this event: ${rsvp_link}. Create a large, prominent RSVP button that points to this exact link with the text "RSVP Now" or "Get Your Tickets".`;
+    }
+
+    const prompt = `You are a professional communications officer for the Rotaract Club of Swarna Bengaluru (RCSB). 
+Please write a highly engaging, branded HTML email newsletter ${isRecap ? 'highlighting the recap of' : 'announcing'} our event.
+
+Title: ${title}
+Details: ${description}
+
+URLs (FOR BUTTON LINKS ONLY. DO NOT WRITE THEM OUT AS TEXT IN THE EMAIL BODY):
+- Official Website: ${SITE_URL}
+- Link to view event details: ${SITE_URL}/events/${slug}
+
+CONTEXTUAL DATA:
+${dateContext}
+${imageTag ? `\nCRITICAL: Include this cover image at the top of the body: ${imageTag}` : ""}
+${rsvpContext}
+
+Guidelines:
+1. Always start the email body with a professional header: "Rotaract Club of Swarna Bengaluru".
+2. Tone: ${isRecap ? 'Warm, proud, reflective, and grateful to all attendees.' : 'Exciting, inviting, and welcoming.'}
+3. **NO Hardcoded / Raw Links**: Do NOT include raw URLs, raw link text, or standard blue anchor links in the text. All calls to action or navigation links MUST be formatted as styled gold buttons. Never write something like "visit our website at ${SITE_URL}".
+4. **Buttons**: Any primary link (like RSVP or Read More) MUST be a styled button. Use this EXACT HTML: 
+   <div style="margin: 32px 0; text-align: center;">
+     <a href="URL_HERE" style="background-color: #C9982A; color: #0a0f1e; padding: 16px 32px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 15px; display: inline-block; letter-spacing: 1px; text-transform: uppercase;">BUTTON_TEXT_HERE</a>
+   </div>
+5. Output ONLY a valid JSON object with keys "subject" and "body". Use semantic HTML tags in the body.`;
+
+    const systemPrompt = `You are a professional copywriter for RCSB. Write an ${isRecap ? 'event recap' : 'upcoming event invitation'} email. Return ONLY a JSON object with "subject" and "body". Never print raw text links or default anchor links.`;
+    
+    return callGroq(systemPrompt, prompt, apiKey);
+}
+
+async function generateBlogNewsletter(project: {
+    title: string;
+    description: string;
+    slug: string;
+    image_url?: string;
+}) {
+    const apiKey = process.env.GROQ_API_KEY!;
+    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb-website.pages.dev";
+    const { title, description, slug, image_url } = project;
+
+    const absImageUrl = image_url ? (image_url.startsWith("http") ? image_url : `${SITE_URL}${image_url}`) : "";
+    const imageTag = absImageUrl ? `<img src="${absImageUrl}" alt="${title}" style="width:100%; border-radius:12px; margin-bottom:24px; border: 1px solid rgba(255,215,0,0.1);" />` : "";
+
+    const prompt = `You are a professional communications officer for the Rotaract Club of Swarna Bengaluru (RCSB). 
+Please write an engaging, editorial-style HTML email newsletter sharing our latest blog post / story.
+
+Title: ${title}
+Details: ${description}
+
+URLs (FOR BUTTON LINKS ONLY. DO NOT WRITE THEM OUT AS TEXT IN THE EMAIL BODY):
+- Official Website: ${SITE_URL}
+- Link to read story on site: ${SITE_URL}/blogs/${slug}
+
+CONTEXTUAL DATA:
+${imageTag ? `\nCRITICAL: Include this cover image at the top of the body: ${imageTag}` : ""}
+
+Guidelines:
+1. Always start the email body with a professional header: "Rotaract Club of Swarna Bengaluru".
+2. Tone: Narrative, engaging, thoughtful, and editorial.
+3. **DO NOT treat this as an event**: Do NOT mention dates, RSVP links, invitations, or "You're invited". It is a blog post / story publication.
+4. **Subject Line**: The subject line must announce a new blog story, editorial, or article (e.g., "New Story: [Title]" or "Read Our Latest Article: [Title]"). NEVER use words like "Invited", "Invitation", "Register", "RSVP", or dates/countdowns in the subject.
+5. **Body Text**: The email must announce a new blog story has been published (e.g., "We are excited to share our latest article...", "A new story has been published on our blog..."). Do NOT invite people to an event or write in an RSVP context.
+6. **NO Hardcoded / Raw Links**: Do NOT include raw URLs, raw link text, or standard blue anchor links in the text. All links MUST be formatted as styled gold buttons. Never write something like "visit our website at ${SITE_URL}".
+7. **Buttons**: Provide a prominent "Read Full Article" or "Read Story" button pointing to ${SITE_URL}/blogs/${slug}. Use this EXACT HTML:
+   <div style="margin: 32px 0; text-align: center;">
+     <a href="${SITE_URL}/blogs/${slug}" style="background-color: #C9982A; color: #0a0f1e; padding: 16px 32px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 15px; display: inline-block; letter-spacing: 1px; text-transform: uppercase;">Read Full Story</a>
+   </div>
+8. Output ONLY a valid JSON object with keys "subject" and "body". Use semantic HTML tags in the body.`;
+
+    const systemPrompt = `You are a professional copywriter for RCSB. Write a blog announcement newsletter. Do not include event details, RSVP, or invitations. Never print raw text links or default anchor links. Return ONLY a JSON object with "subject" and "body".`;
+    
+    return callGroq(systemPrompt, prompt, apiKey);
+}
+
+async function generateAwardNewsletter(project: {
+    title: string;
+    description: string;
+    slug: string;
+    image_url?: string;
+}) {
+    const apiKey = process.env.GROQ_API_KEY!;
+    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb-website.pages.dev";
+    const { title, description, slug, image_url } = project;
+
+    const absImageUrl = image_url ? (image_url.startsWith("http") ? image_url : `${SITE_URL}${image_url}`) : "";
+    const imageTag = absImageUrl ? `<img src="${absImageUrl}" alt="${title}" style="width:100%; border-radius:12px; margin-bottom:24px; border: 1px solid rgba(255,215,0,0.1);" />` : "";
+
+    const prompt = `You are a professional communications officer for the Rotaract Club of Swarna Bengaluru (RCSB). 
+Please write a celebratory, prestigious HTML email newsletter announcing an award or milestone recognition.
+
+Title: ${title}
+Details: ${description}
+
+URLs (FOR BUTTON LINKS ONLY. DO NOT WRITE THEM OUT AS TEXT IN THE EMAIL BODY):
+- Official Website: ${SITE_URL}
+- Link to view award details: ${SITE_URL}/awards/${slug}
+
+CONTEXTUAL DATA:
+${imageTag ? `\nCRITICAL: Include this cover image at the top of the body: ${imageTag}` : ""}
+
+Guidelines:
+1. Always start the email body with a professional header: "Rotaract Club of Swarna Bengaluru".
+2. Tone: Proud, celebratory, prestigious, and grateful to club members, sponsors, and partners.
+3. **DO NOT treat this as an event**: Do NOT mention future event dates, RSVP buttons, or ticketing. This is an announcement of an award or recognition we have received.
+4. **Subject Line**: The subject line must celebrate the award or recognition (e.g., "Proud Moment: RCSB Receives [Title]" or "We Won! Announcing [Title]"). NEVER use words like "Invited", "Invitation", "Register", "RSVP", or dates/countdowns in the subject.
+5. **Body Text**: The email must celebrate the recognition or award received by the club (e.g., "We are thrilled to announce that our club has been recognized with...", "Proud to share that RCSB has received..."). Do NOT invite people to an event or write in an RSVP context.
+6. **NO Hardcoded / Raw Links**: Do NOT include raw URLs, raw link text, or standard blue anchor links in the text. All links MUST be formatted as styled gold buttons. Never write something like "visit our website at ${SITE_URL}".
+7. **Buttons**: Provide a prominent "View Award Details" or "Read Full Citation" button pointing to ${SITE_URL}/awards/${slug}. Use this EXACT HTML:
+   <div style="margin: 32px 0; text-align: center;">
+     <a href="${SITE_URL}/awards/${slug}" style="background-color: #C9982A; color: #0a0f1e; padding: 16px 32px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 15px; display: inline-block; letter-spacing: 1px; text-transform: uppercase;">View Award Details</a>
+   </div>
+8. Output ONLY a valid JSON object with keys "subject" and "body". Use semantic HTML tags in the body.`;
+
+    const systemPrompt = `You are a professional copywriter for RCSB. Write a celebratory award announcement newsletter. Do not include event details, RSVP, or invitations. Never print raw text links or default anchor links. Return ONLY a JSON object with "subject" and "body".`;
+    
+    return callGroq(systemPrompt, prompt, apiKey);
+}
+
+async function generateProjectNewsletter(project: {
+    title: string;
+    description: string;
+    slug: string;
+    image_url?: string;
+}) {
+    const apiKey = process.env.GROQ_API_KEY!;
+    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb-website.pages.dev";
+    const { title, description, slug, image_url } = project;
+
+    const absImageUrl = image_url ? (image_url.startsWith("http") ? image_url : `${SITE_URL}${image_url}`) : "";
+    const imageTag = absImageUrl ? `<img src="${absImageUrl}" alt="${title}" style="width:100%; border-radius:12px; margin-bottom:24px; border: 1px solid rgba(255,215,0,0.1);" />` : "";
+
+    const prompt = `You are a professional communications officer for the Rotaract Club of Swarna Bengaluru (RCSB). 
+Please write an inspiring, impact-driven HTML email newsletter highlighting a completed project initiative.
+
+Title: ${title}
+Details: ${description}
+
+URLs (FOR BUTTON LINKS ONLY. DO NOT WRITE THEM OUT AS TEXT IN THE EMAIL BODY):
+- Official Website: ${SITE_URL}
+- Link to view project details: ${SITE_URL}/projects/${slug}
+
+CONTEXTUAL DATA:
+${imageTag ? `\nCRITICAL: Include this cover image at the top of the body: ${imageTag}` : ""}
+
+Guidelines:
+1. Always start the email body with a professional header: "Rotaract Club of Swarna Bengaluru".
+2. Tone: Impactful, inspiring, service-minded, and community-focused.
+3. **DO NOT treat this as an event**: Do NOT mention future event dates, ticket links, or RSVP. This is a showcase of a project that has been successfully completed.
+4. **Subject Line**: The subject line must announce the successful completion or showcase of the project (e.g., "Project Completed: [Title]" or "Making a Difference: [Title]"). NEVER use words like "Invited", "Invitation", "Register", "RSVP", or dates/countdowns in the subject.
+5. **Body Text**: The email must showcase the completed community project (e.g., "We are pleased to share the success and impact of our project...", "Showcasing our latest service initiative..."). Do NOT invite people to an event or write in an RSVP context.
+6. **NO Hardcoded / Raw Links**: Do NOT include raw URLs, raw link text, or standard blue anchor links in the text. All links MUST be formatted as styled gold buttons. Never write something like "visit our website at ${SITE_URL}".
+7. **Buttons**: Provide a prominent "Read Case Study" or "View Project Details" button pointing to ${SITE_URL}/projects/${slug}. Use this EXACT HTML:
+   <div style="margin: 32px 0; text-align: center;">
+     <a href="${SITE_URL}/projects/${slug}" style="background-color: #C9982A; color: #0a0f1e; padding: 16px 32px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 15px; display: inline-block; letter-spacing: 1px; text-transform: uppercase;">View Project Details</a>
+   </div>
+8. Output ONLY a valid JSON object with keys "subject" and "body". Use semantic HTML tags in the body.`;
+
+    const systemPrompt = `You are a professional copywriter for RCSB. Write a project showcase newsletter. Do not include RSVP or future event details. Never print raw text links or default anchor links. Return ONLY a JSON object with "subject" and "body".`;
+    
+    return callGroq(systemPrompt, prompt, apiKey);
+}
+
 export async function generateNewsletterReminder(project: {
     title: string;
     description: string;
@@ -133,7 +278,7 @@ export async function generateNewsletterReminder(project: {
     }
 
     const { title, description, type, slug, image_url, event_date, rsvp_link } = project;
-    const section = type === "event" ? "events" : (type === "blog" ? "blogs" : "projects");
+    const section = type === "event" ? "events" : (type === "blog" ? "blogs" : (type === "award" ? "awards" : "projects"));
 
     const eDate = new Date(event_date);
     const today = new Date();
@@ -152,57 +297,30 @@ Please write an urgent, high-energy REMINDER email for our upcoming ${type}.
 
 Title: ${title}
 Details: ${description}
-Official Website: ${SITE_URL}
-Official Link: ${SITE_URL}/${section}/${slug}
-RSVP Link: ${rsvp_link || "N/A"}
 Countdown: EXACTLY ${diffDays} DAYS REMAINING.
+
+URLs (FOR BUTTON LINKS ONLY. DO NOT WRITE THEM OUT AS TEXT IN THE EMAIL BODY):
+- Official Website: ${SITE_URL}
+- Official Link: ${SITE_URL}/${section}/${slug}
+- RSVP Link: ${rsvp_link || "N/A"}
 
 Guidelines:
 1. The subject MUST emphasize the urgency (e.g., "Only ${diffDays} Days Left!", "Time is Running Out!", "Final Call for ${title}").
 2. The body MUST start with the countdown: "Tick-tock! 🕒 Only ${diffDays} days remain until ${title}."
 3. Encourage immediate action/registration. Use a "FOMO" (Fear Of Missing Out) approach but keep it professional.
-4. **Buttons**: Use this EXACT HTML for the registration button: 
+4. **NO Hardcoded / Raw Links**: Do NOT include raw URLs, raw link text, or standard blue anchor links in the text. All links MUST be formatted as styled gold buttons. Never write something like "visit our website at ${SITE_URL}".
+5. **Buttons**: Use this EXACT HTML for the registration button: 
    <div style="margin: 32px 0; text-align: center;">
      <a href="${rsvp_link || `${SITE_URL}/${section}/${slug}`}" style="background-color: #C9982A; color: #0a0f1e; padding: 16px 32px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 15px; display: inline-block; letter-spacing: 1px; text-transform: uppercase;">Register Now →</a>
    </div>
-5. **Media Usage**: include this image tag at the top: ${imageTag}
-6. Keep the email concise and punchy.
-7. Output ONLY a valid JSON object with keys "subject" and "body".`;
+6. **Media Usage**: include this image tag at the top: ${imageTag}
+7. Keep the email concise and punchy.
+8. Output ONLY a valid JSON object with keys "subject" and "body".`;
 
-    const systemPrompt = `You are a professional copywriter for RCSB. You specialize in high-conversion reminder emails.
-Return ONLY a JSON object with "subject" and "body".`;
+    const systemPrompt = `You are a professional copywriter for RCSB. You specialize in high-conversion reminder emails. Never print raw text links or default anchor links. Return ONLY a JSON object with "subject" and "body".`;
 
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
-
-            messages: [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: prompt }
-            ],
-            temperature: 0.8,
-            response_format: { type: "json_object" }
-        }),
-    });
-
-    if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(`AI Reminder Generation failed: ${errorData}`);
-    }
-
-    const data = await response.json();
-    const generatedText = data.choices[0]?.message?.content;
-
-    if (!generatedText) {
-        throw new Error("No content returned from AI");
-    }
-
-    return JSON.parse(generatedText) as { subject: string; body: string };
+    const parsed = await callGroq(systemPrompt, prompt, apiKey);
+    return parsed;
 }
 export async function triggerN8NWebhook(type: "blog_published" | "user_subscribed", data: any) {
     const webhookUrl = process.env.N8N_WEBHOOK_URL;

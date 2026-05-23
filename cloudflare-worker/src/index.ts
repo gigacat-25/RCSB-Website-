@@ -6,6 +6,9 @@ declare global {
     MEDIA_BUCKET: R2Bucket;
     WORKER_SECRET: string;
     EVENT_REMINDER_WORKFLOW: any;
+    BLOG_ANNOUNCEMENT_WORKFLOW: any;
+    AWARD_ANNOUNCEMENT_WORKFLOW: any;
+    PROJECT_ANNOUNCEMENT_WORKFLOW: any;
   }
 }
 
@@ -15,6 +18,9 @@ export interface Env {
   WORKER_SECRET: string;
   SITE_URL?: string;
   EVENT_REMINDER_WORKFLOW: any;
+  BLOG_ANNOUNCEMENT_WORKFLOW: any;
+  AWARD_ANNOUNCEMENT_WORKFLOW: any;
+  PROJECT_ANNOUNCEMENT_WORKFLOW: any;
 }
 
 // D1 Migration — run once in Cloudflare dashboard > D1 > your DB > Console:
@@ -287,14 +293,32 @@ export default {
 
         const insertedId = result.meta.last_row_id;
 
-        // Trigger Cloudflare Workflow automatically in the background
-        if (env.EVENT_REMINDER_WORKFLOW && (body.type === 'blog' || body.type === 'project' || body.type === 'event')) {
+        // Trigger the specific Cloudflare Workflow automatically in the background
+        let workflowBinding: any = undefined;
+        let workflowName = "";
+        const insertedType = body.type || 'project';
+        
+        if (insertedType === 'event') {
+          workflowBinding = env.EVENT_REMINDER_WORKFLOW;
+          workflowName = "event-reminder-workflow";
+        } else if (insertedType === 'blog') {
+          workflowBinding = env.BLOG_ANNOUNCEMENT_WORKFLOW;
+          workflowName = "blog-announcement-workflow";
+        } else if (insertedType === 'award') {
+          workflowBinding = env.AWARD_ANNOUNCEMENT_WORKFLOW;
+          workflowName = "award-announcement-workflow";
+        } else if (insertedType === 'project') {
+          workflowBinding = env.PROJECT_ANNOUNCEMENT_WORKFLOW;
+          workflowName = "project-announcement-workflow";
+        }
+
+        if (workflowBinding) {
           try {
-            await env.EVENT_REMINDER_WORKFLOW.create({
-              id: `event-${insertedId}`,
-              params: { eventId: insertedId, type: body.type }
+            await workflowBinding.create({
+              id: `${insertedType}-${insertedId}`,
+              params: { eventId: insertedId, type: insertedType }
             });
-            console.log(`[Workflow] Spawned workflow for event-${insertedId} (type: ${body.type})`);
+            console.log(`[Workflow] Spawned ${workflowName} for ${insertedType}-${insertedId}`);
           } catch (err: any) {
             console.error(`[Workflow] Failed to trigger workflow:`, err.message);
           }
@@ -358,26 +382,56 @@ export default {
             ).run();
 
             // Manage Workflow instance on update
-            if (env.EVENT_REMINDER_WORKFLOW) {
-              const numId = parseInt(id);
-              try {
-                const existing = await env.EVENT_REMINDER_WORKFLOW.get(`event-${numId}`);
-                if (existing) {
-                  await existing.terminate();
-                  console.log(`[Workflow] Terminated existing workflow for event-${numId}`);
+            const numId = parseInt(id);
+            const updateType = body.type || 'project';
+            const workflowsList = [
+              { binding: env.EVENT_REMINDER_WORKFLOW, prefix: 'event' },
+              { binding: env.BLOG_ANNOUNCEMENT_WORKFLOW, prefix: 'blog' },
+              { binding: env.AWARD_ANNOUNCEMENT_WORKFLOW, prefix: 'award' },
+              { binding: env.PROJECT_ANNOUNCEMENT_WORKFLOW, prefix: 'project' }
+            ];
+
+            // Terminate existing workflows of any type for this ID
+            for (const wf of workflowsList) {
+              if (wf.binding) {
+                try {
+                  const existing = await wf.binding.get(`${wf.prefix}-${numId}`);
+                  if (existing) {
+                    await existing.terminate();
+                    console.log(`[Workflow] Terminated existing workflow for ${wf.prefix}-${numId}`);
+                  }
+                } catch (e) {
+                  // Ignore if not found
                 }
-              } catch (e) {
-                // Not found
+              }
+            }
+
+            // Spin up the new workflow if post is active
+            if (body.status !== 'trash' && body.status !== 'draft') {
+              let workflowBinding: any = undefined;
+              let workflowName = "";
+
+              if (updateType === 'event') {
+                workflowBinding = env.EVENT_REMINDER_WORKFLOW;
+                workflowName = "event-reminder-workflow";
+              } else if (updateType === 'blog') {
+                workflowBinding = env.BLOG_ANNOUNCEMENT_WORKFLOW;
+                workflowName = "blog-announcement-workflow";
+              } else if (updateType === 'award') {
+                workflowBinding = env.AWARD_ANNOUNCEMENT_WORKFLOW;
+                workflowName = "award-announcement-workflow";
+              } else if (updateType === 'project') {
+                workflowBinding = env.PROJECT_ANNOUNCEMENT_WORKFLOW;
+                workflowName = "project-announcement-workflow";
               }
 
-              // If post is still active, spin up new workflow
-              if (body.status !== 'trash' && body.status !== 'draft' && (body.type === 'blog' || body.type === 'project' || body.type === 'event')) {
+              if (workflowBinding) {
                 try {
-                  await env.EVENT_REMINDER_WORKFLOW.create({
-                    id: `event-${numId}`,
-                    params: { eventId: numId, type: body.type }
+                  await workflowBinding.create({
+                    id: `${updateType}-${numId}`,
+                    params: { eventId: numId, type: updateType }
                   });
-                  console.log(`[Workflow] Spawned updated workflow for event-${numId} (type: ${body.type})`);
+                  console.log(`[Workflow] Spawned updated workflow ${workflowName} for ${updateType}-${numId}`);
                 } catch (err: any) {
                   console.error(`[Workflow] Failed to spawn updated workflow:`, err.message);
                 }
@@ -390,17 +444,26 @@ export default {
           if (request.method === "DELETE") {
             await env.DB.prepare("DELETE FROM projects WHERE id=?").bind(id).run();
 
-            // Terminate Workflow on delete
-            if (env.EVENT_REMINDER_WORKFLOW) {
-              const numId = parseInt(id);
-              try {
-                const existing = await env.EVENT_REMINDER_WORKFLOW.get(`event-${numId}`);
-                if (existing) {
-                  await existing.terminate();
-                  console.log(`[Workflow] Terminated workflow for deleted event-${numId}`);
+            // Terminate Workflows on delete
+            const numId = parseInt(id);
+            const workflowsList = [
+              { binding: env.EVENT_REMINDER_WORKFLOW, prefix: 'event' },
+              { binding: env.BLOG_ANNOUNCEMENT_WORKFLOW, prefix: 'blog' },
+              { binding: env.AWARD_ANNOUNCEMENT_WORKFLOW, prefix: 'award' },
+              { binding: env.PROJECT_ANNOUNCEMENT_WORKFLOW, prefix: 'project' }
+            ];
+
+            for (const wf of workflowsList) {
+              if (wf.binding) {
+                try {
+                  const existing = await wf.binding.get(`${wf.prefix}-${numId}`);
+                  if (existing) {
+                    await existing.terminate();
+                    console.log(`[Workflow] Terminated workflow for deleted ${wf.prefix}-${numId}`);
+                  }
+                } catch (e) {
+                  // Ignore
                 }
-              } catch (e) {
-                // Ignore
               }
             }
 
@@ -728,25 +791,26 @@ export default {
   },
 };
 
-// --- CLOUDFLARE WORKFLOW FOR EVENT REMINDERS ---
+// --- CLOUDFLARE WORKFLOWS ---
 interface EventReminderParams {
   eventId: number;
   type?: string;
 }
 
+// 1. EVENT REMINDER WORKFLOW (Immediate announcement, periodic reminders, daily countdown, post-event recap)
 export class EventReminderWorkflow extends WorkflowEntrypoint<Env, EventReminderParams> {
   async run(event: WorkflowEvent<EventReminderParams>, step: WorkflowStep) {
-    const { eventId, type } = event.payload || {};
-    console.log(`[Workflow] Started EventReminderWorkflow. Payload: ${JSON.stringify(event.payload)}`);
+    const { eventId } = event.payload || {};
+    console.log(`[Event Workflow] Started EventReminderWorkflow for event ID: ${eventId}`);
 
     if (!eventId) {
-      console.warn("[Workflow] Error: eventId is missing in the payload. Stopping workflow.");
+      console.warn("[Event Workflow] Error: eventId is missing in the payload. Stopping workflow.");
       return;
     }
 
     const ONE_DAY = 24 * 60 * 60 * 1000;
 
-    // 1. --- MILESTONE 1: Immediate Creation Notification ---
+    // 1. Send immediate creation notification
     await step.do("Send initial creation email", async () => {
       const siteUrl = this.env.SITE_URL || "https://rcsb-website.pages.dev";
       const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
@@ -765,40 +829,32 @@ export class EventReminderWorkflow extends WorkflowEntrypoint<Env, EventReminder
       return { status: "sent" };
     });
 
-    // Blogs do not have event dates or reminders. Exit workflow.
-    if (type === 'blog') {
-      console.log(`[Workflow] Blog creation email sent. Exiting workflow for blog ID: ${eventId}`);
-      return;
-    }
-
     // Retrieve event details to process reminders
     let eventDetails = await step.do("Fetch event details", async () => {
       return await getEventFromDb(this.env.DB, eventId);
     });
 
     if (!eventDetails || eventDetails.status === "trash" || !eventDetails.event_date) {
-      console.log(`[Workflow] Event/Project ${eventId} has no event date or is inactive. Exiting.`);
+      console.log(`[Event Workflow] Event ${eventId} has no event date or is inactive. Exiting.`);
       return;
     }
 
     let eventTime = new Date(eventDetails.event_date).getTime();
 
-    // 2. --- MILESTONE 2: Send email every 2 days until 2 days near event ---
+    // 2. Send email every 2 days until 2 days near event
     let twoDaysNear = eventTime - 2 * ONE_DAY;
 
     while (Date.now() < twoDaysNear) {
-      // Sleep for 2 days or until we hit the 2-days-near mark (whichever is sooner)
       let nextSleepTarget = Math.min(Date.now() + 2 * ONE_DAY, twoDaysNear);
-      console.log(`[Workflow] Sleeping until next 2-day milestone: ${new Date(nextSleepTarget).toISOString()}`);
+      console.log(`[Event Workflow] Sleeping until next 2-day milestone: ${new Date(nextSleepTarget).toISOString()}`);
       await step.sleepUntil("Wait for next 2-day milestone", new Date(nextSleepTarget));
 
-      // Re-fetch event details
       eventDetails = await step.do("Re-fetch event details after 2-day sleep", async () => {
         return await getEventFromDb(this.env.DB, eventId);
       });
 
       if (!eventDetails || eventDetails.status === "trash" || !eventDetails.event_date) {
-        console.log(`[Workflow] Event ${eventId} became inactive or date was cleared. Exiting.`);
+        console.log(`[Event Workflow] Event ${eventId} became inactive or date was cleared. Exiting.`);
         return;
       }
 
@@ -807,69 +863,70 @@ export class EventReminderWorkflow extends WorkflowEntrypoint<Env, EventReminder
 
       const daysRemaining = Math.max(1, Math.round((eventTime - Date.now()) / ONE_DAY));
 
-      // Send periodic update reminder
-      await step.do("Send periodic update reminder", async () => {
-        const siteUrl = this.env.SITE_URL || "https://rcsb-website.pages.dev";
-        const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-internal-key": this.env.WORKER_SECRET,
-          },
-          body: JSON.stringify({ eventId, daysRemaining }),
-        });
+      if (Date.now() < twoDaysNear) {
+        await step.do("Send periodic update reminder", async () => {
+          const siteUrl = this.env.SITE_URL || "https://rcsb-website.pages.dev";
+          const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-internal-key": this.env.WORKER_SECRET,
+            },
+            body: JSON.stringify({ eventId, daysRemaining }),
+          });
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Failed to send periodic reminder: ${errorText}`);
-        }
-        return { status: "sent", daysRemaining };
-      });
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Failed to send periodic reminder: ${errorText}`);
+          }
+          return { status: "sent", daysRemaining };
+        });
+      }
     }
 
-    // 3. --- MILESTONE 3: Send email every day when 2 days near ---
+    // 3. Send email every day when event is 2 days near
     while (Date.now() < eventTime) {
       let nextSleepTarget = Math.min(Date.now() + ONE_DAY, eventTime);
-      console.log(`[Workflow] Sleeping until next daily milestone: ${new Date(nextSleepTarget).toISOString()}`);
+      console.log(`[Event Workflow] Sleeping until next daily milestone: ${new Date(nextSleepTarget).toISOString()}`);
       await step.sleepUntil("Wait for daily milestone", new Date(nextSleepTarget));
 
-      // Re-verify event details
       eventDetails = await step.do("Re-verify event details during countdown", async () => {
         return await getEventFromDb(this.env.DB, eventId);
       });
 
       if (!eventDetails || eventDetails.status === "trash" || !eventDetails.event_date) {
-        console.log(`[Workflow] Event ${eventId} became inactive during countdown. Exiting.`);
+        console.log(`[Event Workflow] Event ${eventId} became inactive during countdown. Exiting.`);
         return;
       }
 
       eventTime = new Date(eventDetails.event_date).getTime();
       const daysRemaining = Math.max(1, Math.round((eventTime - Date.now()) / ONE_DAY));
 
-      // Send daily countdown reminder
-      await step.do("Send daily countdown reminder", async () => {
-        const siteUrl = this.env.SITE_URL || "https://rcsb-website.pages.dev";
-        const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-internal-key": this.env.WORKER_SECRET,
-          },
-          body: JSON.stringify({ eventId, daysRemaining }),
-        });
+      if (Date.now() < eventTime) {
+        await step.do("Send daily countdown reminder", async () => {
+          const siteUrl = this.env.SITE_URL || "https://rcsb-website.pages.dev";
+          const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-internal-key": this.env.WORKER_SECRET,
+            },
+            body: JSON.stringify({ eventId, daysRemaining }),
+          });
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Failed to send daily countdown: ${errorText}`);
-        }
-        return { status: "sent", daysRemaining };
-      });
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Failed to send daily countdown: ${errorText}`);
+          }
+          return { status: "sent", daysRemaining };
+        });
+      }
     }
 
-    // 4. --- MILESTONE 4: Post-Event Recap (4 days after event) ---
+    // 4. Post-Event Recap (4 days after event)
     const recapTime = eventTime + 4 * ONE_DAY;
     if (Date.now() < recapTime) {
-      console.log(`[Workflow] Sleeping until 4 days post-event: ${new Date(recapTime).toISOString()}`);
+      console.log(`[Event Workflow] Sleeping until 4 days post-event: ${new Date(recapTime).toISOString()}`);
       await step.sleepUntil("Wait for 4-day post-event recap", new Date(recapTime));
 
       eventDetails = await step.do("Re-fetch event details for recap", async () => {
@@ -877,11 +934,10 @@ export class EventReminderWorkflow extends WorkflowEntrypoint<Env, EventReminder
       });
 
       if (!eventDetails || eventDetails.status === "trash") {
-        console.log(`[Workflow] Event ${eventId} is deleted. Skipping post-event recap.`);
+        console.log(`[Event Workflow] Event ${eventId} is deleted. Skipping post-event recap.`);
         return;
       }
 
-      // Send post-event recap
       await step.do("Send post-event recap", async () => {
         const siteUrl = this.env.SITE_URL || "https://rcsb-website.pages.dev";
         const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
@@ -900,6 +956,90 @@ export class EventReminderWorkflow extends WorkflowEntrypoint<Env, EventReminder
         return { status: "sent" };
       });
     }
+  }
+}
+
+// 2. BLOG ANNOUNCEMENT WORKFLOW (Immediate announcement only)
+export class BlogAnnouncementWorkflow extends WorkflowEntrypoint<Env, EventReminderParams> {
+  async run(event: WorkflowEvent<EventReminderParams>, step: WorkflowStep) {
+    const { eventId } = event.payload || {};
+    console.log(`[Blog Workflow] Started for blog ID: ${eventId}`);
+
+    if (!eventId) return;
+
+    await step.do("Send blog creation email", async () => {
+      const siteUrl = this.env.SITE_URL || "https://rcsb-website.pages.dev";
+      const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-internal-key": this.env.WORKER_SECRET,
+        },
+        body: JSON.stringify({ eventId, isNewPost: true }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to send blog creation email: ${errorText}`);
+      }
+      return { status: "sent" };
+    });
+  }
+}
+
+// 3. AWARD ANNOUNCEMENT WORKFLOW (Immediate announcement only)
+export class AwardAnnouncementWorkflow extends WorkflowEntrypoint<Env, EventReminderParams> {
+  async run(event: WorkflowEvent<EventReminderParams>, step: WorkflowStep) {
+    const { eventId } = event.payload || {};
+    console.log(`[Award Workflow] Started for award ID: ${eventId}`);
+
+    if (!eventId) return;
+
+    await step.do("Send award creation email", async () => {
+      const siteUrl = this.env.SITE_URL || "https://rcsb-website.pages.dev";
+      const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-internal-key": this.env.WORKER_SECRET,
+        },
+        body: JSON.stringify({ eventId, isNewPost: true }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to send award creation email: ${errorText}`);
+      }
+      return { status: "sent" };
+    });
+  }
+}
+
+// 4. PROJECT ANNOUNCEMENT WORKFLOW (Immediate announcement only)
+export class ProjectAnnouncementWorkflow extends WorkflowEntrypoint<Env, EventReminderParams> {
+  async run(event: WorkflowEvent<EventReminderParams>, step: WorkflowStep) {
+    const { eventId } = event.payload || {};
+    console.log(`[Project Workflow] Started for project ID: ${eventId}`);
+
+    if (!eventId) return;
+
+    await step.do("Send project creation email", async () => {
+      const siteUrl = this.env.SITE_URL || "https://rcsb-website.pages.dev";
+      const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-internal-key": this.env.WORKER_SECRET,
+        },
+        body: JSON.stringify({ eventId, isNewPost: true }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to send project creation email: ${errorText}`);
+      }
+      return { status: "sent" };
+    });
   }
 }
 
