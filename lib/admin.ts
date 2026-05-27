@@ -1,7 +1,7 @@
 // NOTE: These are used for UI visibility only. 
 // The Cloudflare Worker SQL database (authorized_admins table) 
 // is the source of truth for authorization.
-export const SUPER_ADMIN = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "rscbadmin@rotract.com").toLowerCase();
+export const SUPER_ADMIN = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "rscbadmin@rotaract.com").toLowerCase();
 
 export function isAdmin(email?: string | null, roleMetadata?: any) {
   if (!email) return false;
