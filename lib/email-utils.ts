@@ -115,7 +115,7 @@ export function buildEmailHtml(subject: string, body: string, unsubscribeUrl?: s
       <div style="margin-bottom:24px; color:#c8d0e0; font-size:12px; line-height:1.6;">
         <p style="margin:0; font-weight:700; color:#ffffff;">Rotaract Club of Swarna Bengaluru</p>
         <p style="margin:4px 0 0;">Rotary House of Friendship, 11 Lavelle Road, Bengaluru</p>
-        <p style="margin:2px 0 0;"><a href="mailto:rota.rcbs@gmail.com" style="color:#C9982A; text-decoration:none;">rota.rcbs@gmail.com</a> | <a href="${SITE_URL}" style="color:#C9982A; text-decoration:none;">Visit Website</a></p>
+        <p style="margin:2px 0 0;"><a href="mailto:rota.rcsb@gmail.com" style="color:#C9982A; text-decoration:none;">rota.rcsb@gmail.com</a> | <a href="${SITE_URL}" style="color:#C9982A; text-decoration:none;">Visit Website</a></p>
       </div>
 
       <p style="margin:0;color:#556677;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;">
