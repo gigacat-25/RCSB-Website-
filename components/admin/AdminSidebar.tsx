@@ -19,11 +19,17 @@ const navItems = [
   { name: "Settings", href: "/admin/settings", icon: CogIcon },
 ];
 
-export default function AdminSidebar() {
+interface AdminSidebarProps {
+  userIsAdmin?: boolean;
+}
+
+export default function AdminSidebar({ userIsAdmin: propUserIsAdmin }: AdminSidebarProps = {}) {
   const pathname = usePathname();
   const { user } = useUser();
   const email = user?.primaryEmailAddress?.emailAddress;
-  const userIsAdmin = isAdmin(email, user?.publicMetadata?.role);
+  const userIsAdmin = propUserIsAdmin !== undefined 
+    ? propUserIsAdmin 
+    : isAdmin(email, user?.publicMetadata?.role);
   const userIsSuperAdmin = isSuperAdmin(email);
 
   return (

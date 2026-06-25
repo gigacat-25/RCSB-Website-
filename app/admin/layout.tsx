@@ -2,6 +2,7 @@ import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminHeader from "@/components/admin/AdminHeader";
 import { currentUser } from "@clerk/nextjs/server";
 import { isAdmin } from "@/lib/admin";
+import { getDatabaseRole, syncClerkRoleWithDatabase, checkAndPromoteSuperAdmin } from "@/lib/admin-server";
 import { redirect } from "next/navigation";
 
 export default async function AdminLayout({
@@ -11,19 +12,31 @@ export default async function AdminLayout({
 }) {
   const user = await currentUser();
   const email = user?.primaryEmailAddress?.emailAddress;
-  const userIsAdmin = isAdmin(email, user?.publicMetadata?.role);
+  
+  let role = user?.publicMetadata?.role;
+  
+  if (user && email) {
+    // 1. Promote Super Admin if needed
+    const promoted = await checkAndPromoteSuperAdmin(user.id, email, role);
+    if (promoted) {
+      role = 'admin';
+    } else if (!role || (role !== 'admin' && role !== 'editor')) {
+      // 2. Otherwise check database role
+      const dbRole = await getDatabaseRole(email);
+      if (dbRole) {
+        // Sync database role to Clerk in the background
+        syncClerkRoleWithDatabase(user.id, email, role, dbRole);
+        role = dbRole;
+      }
+    }
+  }
 
-  // If NOT admin, they can only access /admin and /admin/blogs
-  // Check if current path is restricted
-  // (Note: layout doesn't get the pathname easily in Server Components, 
-  // but we can check the referer or just rely on the sidebar for now, 
-  // or use a wrapper in the page level if absolute safety is needed.
-  // For now, we allow access to the layout itself for all logged in users.)
+  const userIsAdmin = isAdmin(email, role);
 
   return (
     <div className="flex min-h-screen bg-brand-light">
       {/* Sidebar Navigation */}
-      <AdminSidebar />
+      <AdminSidebar userIsAdmin={userIsAdmin} />
 
       {/* Main Content Area */}
       <div className="flex-1 ml-64 flex flex-col">

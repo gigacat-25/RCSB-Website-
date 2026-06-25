@@ -3,12 +3,32 @@ import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import { isAdmin } from "@/lib/admin";
+import { getDatabaseRole, syncClerkRoleWithDatabase, checkAndPromoteSuperAdmin } from "@/lib/admin-server";
 import { BookOpenIcon, PencilSquareIcon, SparklesIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
 
 export default async function AdminDashboard() {
   const user = await currentUser();
   const email = user?.primaryEmailAddress?.emailAddress;
-  const userIsAdmin = isAdmin(email, user?.publicMetadata?.role);
+  
+  let role = user?.publicMetadata?.role;
+  
+  if (user && email) {
+    // 1. Promote Super Admin if needed
+    const promoted = await checkAndPromoteSuperAdmin(user.id, email, role);
+    if (promoted) {
+      role = 'admin';
+    } else if (!role || (role !== 'admin' && role !== 'editor')) {
+      // 2. Otherwise check database role
+      const dbRole = await getDatabaseRole(email);
+      if (dbRole) {
+        // Sync database role to Clerk in the background
+        syncClerkRoleWithDatabase(user.id, email, role, dbRole);
+        role = dbRole;
+      }
+    }
+  }
+
+  const userIsAdmin = isAdmin(email, role);
 
   // Stats
   let projectsCount = 0;
