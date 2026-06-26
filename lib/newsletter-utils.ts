@@ -83,7 +83,7 @@ async function generateEventNewsletter(project: {
     content?: string;
 }, isRecap: boolean) {
     const apiKey = process.env.GROQ_API_KEY!;
-    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb-website.pages.dev";
+    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rotaractswarnabengaluru.in";
     const { title, description, slug, image_url, event_date, rsvp_link, content } = project;
 
     let dateContext = "";
@@ -144,7 +144,7 @@ async function generateBlogNewsletter(project: {
     author_email?: string;
 }) {
     const apiKey = process.env.GROQ_API_KEY!;
-    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb-website.pages.dev";
+    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rotaractswarnabengaluru.in";
     const { title, description, slug, image_url, content, event_date, author_email } = project;
     const authorName = event_date || (author_email ? author_email.split('@')[0] : "") || "RCSB Editorial Team";
 
@@ -196,7 +196,7 @@ async function generateAwardNewsletter(project: {
     content?: string;
 }) {
     const apiKey = process.env.GROQ_API_KEY!;
-    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb-website.pages.dev";
+    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rotaractswarnabengaluru.in";
     const { title, description, slug, image_url, content } = project;
 
     const absImageUrl = image_url ? (image_url.startsWith("http") ? image_url : `${SITE_URL}${image_url}`) : "";
@@ -242,7 +242,7 @@ async function generateProjectNewsletter(project: {
     content?: string;
 }) {
     const apiKey = process.env.GROQ_API_KEY!;
-    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb-website.pages.dev";
+    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rotaractswarnabengaluru.in";
     const { title, description, slug, image_url, content } = project;
 
     const absImageUrl = image_url ? (image_url.startsWith("http") ? image_url : `${SITE_URL}${image_url}`) : "";
@@ -289,7 +289,7 @@ export async function generateNewsletterReminder(project: {
     event_date: string;
     rsvp_link?: string;
 }, daysRemainingOverride?: number) {
-    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb-website.pages.dev";
+    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rotaractswarnabengaluru.in";
     const apiKey = process.env.GROQ_API_KEY;
 
     if (!apiKey) {

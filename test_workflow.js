@@ -37,7 +37,7 @@ const payload = {
     status: "upcoming",
     author_email: "thejaswinps@gmail.com", // Valid admin email
     event_date: postType === "blog" ? null : targetDate.toISOString(),
-    rsvp_link: "https://rcsb-website.pages.dev/register",
+    rsvp_link: "https://rotaractswarnabengaluru.in/register",
     gallery_urls: "[]",
     featured_links: "[]"
 };

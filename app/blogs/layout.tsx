@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Our Stories',
-    description: 'Insights and perspectives. Exploring the heart of Rotaract through reports, reflections, and deep-dives into our community impact.',
+    title: 'Blogs & Stories | Rotaract Club of Swarna Bengaluru',
+    description: 'Read the latest articles, reports, community service stories, and updates from the members of Rotaract Club of Swarna Bengaluru.',
 };
 
 export default function BlogsLayout({ children }: { children: React.ReactNode }) {

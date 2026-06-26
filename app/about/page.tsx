@@ -16,8 +16,8 @@ import {
 export const runtime = 'edge';
 
 export const metadata: Metadata = {
-    title: 'About Us',
-    description: 'Service • Fellowship • Impact — building stronger communities in Bengaluru and beyond.',
+    title: 'About Us | Rotaract Club of Swarna Bengaluru',
+    description: 'Learn about Rotaract Club of Swarna Bengaluru - a youth-led Rotary organization providing community service, fellowship, networking, and leadership in Bengaluru.',
 };
 
 export default function AboutPage() {

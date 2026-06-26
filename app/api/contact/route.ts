@@ -68,7 +68,7 @@ export async function POST(request: Request) {
             <p style="margin:0;color:#e0e8f0;font-size:15px;line-height:1.7;">${(message || "").replace(/\n/g, "<br/>")}</p>
           </div>
           <div style="margin-top:24px;">
-            <a href="https://rcsb-website.pages.dev/admin/messages" style="display:inline-block;background:#C9982A;color:#0a0f1e;text-decoration:none;font-weight:900;padding:12px 24px;border-radius:8px;font-size:13px;letter-spacing:1px;">
+            <a href="https://rotaractswarnabengaluru.in/admin/messages" style="display:inline-block;background:#C9982A;color:#0a0f1e;text-decoration:none;font-weight:900;padding:12px 24px;border-radius:8px;font-size:13px;letter-spacing:1px;">
               View in Admin Panel →
             </a>
           </div>

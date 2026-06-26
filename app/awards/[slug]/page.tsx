@@ -16,12 +16,12 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     if (!award) return {};
 
     const fixImageUrl = (url: string | null | undefined) => {
-      if (!url) return "https://rcsb-website.pages.dev/Images/placeholder.jpg";
+      if (!url) return "https://rotaractswarnabengaluru.in/Images/placeholder.jpg";
       if (url.includes("media.rcsb.in/")) {
         const key = url.split("media.rcsb.in/").pop();
         return `https://rcsb-api-worker.impact1-iceas.workers.dev/media/${key}`;
       }
-      return url.startsWith("/") ? `https://rcsb-website.pages.dev${url}` : url;
+      return url.startsWith("/") ? `https://rotaractswarnabengaluru.in${url}` : url;
     };
 
     return {
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
         title: award.title,
         description: award.description?.substring(0, 160),
         type: 'article',
-        url: `https://rcsb-website.pages.dev/awards/${award.slug}`,
+        url: `https://rotaractswarnabengaluru.in/awards/${award.slug}`,
         images: [{ url: fixImageUrl(award.image_url) }],
       },
     };

@@ -168,13 +168,13 @@ export default function EditAwardPage({ params }: { params: { id: string } }) {
         // Fallback manual draft
         setEmailDraft({
           subject: `🏆 Announcing: ${formData.title}`,
-          body: `<p>Dear Rotaract Family,</p><p>We are proud to announce that <b>${formData.title}</b> — a ${formData.category} — has been awarded to Rotaract Club of Swarna Bengaluru for the year ${formData.year}.</p><p>${formData.description}</p><p>Read more: <a href="https://rcsb-website.pages.dev/awards/${formData.slug}">View Award →</a></p><p>Yours in Service,<br/>Rotaract Club of Swarna Bengaluru</p>`,
+          body: `<p>Dear Rotaract Family,</p><p>We are proud to announce that <b>${formData.title}</b> — a ${formData.category} — has been awarded to Rotaract Club of Swarna Bengaluru for the year ${formData.year}.</p><p>${formData.description}</p><p>Read more: <a href="https://rotaractswarnabengaluru.in/awards/${formData.slug}">View Award →</a></p><p>Yours in Service,<br/>Rotaract Club of Swarna Bengaluru</p>`,
         });
       }
     } catch {
       setEmailDraft({
         subject: `🏆 Announcing: ${formData.title}`,
-        body: `<p>Dear Rotaract Family,</p><p>We are proud to announce that <b>${formData.title}</b> — a ${formData.category} — has been awarded to Rotaract Club of Swarna Bengaluru for the year ${formData.year}.</p><p>${formData.description}</p><p>Read more: <a href="https://rcsb-website.pages.dev/awards/${formData.slug}">View Award →</a></p><p>Yours in Service,<br/>Rotaract Club of Swarna Bengaluru</p>`,
+        body: `<p>Dear Rotaract Family,</p><p>We are proud to announce that <b>${formData.title}</b> — a ${formData.category} — has been awarded to Rotaract Club of Swarna Bengaluru for the year ${formData.year}.</p><p>${formData.description}</p><p>Read more: <a href="https://rotaractswarnabengaluru.in/awards/${formData.slug}">View Award →</a></p><p>Yours in Service,<br/>Rotaract Club of Swarna Bengaluru</p>`,
       });
     } finally {
       setAiLoading(false);

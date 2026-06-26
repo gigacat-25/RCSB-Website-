@@ -1,0 +1,39 @@
+import { NextResponse } from 'next/server';
+
+export const runtime = 'edge';
+
+const LLMS_TXT = `# Rotaract Club of Swarna Bengaluru
+
+> Official website for the Rotaract Club of Swarna Bengaluru (RCSB), part of Rotary International District 3191. A youth-led organization focused on community service, professional development, leadership, and fellowship.
+
+## Information
+- Domain: https://rotaractswarnabengaluru.in
+- Organization Type: Non-Governmental Organization (NGO) / Youth Club
+- Location: Bengaluru, Karnataka, India
+- Affiliation: Rotary International (District 3191)
+
+## Main Navigation
+- [Home Page](https://rotaractswarnabengaluru.in/) - Welcome details, recent updates, featured stories, and interactive components.
+- [About Us](https://rotaractswarnabengaluru.in/about) - Mission, history, Rotary Focus Areas, and our code of ethics.
+- [Projects](https://rotaractswarnabengaluru.in/projects) - Showcase of our community service projects, professional initiatives, and club development programs.
+- [Team](https://rotaractswarnabengaluru.in/team) - Board of directors, club leadership, and active members list.
+- [Blogs](https://rotaractswarnabengaluru.in/blogs) - News, reports, stories, and editorial articles authored by club members.
+- [Contact](https://rotaractswarnabengaluru.in/contact) - Contact form, support channels, and links to official social media profiles.
+- [Past Presidents](https://rotaractswarnabengaluru.in/past-presidents) - The legacy of presidents who steered our club since inception.
+- [Awards & Milestones](https://rotaractswarnabengaluru.in/awards) - Awards, citations, and recognition milestones received by the club.
+
+## Social Handles
+- Facebook: https://www.facebook.com/rotaractswarnabengaluru/
+- Instagram: https://www.instagram.com/rotaract_swarnabengaluru
+- LinkedIn: https://www.linkedin.com/company/rotaract-club-of-swarna-bengaluru/
+- Twitter / X: https://x.com/RCSwarnaB
+- YouTube: https://www.youtube.com/channel/UCE4XQBKSjPs8rj5xyH6FOxA
+`;
+
+export async function GET() {
+    return new NextResponse(LLMS_TXT, {
+        headers: {
+            'Content-Type': 'text/plain; charset=utf-8',
+        },
+    });
+}

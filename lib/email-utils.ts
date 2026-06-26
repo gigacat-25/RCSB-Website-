@@ -5,7 +5,7 @@ const GMAIL_CLIENT_SECRET = process.env.GMAIL_CLIENT_SECRET;
 const GMAIL_REFRESH_TOKEN = process.env.GMAIL_REFRESH_TOKEN;
 const GMAIL_USER = process.env.GMAIL_USER || "rcsb.allert@gmail.com";
 const EMAIL_FROM = process.env.EMAIL_FROM || `Rotaract Swarna Bengaluru <${GMAIL_USER}>`;
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb-website.pages.dev";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rotaractswarnabengaluru.in";
 
 export async function getGmailAccessToken() {
     const params = new URLSearchParams({
@@ -80,7 +80,7 @@ export function buildEmailHtml(subject: string, body: string, unsubscribeUrl?: s
   <div class="container" style="max-width: 600px; margin: 0 auto; background: #0d1528; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,215,0,0.15);">
     <div class="header" style="background: linear-gradient(135deg,#0a0f1e 0%,#1a2744 100%); padding: 32px 40px; border-bottom: 2px solid #C9982A;">
       <div style="margin-bottom:20px; background:#ffffff; display:inline-block; padding:8px; border-radius:8px; line-height: 0;">
-        <img src="https://rcsb-website.pages.dev/logo.png" alt="RCSB Logo" style="height:44px; width:auto; border:0; display:block;" />
+        <img src="https://rotaractswarnabengaluru.in/logo.png" alt="RCSB Logo" style="height:44px; width:auto; border:0; display:block;" />
       </div>
       <p style="margin:0;color:#C9982A;font-size:11px;text-transform:uppercase;letter-spacing:2px;font-weight:700;">Rotaract Club of Swarna Bengaluru</p>
       <h1 style="margin:8px 0 0;color:#ffffff;font-size:24px;font-weight:900;letter-spacing:-0.5px;">${subject}</h1>

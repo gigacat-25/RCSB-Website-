@@ -10,17 +10,26 @@ import AutoSubscribeOnLogin from "@/components/newsletter/AutoSubscribeOnLogin";
 import CookieConsent from "@/components/layout/CookieConsent";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://rcsb-website.pages.dev"),
+  metadataBase: new URL("https://rotaractswarnabengaluru.in"),
   alternates: {
     canonical: "/",
   },
   title: {
     template: "%s | Rotaract Swarna Bengaluru",
-    default: "Rotaract Club of Swarna Bengaluru — Together, Change is Possible!",
+    default: "Rotaract Club of Swarna Bengaluru | RI District 3191",
   },
   description:
-    "A community of young professionals committed to service above self. Grow your leadership and create impact with Rotaract Swarna Bengaluru.",
-  keywords: ["Rotaract", "Bengaluru", "RCSB", "Service", "Youth", "Community", "Rotary"],
+    "Official website of Rotaract Club of Swarna Bengaluru, RI District 3191. Developing youth leadership through community service, fellowship, and networking in Bengaluru.",
+  keywords: [
+    "Rotaract Club of Swarna Bengaluru",
+    "Rotaract Bengaluru",
+    "Rotaract 3191",
+    "Swarna Bengaluru",
+    "Community Service Bengaluru",
+    "Youth Leadership Karnataka",
+    "Rotary District 3191",
+    "Fellowship"
+  ],
   authors: [{ name: "RCSB" }],
   icons: {
     icon: "/favicon.png",
@@ -30,7 +39,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://rcsb-website.pages.dev",
+    url: "https://rotaractswarnabengaluru.in",
     siteName: "Rotaract Club of Swarna Bengaluru",
     images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
   },
@@ -52,8 +61,8 @@ export default function RootLayout({
                 "@context": "https://schema.org",
                 "@type": "NGO",
                 "name": "Rotaract Club of Swarna Bengaluru",
-                "url": "https://rcsb-website.pages.dev",
-                "logo": "https://rcsb-website.pages.dev/logo.png",
+                "url": "https://rotaractswarnabengaluru.in",
+                "logo": "https://rotaractswarnabengaluru.in/logo.png",
                 "sameAs": [
                   "https://www.facebook.com/rotaractswarnabengaluru/",
                   "https://www.instagram.com/rotaract_swarnabengaluru",

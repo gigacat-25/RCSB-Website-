@@ -718,7 +718,7 @@ Guidelines:
                                 {/* Header */}
                                 <div className="bg-gradient-to-br from-[#0a0f1e] to-[#1a2744] p-8 border-b-2 border-[#C9982A]">
                                     <div className="mb-5 bg-white inline-block p-2 rounded-lg leading-none">
-                                        <img src="https://rcsb-website.pages.dev/logo.png" alt="RCSB Logo" className="h-10 w-auto" />
+                                        <img src="https://rotaractswarnabengaluru.in/logo.png" alt="RCSB Logo" className="h-10 w-auto" />
                                     </div>
                                     <p className="m-0 text-[#C9982A] text-[10px] uppercase font-bold tracking-[0.2em]">Rotaract Club of Swarna Bengaluru</p>
                                     <h1 className="mt-2 text-white text-2xl font-black tracking-tight leading-tight">{subject || "No Subject"}</h1>

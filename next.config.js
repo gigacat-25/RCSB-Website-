@@ -4,7 +4,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "rcsb-website.pages.dev",
+        hostname: "rotaractswarnabengaluru.in",
         pathname: "/**",
       },
       // Production media CDN

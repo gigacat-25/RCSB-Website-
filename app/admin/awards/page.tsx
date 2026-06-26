@@ -269,7 +269,7 @@ export default function AdminAwardsPage() {
                         ) : (
                           <>
                             <Link
-                              href={`/admin/newsletter?subject=${encodeURIComponent(`🏆 ${item.title}`)}&body=${encodeURIComponent(`<p>Dear Rotaract Family,</p><p>We are proud to share that <b>${item.title}</b> has been awarded to Rotaract Club of Swarna Bengaluru for the year ${item.year}.</p><p>${item.description || ''}</p><p><a href='https://rcsb-website.pages.dev/awards/${item.slug}'>Read more →</a></p><p>Yours in Service,<br/>Rotaract Club of Swarna Bengaluru</p>`)}`}
+                              href={`/admin/newsletter?subject=${encodeURIComponent(`🏆 ${item.title}`)}&body=${encodeURIComponent(`<p>Dear Rotaract Family,</p><p>We are proud to share that <b>${item.title}</b> has been awarded to Rotaract Club of Swarna Bengaluru for the year ${item.year}.</p><p>${item.description || ''}</p><p><a href='https://rotaractswarnabengaluru.in/awards/${item.slug}'>Read more →</a></p><p>Yours in Service,<br/>Rotaract Club of Swarna Bengaluru</p>`)}`}
                               className="p-2 text-brand-gold hover:bg-amber-50 rounded-lg transition-colors flex items-center justify-center"
                               title="Send Newsletter"
                             >
