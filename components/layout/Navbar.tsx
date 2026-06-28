@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser, useClerk } from "@clerk/nextjs";
+import { motion, AnimatePresence } from "framer-motion";
 import { isAdmin } from "@/lib/admin";
 
 const navLinks = [
@@ -129,7 +130,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`relative text-[12px] font-bold uppercase tracking-[0.15em] whitespace-nowrap transition-colors duration-200 group ${isActive
+                className={`relative py-1 text-[12px] font-bold uppercase tracking-[0.15em] whitespace-nowrap transition-colors duration-300 group ${isActive
                     ? scrolled ? "text-brand-blue" : "text-white"
                     : scrolled
                       ? "text-brand-gray hover:text-brand-blue"
@@ -137,10 +138,15 @@ export default function Navbar() {
                   }`}
               >
                 {link.label}
-                <span
-                  className={`absolute -bottom-1 left-0 h-[2px] bg-brand-gold rounded-full transition-all duration-300 ${isActive ? "w-full" : "w-0 group-hover:w-full"
-                    }`}
-                />
+                {isActive ? (
+                  <motion.span
+                    layoutId="activeNavIndicator"
+                    className="absolute -bottom-1 left-0 h-[2.5px] bg-brand-gold rounded-full w-full"
+                    transition={{ type: "spring", stiffness: 350, damping: 26 }}
+                  />
+                ) : (
+                  <span className="absolute -bottom-1 left-0 h-[2px] bg-brand-gold/60 rounded-full w-0 group-hover:w-full transition-all duration-300" />
+                )}
               </Link>
             );
           })}
@@ -170,39 +176,59 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Drawer Overlay */}
-      <div
-        className={`lg:hidden fixed inset-0 bg-[#0a0f1e]/98 backdrop-blur-2xl transition-all duration-500 z-40 ${open ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"
-          }`}
-      >
-        <div className="flex flex-col items-center justify-center min-h-screen gap-8 p-8">
-          {navLinks.map((link, idx) => {
-            const isActive = pathname === link.href;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setOpen(false)}
-                className={`text-2xl font-black uppercase tracking-[0.2em] transition-all duration-300 ${isActive ? "text-brand-gold scale-110" : "text-white/60 hover:text-white"
-                  }`}
-                style={{
-                  transitionDelay: `${idx * 50}ms`
-                }}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, clipPath: "circle(0% at 92% 5%)" }}
+            animate={{ opacity: 1, clipPath: "circle(150% at 92% 5%)" }}
+            exit={{ opacity: 0, clipPath: "circle(0% at 92% 5%)" }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:hidden fixed inset-0 bg-[#0a0f1e]/98 backdrop-blur-2xl z-40"
+          >
+            <div className="flex flex-col items-center justify-center min-h-screen gap-8 p-8">
+              {navLinks.map((link, idx) => {
+                const isActive = pathname === link.href;
+                return (
+                  <motion.div
+                    key={link.href}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15 + idx * 0.04, duration: 0.4, ease: "easeOut" }}
+                  >
+                    <Link
+                      href={link.href}
+                      onClick={() => setOpen(false)}
+                      className={`text-2xl font-black uppercase tracking-[0.2em] transition-all duration-300 ${isActive ? "text-brand-gold scale-110" : "text-white/60 hover:text-white"
+                        }`}
+                    >
+                      {link.label}
+                    </Link>
+                  </motion.div>
+                );
+              })}
+
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 + navLinks.length * 0.04, duration: 0.4 }}
+                className="w-full max-w-xs mt-4 pt-10 border-t border-white/10 flex flex-col gap-4"
               >
-                {link.label}
-              </Link>
-            );
-          })}
+                <MobileAuth />
+              </motion.div>
 
-          <div className="w-full max-w-xs mt-4 pt-10 border-t border-white/10 flex flex-col gap-4">
-            <MobileAuth />
-          </div>
-
-          <div className="mt-8 flex flex-col items-center gap-2 opacity-40">
-            <img src="/logo.png" alt="RCSB" className="h-10 grayscale invert brightness-0" />
-            <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-white">Swarna Bengaluru</p>
-          </div>
-        </div>
-      </div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 + navLinks.length * 0.04, duration: 0.5 }}
+                className="mt-8 flex flex-col items-center gap-2 opacity-40"
+              >
+                <img src="/logo.png" alt="RCSB" className="h-10 grayscale invert brightness-0" />
+                <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-white">Swarna Bengaluru</p>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

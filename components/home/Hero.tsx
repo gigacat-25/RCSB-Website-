@@ -1,18 +1,78 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 export default function Hero() {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(mediaQuery.matches);
+  }, []);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (reducedMotion) return;
+    const { clientX, clientY } = e;
+    const { innerWidth, innerHeight } = window;
+    const x = (clientX / innerWidth - 0.5) * 30; // Max tilt amplitude
+    const y = (clientY / innerHeight - 0.5) * 30;
+    setMousePos({ x, y });
+  };
+
+  const handleMouseLeave = () => {
+    setMousePos({ x: 0, y: 0 });
+  };
+
+  // Stagger configurations
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.12,
+        delayChildren: 0.3,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30, filter: "blur(6px)" },
+    visible: {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as any },
+    },
+  };
+
   return (
-    <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden pt-32 pb-16 md:pt-20">
-      {/* Dynamic Background */}
-      <div className="absolute inset-0 z-0">
+    <section 
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="relative min-h-[100svh] flex items-center justify-center overflow-hidden pt-32 pb-16 md:pt-20 [perspective:1000px]"
+    >
+      {/* Dynamic Background with Parallax */}
+      <motion.div 
+        initial={{ scale: 1.15, opacity: 0 }}
+        animate={{ scale: 1.05, opacity: 1 }}
+        transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+        style={!reducedMotion ? {
+          x: -mousePos.x * 0.4,
+          y: -mousePos.y * 0.4,
+        } : undefined}
+        className="absolute inset-0 z-0 will-change-transform"
+      >
         <video
           autoPlay
           loop
           muted
           playsInline
           poster="/images/hero-fallback.png"
-          className="w-full h-full object-cover scale-110"
+          className="w-full h-full object-cover"
         >
           <source src={`${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/hero-bg.mp4`} type="video/mp4" />
         </video>
@@ -29,51 +89,76 @@ export default function Hero() {
         </div>
 
         {/* Layered Overlays for Depth */}
-        <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm" />
-        <div className="absolute inset-0 bg-mesh-gradient opacity-40 mix-blend-overlay" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/20 to-slate-950" />
-      </div>
+        <div className="absolute inset-0 bg-slate-950/45 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-mesh-gradient opacity-30 mix-blend-overlay" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/10 to-slate-950" />
+      </motion.div>
 
       <div className="container-custom relative z-10 text-white w-full">
-        <div className="max-w-4xl mx-auto md:mx-0">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 md:py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-6 md:mb-8 animate-fade-down">
-            <span className="w-2 h-2 bg-brand-gold rounded-full animate-pulse" />
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          style={!reducedMotion ? {
+            rotateY: mousePos.x * 0.05,
+            rotateX: -mousePos.y * 0.05,
+            x: mousePos.x * 0.2,
+            y: mousePos.y * 0.2,
+          } : undefined}
+          className="max-w-4xl mx-auto md:mx-0 will-change-transform transition-all duration-300 ease-out"
+        >
+          {/* Tagline */}
+          <motion.div 
+            variants={itemVariants}
+            className="inline-flex items-center gap-2 px-4.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[9px] md:text-[10px] font-black uppercase tracking-[0.25em] mb-6 md:mb-8"
+          >
+            <span className="w-1.5 h-1.5 bg-brand-gold rounded-full animate-pulse" />
             Together, Change is Possible
-          </div>
+          </motion.div>
 
-          <h1 className="text-[2.75rem] leading-[1.1] sm:text-5xl md:text-8xl font-heading font-black text-white mb-6 md:mb-8 animate-fade-up">
+          {/* Heading Staggered Reveal */}
+          <motion.h1 
+            variants={itemVariants}
+            className="text-[2.75rem] leading-[1.1] sm:text-5xl md:text-8xl font-heading font-black text-white mb-6 md:mb-8 tracking-tight"
+          >
             Grow your <span className="text-brand-gold">leadership</span>, <br className="hidden sm:block" />
             <span className="relative inline-block mt-2 md:mt-0 pr-2 md:pr-4">
               Create impact
               <svg className="absolute -bottom-1 md:-bottom-2 left-0 w-full h-2 md:h-3 text-brand-azure/40" viewBox="0 0 100 10" preserveAspectRatio="none">
                 <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" />
               </svg>
-            </span>
+            </span>{" "}
             <span className="inline-block mt-2 md:mt-0">with us</span>
-          </h1>
+          </motion.h1>
 
-          <p className="text-base md:text-2xl text-white/90 mb-8 md:mb-12 max-w-2xl leading-relaxed font-light animate-fade-up" style={{ animationDelay: "200ms" }}>
+          {/* Description */}
+          <motion.p 
+            variants={itemVariants}
+            className="text-base md:text-2xl text-white/95 mb-8 md:mb-12 max-w-2xl leading-relaxed font-light font-sans"
+          >
             Working Towards a Brighter Future. Rotaract Club of Swarna Bengaluru (Formerly Rotaract Club of Bangalore Seshadripuram), emerged in the cradle of service dreamt by 15 young friends in Bengaluru in 2014.
-          </p>
+          </motion.p>
 
-          <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-6 animate-fade-up" style={{ animationDelay: "400ms" }}>
+          {/* Actions */}
+          <motion.div 
+            variants={itemVariants}
+            className="flex flex-col sm:flex-row flex-wrap gap-4 md:gap-6"
+          >
             <Link
               href="/projects"
-              className="premium-button text-center px-10 py-5 bg-brand-gold text-brand-blue font-bold rounded-2xl transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 active:scale-95 font-heading text-lg"
+              className="premium-button text-center px-10 py-5 bg-brand-gold text-brand-blue font-black uppercase tracking-[0.15em] text-xs rounded-2xl transition-all shadow-xl hover:shadow-2xl hover:bg-yellow-400 hover:-translate-y-1 active:translate-y-0 active:scale-98 font-poppins shrink-0"
             >
               Latest Projects
             </Link>
             <Link
               href="/contact"
-              className="premium-button-outline text-center px-10 py-5 bg-white/10 backdrop-blur-md border border-white/30 text-white font-bold rounded-2xl hover:bg-white/20 transition-all hover:-translate-y-1 active:scale-95 font-heading text-lg"
+              className="premium-button-outline text-center px-10 py-5 bg-white/10 backdrop-blur-md border border-white/20 text-white font-black uppercase tracking-[0.15em] text-xs rounded-2xl hover:bg-white hover:text-brand-blue transition-all hover:-translate-y-1 active:translate-y-0 active:scale-98 font-poppins shrink-0"
             >
               Join Our Tribe
             </Link>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
-
-
     </section>
   );
 }

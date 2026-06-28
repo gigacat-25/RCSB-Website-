@@ -93,21 +93,25 @@ export default function EventGallery() {
 
   const slideVariants = {
     enter: (direction: number) => ({
-      x: direction > 0 ? 500 : -500,
-      opacity: 0,
-      scale: 0.9,
+      clipPath: direction > 0 
+        ? "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)" 
+        : "polygon(0 0, 0 0, 0 100%, 0 100%)",
+      opacity: 0.2,
+      scale: 1.1,
     }),
     center: {
       zIndex: 1,
-      x: 0,
+      clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
       opacity: 1,
       scale: 1,
     },
     exit: (direction: number) => ({
       zIndex: 0,
-      x: direction < 0 ? 500 : -500,
+      clipPath: direction < 0 
+        ? "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)" 
+        : "polygon(0 0, 0 0, 0 100%, 0 100%)",
       opacity: 0,
-      scale: 0.9,
+      scale: 0.96,
     }),
   };
 
@@ -154,9 +158,9 @@ export default function EventGallery() {
                 animate="center"
                 exit="exit"
                 transition={{
-                  x: { type: "spring", stiffness: 300, damping: 30 },
-                  opacity: { duration: 0.4 },
-                  scale: { duration: 0.4 },
+                  clipPath: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
+                  opacity: { duration: 0.6 },
+                  scale: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
                 }}
                 className="absolute inset-0 cursor-grab active:cursor-grabbing"
               >

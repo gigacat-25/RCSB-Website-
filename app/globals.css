@@ -12,19 +12,42 @@
   --bg-light: #F8F9FA;
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(255, 255, 255, 0.2);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Lenis smooth scrolling compatibility */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
 }
 
 html {
-  scroll-behavior: smooth;
   background-color: var(--bg-light);
 }
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
   color: #1e293b;
-  /* slate-800 for better readability */
   background-color: var(--bg-light);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 h1,
@@ -67,7 +90,6 @@ h6 {
   0% {
     left: -33%;
   }
-
   100% {
     left: 100%;
   }
@@ -101,7 +123,6 @@ h6 {
     opacity: 0;
     transform: translateY(24px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -109,7 +130,7 @@ h6 {
 }
 
 .animate-slide-up {
-  animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slide-up 0.4s var(--ease-out-expo) forwards;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -127,4 +148,112 @@ h6 {
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(201, 152, 42, 0.3);
+}
+
+/* Custom Cursor styles */
+@media (hover: hover) and (pointer: fine) {
+  .custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    background-color: var(--rotary-gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width 0.2s var(--ease-out-expo), height 0.2s var(--ease-out-expo), background-color 0.2s var(--ease-out-expo);
+    will-change: transform;
+  }
+  
+  .custom-cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 32px;
+    height: 32px;
+    border: 1px solid rgba(247, 168, 27, 0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s var(--ease-out-expo), height 0.3s var(--ease-out-expo), border-color 0.3s var(--ease-out-expo), background-color 0.3s var(--ease-out-expo);
+    will-change: transform;
+  }
+
+  /* When cursor is hovering clickable elements */
+  body.custom-cursor-hovering .custom-cursor {
+    width: 6px;
+    height: 6px;
+    background-color: var(--rotary-azure);
+  }
+  
+  body.custom-cursor-hovering .custom-cursor-ring {
+    width: 52px;
+    height: 52px;
+    border-color: var(--rotary-azure);
+    background-color: rgba(1, 180, 231, 0.08);
+  }
+}
+
+/* Noise texture overlay */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  opacity: 0.015;
+  z-index: 999;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Scroll progress bar */
+.scroll-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(to right, var(--rotary-gold), var(--rotary-azure));
+  transform-origin: 0% 50%;
+  z-index: 1000;
+  will-change: transform;
+}
+
+/* Premium border glow effect for cards */
+.card-border-glow {
+  position: relative;
+}
+.card-border-glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(135deg, rgba(247, 168, 27, 0.4), transparent 50%, rgba(1, 180, 231, 0.4));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-out-expo);
+}
+.card-border-glow:hover::before {
+  opacity: 1;
+}
+
+/* Smooth zoom and rotate keyframe helpers */
+.animate-slow-pan {
+  animation: slowPan 30s ease-in-out infinite alternate;
+}
+@keyframes slowPan {
+  0% { transform: scale(1) translate(0, 0); }
+  100% { transform: scale(1.08) translate(-1%, -1%); }
+}
+
+.mouse-gradient-card {
+  position: relative;
+  overflow: hidden;
 }
