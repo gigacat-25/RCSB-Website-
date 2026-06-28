@@ -1,76 +1,38 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
 export default function Hero() {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReducedMotion(mediaQuery.matches);
-
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (reducedMotion || isMobile) return;
-    const { clientX, clientY } = e;
-    const { innerWidth, innerHeight } = window;
-    const x = (clientX / innerWidth - 0.5) * 30; // Max tilt amplitude
-    const y = (clientY / innerHeight - 0.5) * 30;
-    setMousePos({ x, y });
-  };
-
-  const handleMouseLeave = () => {
-    setMousePos({ x: 0, y: 0 });
-  };
-
-  // Stagger configurations
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: isMobile ? 0.05 : 0.12,
-        delayChildren: isMobile ? 0.1 : 0.3,
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30, filter: "blur(6px)" },
+    hidden: { opacity: 0, y: 15 },
     visible: {
       opacity: 1,
       y: 0,
-      filter: "blur(0px)",
-      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as any },
+      transition: { duration: 0.5, ease: "easeOut" as any },
     },
   };
 
   return (
-    <section 
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className="relative min-h-[100svh] flex items-center justify-center overflow-hidden pt-32 pb-16 md:pt-20 [perspective:1000px]"
-    >
-      {/* Dynamic Background with Parallax */}
+    <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden pt-32 pb-16 md:pt-20">
+      {/* Background */}
       <motion.div 
-        initial={isMobile ? false : { scale: 1.15, opacity: 0 }}
-        animate={isMobile ? false : { scale: 1.05, opacity: 1 }}
-        transition={isMobile ? undefined : { duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
-        style={(!reducedMotion && !isMobile) ? {
-          x: -mousePos.x * 0.4,
-          y: -mousePos.y * 0.4,
-        } : undefined}
-        className="absolute inset-0 z-0 will-change-transform"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        className="absolute inset-0 z-0"
       >
         <video
           autoPlay
@@ -103,15 +65,9 @@ export default function Hero() {
       <div className="container-custom relative z-10 text-white w-full">
         <motion.div 
           variants={containerVariants}
-          initial={isMobile ? false : "hidden"}
-          animate={isMobile ? false : "visible"}
-          style={(!reducedMotion && !isMobile) ? {
-            rotateY: mousePos.x * 0.05,
-            rotateX: -mousePos.y * 0.05,
-            x: mousePos.x * 0.2,
-            y: mousePos.y * 0.2,
-          } : undefined}
-          className="max-w-4xl mx-auto md:mx-0 will-change-transform transition-all duration-300 ease-out"
+          initial="hidden"
+          animate="visible"
+          className="max-w-4xl mx-auto md:mx-0"
         >
           {/* Tagline */}
           <motion.div 
@@ -168,3 +124,4 @@ export default function Hero() {
     </section>
   );
 }
+

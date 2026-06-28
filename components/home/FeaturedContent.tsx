@@ -10,13 +10,8 @@ export default function FeaturedContent() {
   const [blogs, setBlogs] = useState<any[]>([]);
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
     const fetchData = async () => {
       try {
         const res = await fetch(`/api/projects?t=${new Date().getTime()}`);
@@ -32,8 +27,6 @@ export default function FeaturedContent() {
       }
     };
     fetchData();
-
-    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const fixImageUrl = (url: string | null | undefined) => {
@@ -56,16 +49,16 @@ export default function FeaturedContent() {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.15 }
+      transition: { staggerChildren: 0.1 }
     }
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 15 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as any }
+      transition: { duration: 0.5, ease: "easeOut" as any }
     }
   };
 
@@ -88,16 +81,16 @@ export default function FeaturedContent() {
 
             <motion.div 
               variants={containerVariants}
-              initial={isMobile ? false : "hidden"}
-              whileInView={isMobile ? undefined : "visible"}
-              viewport={isMobile ? undefined : { once: true, amount: 0.2 }}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
               className="grid grid-cols-1 lg:grid-cols-2 gap-10"
             >
               {events.map((event, idx) => (
                 <motion.div 
                   key={event.id}
                   variants={itemVariants}
-                  whileHover={isMobile ? undefined : { y: -6, transition: { duration: 0.3 } }}
+                  whileHover={{ y: -6, transition: { duration: 0.2 } }}
                   className="group relative flex flex-col md:flex-row premium-card card-border-glow"
                 >
                   <Link href={`/projects/${event.slug}`} className="flex flex-col md:flex-row w-full">
@@ -148,16 +141,16 @@ export default function FeaturedContent() {
 
             <motion.div 
               variants={containerVariants}
-              initial={isMobile ? false : "hidden"}
-              whileInView={isMobile ? undefined : "visible"}
-              viewport={isMobile ? undefined : { once: true, amount: 0.15 }}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.15 }}
               className="grid grid-cols-1 md:grid-cols-3 gap-12"
             >
               {blogs.map((blog, idx) => (
                 <motion.div 
                   key={blog.id}
                   variants={itemVariants}
-                  whileHover={isMobile ? undefined : { y: -6, transition: { duration: 0.3 } }}
+                  whileHover={{ y: -6, transition: { duration: 0.2 } }}
                   className="group flex flex-col relative"
                 >
                   <Link href={`/blogs/${blog.slug}`} className="flex flex-col h-full">

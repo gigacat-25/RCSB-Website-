@@ -8,13 +8,8 @@ import { motion } from "framer-motion";
 export default function LeadershipPreview() {
   const [team, setTeam] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 640);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
     fetch("/api/team")
       .then((res) => res.json())
       .then((data) => {
@@ -27,8 +22,6 @@ export default function LeadershipPreview() {
         console.error("Failed to fetch team preview:", err);
         setLoading(false);
       });
-
-    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const containerVariants = {
@@ -36,19 +29,18 @@ export default function LeadershipPreview() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: isMobile ? 0.05 : 0.15,
-        delayChildren: isMobile ? 0.05 : 0.1,
+        staggerChildren: 0.1,
+        delayChildren: 0.1,
       },
     },
   };
 
   const memberVariants = {
-    hidden: { opacity: 0, scale: 0.95, y: 30 },
+    hidden: { opacity: 0, y: 15 },
     visible: {
       opacity: 1,
-      scale: 1,
       y: 0,
-      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as any },
+      transition: { duration: 0.5, ease: "easeOut" as any },
     },
   };
 
@@ -80,9 +72,9 @@ export default function LeadershipPreview() {
         ) : (
           <motion.div 
             variants={containerVariants}
-            initial={isMobile ? false : "hidden"}
-            whileInView={isMobile ? undefined : "visible"}
-            viewport={isMobile ? undefined : { once: true, amount: 0.2 }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10"
           >
             {team.map((member: any, idx: number) => (
@@ -121,7 +113,7 @@ export default function LeadershipPreview() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.3 }}
           className="mt-12 md:mt-20 text-center"
         >
           <Link

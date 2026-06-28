@@ -1,36 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
 export default function ContactCTA() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
+        staggerChildren: 0.1,
         delayChildren: 0.1,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 25 },
+    hidden: { opacity: 0, y: 15 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as any },
+      transition: { duration: 0.5, ease: "easeOut" as any },
     },
   };
 
@@ -38,9 +28,9 @@ export default function ContactCTA() {
     <section className="py-20 md:py-32 bg-white relative">
       <div className="container-custom">
         <motion.div 
-          initial={isMobile ? false : "hidden"}
-          whileInView={isMobile ? undefined : "visible"}
-          viewport={isMobile ? undefined : { once: true, amount: 0.2 }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
           variants={containerVariants}
           className="relative rounded-[2.5rem] md:rounded-[4rem] p-8 md:p-24 overflow-hidden shadow-premium group"
         >

@@ -5,37 +5,24 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-function ProjectCard({ project, idx, fixImageUrl, isMobile }: { project: any; idx: number; fixImageUrl: any; isMobile: boolean }) {
-  const [coords, setCoords] = useState({ x: 0, y: 0 });
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (isMobile) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    setCoords({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
-  };
-
+function ProjectCard({ project, idx, fixImageUrl }: { project: any; idx: number; fixImageUrl: any }) {
   return (
     <motion.div
-      initial={isMobile ? false : { opacity: 0, y: 40 }}
-      whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
-      viewport={isMobile ? undefined : { once: true, margin: "-100px" }}
-      transition={isMobile ? undefined : { duration: 0.8, delay: idx * 0.15, ease: [0.16, 1, 0.3, 1] as any }}
-      className="premium-card card-border-glow group flex flex-col will-change-transform h-full relative"
-      onMouseMove={handleMouseMove}
-      whileHover={isMobile ? undefined : { y: -8, transition: { duration: 0.3, ease: "easeOut" } }}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-100px" }}
+      variants={{
+        hidden: { opacity: 0, y: 15 },
+        visible: { 
+          opacity: 1, 
+          y: 0, 
+          transition: { duration: 0.6, delay: idx * 0.08, ease: "easeOut" as any } 
+        }
+      }}
+      whileHover={{ y: -6, transition: { duration: 0.2 } }}
+      className="premium-card card-border-glow group flex flex-col h-full relative"
     >
       <Link href={`/projects/${project.slug}`} className="flex flex-col h-full z-10">
-        {/* Mouse follow gradient */}
-        <div 
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0"
-          style={{
-            background: `radial-gradient(350px circle at ${coords.x}px ${coords.y}px, rgba(247, 168, 27, 0.12), transparent 80%)`
-          }}
-        />
-
         <div className="relative h-80 overflow-hidden z-10">
           <div className="absolute inset-0 bg-brand-blue/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
           <Image
@@ -43,7 +30,7 @@ function ProjectCard({ project, idx, fixImageUrl, isMobile }: { project: any; id
             alt={project.title}
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover group-hover:scale-105 transition-transform duration-[1200ms] ease-out"
+            className="object-cover group-hover:scale-103 transition-transform duration-700 ease-out"
           />
           <div className="absolute top-6 left-6 glass px-4 py-2 text-[10px] font-black uppercase tracking-widest text-brand-blue z-20 rounded-full">
             {project.category}
@@ -74,13 +61,8 @@ function ProjectCard({ project, idx, fixImageUrl, isMobile }: { project: any; id
 export default function RecentProjects() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
     fetch(`/api/projects?t=${new Date().getTime()}`)
       .then(res => res.json())
       .then(data => {
@@ -100,8 +82,6 @@ export default function RecentProjects() {
         console.error("Failed to fetch recent projects:", err);
         setLoading(false);
       });
-
-    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const fixImageUrl = (url: string | null | undefined) => {
@@ -153,7 +133,6 @@ export default function RecentProjects() {
                 project={project} 
                 idx={idx} 
                 fixImageUrl={fixImageUrl} 
-                isMobile={isMobile}
               />
             ))
           )}

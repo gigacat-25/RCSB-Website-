@@ -32,13 +32,8 @@ function Counter({ value }: { value: number }) {
 export default function About() {
   const [memberCount, setMemberCount] = useState(50);
   const [aboutImage, setAboutImage] = useState("/group-photo-2.jpeg");
-  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
     fetch('/api/team')
       .then(res => res.json())
       .then(data => {
@@ -54,19 +49,14 @@ export default function About() {
         if (data && data.url) setAboutImage(data.url);
       })
       .catch(err => console.error("Could not load about photo:", err));
-
-    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const imageContainerVariants = {
-    hidden: isMobile 
-      ? { opacity: 0, scale: 0.95 }
-      : { clipPath: "inset(10% 10% 10% 10% rounded 2.5rem)", opacity: 0, scale: 0.95 },
+    hidden: { opacity: 0, y: 15 },
     visible: {
-      clipPath: isMobile ? undefined : "inset(0% 0% 0% 0% rounded 2.5rem)",
       opacity: 1,
-      scale: 1,
-      transition: { duration: isMobile ? 0.6 : 1.2, ease: [0.16, 1, 0.3, 1] as any }
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" as any }
     }
   };
 
@@ -75,21 +65,18 @@ export default function About() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: isMobile ? 0.05 : 0.1,
-        delayChildren: isMobile ? 0.1 : 0.2
+        staggerChildren: 0.08,
+        delayChildren: 0.1
       }
     }
   };
 
   const textItemVariants = {
-    hidden: isMobile
-      ? { opacity: 0, y: 25 }
-      : { opacity: 0, y: 25, filter: "blur(4px)" },
+    hidden: { opacity: 0, y: 15 },
     visible: {
       opacity: 1,
       y: 0,
-      filter: isMobile ? undefined : "blur(0px)",
-      transition: { duration: isMobile ? 0.5 : 0.8, ease: [0.16, 1, 0.3, 1] as any }
+      transition: { duration: 0.5, ease: "easeOut" as any }
     }
   };
 
@@ -104,9 +91,9 @@ export default function About() {
 
           {/* Visual Side */}
           <motion.div 
-            initial={isMobile ? false : "hidden"}
-            whileInView={isMobile ? undefined : "visible"}
-            viewport={isMobile ? undefined : { once: true, margin: "-100px" }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
             variants={imageContainerVariants}
             className="relative lg:col-span-7"
           >
@@ -123,10 +110,10 @@ export default function About() {
 
             {/* Floating Info Card */}
             <motion.div 
-              initial={isMobile ? false : { opacity: 0, y: 30 }}
-              whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
-              viewport={isMobile ? undefined : { once: true }}
-              transition={isMobile ? undefined : { delay: 0.5, duration: 0.8, ease: "easeOut" }}
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3, duration: 0.5 }}
               className="absolute -bottom-6 -right-4 lg:-bottom-10 lg:-right-4 glass p-4 md:p-6 rounded-[2rem] shadow-xl max-w-[200px] md:max-w-[240px] hidden sm:block z-20 bg-white/85 backdrop-blur-xl border border-white/20"
             >
               <div className="flex flex-col gap-1">
@@ -145,9 +132,9 @@ export default function About() {
 
           {/* Content Side */}
           <motion.div 
-            initial={isMobile ? false : "hidden"}
-            whileInView={isMobile ? undefined : "visible"}
-            viewport={isMobile ? undefined : { once: true, amount: 0.25 }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
             variants={textContainerVariants}
             className="space-y-8 md:space-y-10 mt-8 lg:mt-0 lg:col-span-5"
           >

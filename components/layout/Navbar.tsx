@@ -179,10 +179,10 @@ export default function Navbar() {
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, clipPath: "circle(0% at 92% 5%)" }}
-            animate={{ opacity: 1, clipPath: "circle(150% at 92% 5%)" }}
-            exit={{ opacity: 0, clipPath: "circle(0% at 92% 5%)" }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
             className="lg:hidden fixed inset-0 bg-[#0a0f1e]/98 backdrop-blur-2xl z-40"
           >
             <div className="flex flex-col items-center justify-center min-h-screen gap-8 p-8">
