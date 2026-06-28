@@ -16,18 +16,18 @@ export const metadata: Metadata = {
   },
   title: {
     template: "%s | Rotaract Swarna Bengaluru",
-    default: "Rotaract Club of Swarna Bengaluru | RI District 3191",
+    default: "Rotaract Club of Swarna Bengaluru | RI District 3192",
   },
   description:
-    "Official website of Rotaract Club of Swarna Bengaluru, RI District 3191. Developing youth leadership through community service, fellowship, and networking in Bengaluru.",
+    "Official website of Rotaract Club of Swarna Bengaluru, RI District 3192. Developing youth leadership through community service, fellowship, and networking in Bengaluru.",
   keywords: [
     "Rotaract Club of Swarna Bengaluru",
     "Rotaract Bengaluru",
-    "Rotaract 3191",
+    "Rotaract 3192",
     "Swarna Bengaluru",
     "Community Service Bengaluru",
     "Youth Leadership Karnataka",
-    "Rotary District 3191",
+    "Rotary District 3192",
     "Fellowship"
   ],
   authors: [{ name: "RCSB" }],

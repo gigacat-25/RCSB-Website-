@@ -1,12 +1,12 @@
 # Rotaract Club of Swarna Bengaluru
 
-> Official website for the Rotaract Club of Swarna Bengaluru (RCSB), part of Rotary International District 3191. A youth-led organization focused on community service, professional development, leadership, and fellowship.
+> Official website for the Rotaract Club of Swarna Bengaluru (RCSB), part of Rotary International District 3192. A youth-led organization focused on community service, professional development, leadership, and fellowship.
 
 ## Information
 - Domain: https://rotaractswarnabengaluru.in
 - Organization Type: Non-Governmental Organization (NGO) / Youth Club
 - Location: Bengaluru, Karnataka, India
-- Affiliation: Rotary International (District 3191)
+- Affiliation: Rotary International (District 3192)
 
 ## Main Navigation
 - [Home Page](https://rotaractswarnabengaluru.in/) - Welcome details, recent updates, featured stories, and interactive components.
