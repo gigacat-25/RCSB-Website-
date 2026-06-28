@@ -198,7 +198,7 @@ export default function Navbar() {
                     <Link
                       href={link.href}
                       onClick={() => setOpen(false)}
-                      className={`text-2xl font-black uppercase tracking-[0.2em] transition-all duration-300 ${isActive ? "text-brand-gold scale-110" : "text-white/60 hover:text-white"
+                      className={`text-2xl font-black uppercase tracking-[0.2em] transition-all duration-300 ${isActive ? "text-brand-gold scale-110" : "text-white hover:text-brand-gold"
                         }`}
                     >
                       {link.label}
