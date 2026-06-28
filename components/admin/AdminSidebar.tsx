@@ -33,7 +33,7 @@ export default function AdminSidebar({ userIsAdmin: propUserIsAdmin }: AdminSide
   const userIsSuperAdmin = isSuperAdmin(email);
 
   return (
-    <aside className="w-64 bg-brand-blue text-white h-screen flex flex-col fixed left-0 top-0 overflow-y-auto custom-scrollbar">
+    <aside className="w-64 bg-brand-blue text-white h-screen flex flex-col fixed left-0 top-0 overflow-y-auto overflow-x-hidden custom-scrollbar">
       <div className="p-8 flex flex-col items-center">
         <Link href="/" className="group mb-8">
           <div className="bg-white p-3 rounded-2xl shadow-xl shadow-black/20 group-hover:scale-105 transition-transform">
