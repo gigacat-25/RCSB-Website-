@@ -9,7 +9,7 @@ export const runtime = 'edge';
 const WORKER_URL = process.env.NEXT_PUBLIC_CLOUDFLARE_API_URL!;
 const WORKER_SECRET = process.env.CLOUDFLARE_WORKER_SECRET!;
 const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rotaractswarnabengaluru.in";
+const SITE_URL = "https://rotaractswarnabengaluru.in";
 
 export async function POST(req: Request) {
     console.log(`[Clerk Webhook] Received request at ${new Date().toISOString()}`);

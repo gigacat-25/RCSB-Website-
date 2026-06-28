@@ -812,7 +812,7 @@ export class EventReminderWorkflow extends WorkflowEntrypoint<Env, EventReminder
 
     // 1. Send immediate creation notification
     await step.do("Send initial creation email", async () => {
-      const siteUrl = this.env.SITE_URL || "https://rotaractswarnabengaluru.in";
+      const siteUrl = "https://rotaractswarnabengaluru.in";
       const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
         method: "POST",
         headers: {
@@ -865,7 +865,7 @@ export class EventReminderWorkflow extends WorkflowEntrypoint<Env, EventReminder
 
       if (Date.now() < twoDaysNear) {
         await step.do("Send periodic update reminder", async () => {
-          const siteUrl = this.env.SITE_URL || "https://rotaractswarnabengaluru.in";
+          const siteUrl = "https://rotaractswarnabengaluru.in";
           const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
             method: "POST",
             headers: {
@@ -904,7 +904,7 @@ export class EventReminderWorkflow extends WorkflowEntrypoint<Env, EventReminder
 
       if (Date.now() < eventTime) {
         await step.do("Send daily countdown reminder", async () => {
-          const siteUrl = this.env.SITE_URL || "https://rotaractswarnabengaluru.in";
+          const siteUrl = "https://rotaractswarnabengaluru.in";
           const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
             method: "POST",
             headers: {
@@ -939,7 +939,7 @@ export class EventReminderWorkflow extends WorkflowEntrypoint<Env, EventReminder
       }
 
       await step.do("Send post-event recap", async () => {
-        const siteUrl = this.env.SITE_URL || "https://rotaractswarnabengaluru.in";
+        const siteUrl = "https://rotaractswarnabengaluru.in";
         const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
           method: "POST",
           headers: {
@@ -968,7 +968,7 @@ export class BlogAnnouncementWorkflow extends WorkflowEntrypoint<Env, EventRemin
     if (!eventId) return;
 
     await step.do("Send blog creation email", async () => {
-      const siteUrl = this.env.SITE_URL || "https://rotaractswarnabengaluru.in";
+      const siteUrl = "https://rotaractswarnabengaluru.in";
       const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
         method: "POST",
         headers: {
@@ -996,7 +996,7 @@ export class AwardAnnouncementWorkflow extends WorkflowEntrypoint<Env, EventRemi
     if (!eventId) return;
 
     await step.do("Send award creation email", async () => {
-      const siteUrl = this.env.SITE_URL || "https://rotaractswarnabengaluru.in";
+      const siteUrl = "https://rotaractswarnabengaluru.in";
       const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
         method: "POST",
         headers: {
@@ -1024,7 +1024,7 @@ export class ProjectAnnouncementWorkflow extends WorkflowEntrypoint<Env, EventRe
     if (!eventId) return;
 
     await step.do("Send project creation email", async () => {
-      const siteUrl = this.env.SITE_URL || "https://rotaractswarnabengaluru.in";
+      const siteUrl = "https://rotaractswarnabengaluru.in";
       const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
         method: "POST",
         headers: {

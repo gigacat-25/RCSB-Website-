@@ -5,7 +5,7 @@ const GMAIL_CLIENT_SECRET = process.env.GMAIL_CLIENT_SECRET;
 const GMAIL_REFRESH_TOKEN = process.env.GMAIL_REFRESH_TOKEN;
 const GMAIL_USER = process.env.GMAIL_USER || "rcsb.allert@gmail.com";
 const EMAIL_FROM = process.env.EMAIL_FROM || `Rotaract Swarna Bengaluru <${GMAIL_USER}>`;
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rotaractswarnabengaluru.in";
+const SITE_URL = "https://rotaractswarnabengaluru.in";
 
 export async function getGmailAccessToken() {
     const params = new URLSearchParams({
