@@ -61,7 +61,7 @@ export function createRawEmail(to: string, from: string, subject: string, html: 
     return encodeB64Url(emailLines.join('\r\n'));
 }
 
-export function buildEmailHtml(subject: string, body: string, unsubscribeUrl?: string): string {
+export function buildEmailHtml(subject: string, body: string, unsubscribeUrl?: string, hideVisitWebsite = false): string {
     return `
 <!DOCTYPE html>
 <html lang="en">
@@ -87,11 +87,13 @@ export function buildEmailHtml(subject: string, body: string, unsubscribeUrl?: s
     </div>
     <div class="content" style="padding: 32px 40px; color:#c8d0e0; font-size:15px; line-height: 1.7;">
       ${body}
+      ${hideVisitWebsite ? '' : `
       <div style="margin-top:32px;">
         <a href="${SITE_URL}" style="display:inline-block;background:#C9982A;color:#0a0f1e;text-decoration:none;font-weight:700;padding:12px 28px;border-radius:8px;font-size:14px;">
           Visit the Website →
         </a>
       </div>
+      `}
     </div>
     <div class="footer" style="background:#090e1a; padding:40px 40px; border-top: 1px solid rgba(255,255,255,0.06); text-align:center;">
       <div style="margin-bottom:28px;">

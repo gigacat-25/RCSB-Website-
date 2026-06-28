@@ -81,8 +81,8 @@ export default function BlogsPage() {
 
   const fixImageUrl = (url: string | null | undefined) => {
     if (!url) return "/Images/placeholder.jpg";
-    if (url.includes("rcsb-website.pages.dev/media/")) {
-      const key = url.split("rcsb-website.pages.dev/media/").pop();
+    if (url.includes("rotaractswarnabengaluru.in/media/")) {
+      const key = url.split("rotaractswarnabengaluru.in/media/").pop();
       return `https://rcsb-api-worker.impact1-iceas.workers.dev/media/${key}`;
     }
     if (url.includes("media.rcsb.in/")) {

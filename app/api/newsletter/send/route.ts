@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
 
         for (const sub of subscribers) {
             const unsubUrl = sub.token ? `${SITE_URL}/unsubscribe?token=${sub.token}` : undefined;
-      const html = buildEmailHtml(subject, body, unsubUrl);
+      const html = buildEmailHtml(subject, body, unsubUrl, true);
       const raw = createRawEmail(sub.email, EMAIL_FROM, subject, html);
 
       try {

@@ -30,10 +30,6 @@ export default function AwardsPage() {
   // Helper to fix broken legacy image URLs
   const fixImageUrl = (url: string | null | undefined) => {
     if (!url) return "/Images/placeholder.jpg";
-    if (url.includes("rcsb-website.pages.dev/media/")) {
-      const key = url.split("rcsb-website.pages.dev/media/").pop();
-      return `https://rcsb-api-worker.impact1-iceas.workers.dev/media/${key}`;
-    }
     if (url.includes("rotaractswarnabengaluru.in/media/")) {
       const key = url.split("rotaractswarnabengaluru.in/media/").pop();
       return `https://rcsb-api-worker.impact1-iceas.workers.dev/media/${key}`;

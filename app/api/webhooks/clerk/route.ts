@@ -9,6 +9,7 @@ export const runtime = 'edge';
 const WORKER_URL = process.env.NEXT_PUBLIC_CLOUDFLARE_API_URL!;
 const WORKER_SECRET = process.env.CLOUDFLARE_WORKER_SECRET!;
 const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rotaractswarnabengaluru.in";
 
 export async function POST(req: Request) {
     console.log(`[Clerk Webhook] Received request at ${new Date().toISOString()}`);
@@ -74,9 +75,9 @@ export async function POST(req: Request) {
           <p>Welcome to <strong>Rotaract Club of Swarna Bengaluru (RCSB)</strong>! We're thrilled to have you join our vibrant community of young professionals committed to "Service Above Self".</p>
           <p>By joining us, you've taken the first step towards creating a lasting impact in Bengaluru and beyond. Here are a few things you can explore to get started:</p>
           <ul style="padding-left:20px; margin-bottom:24px;">
-            <li style="margin-bottom:12px;"><strong>Meet the Team:</strong> Get to know the visionaries leading our club this term on our <a href="${process.env.NEXT_PUBLIC_SITE_URL}/team" style="color:#C9982A;text-decoration:none;font-weight:bold;">Leadership Page</a>.</li>
-            <li style="margin-bottom:12px;"><strong>Our Impact:</strong> See the projects we've been working on and our journey so far in the <a href="${process.env.NEXT_PUBLIC_SITE_URL}/projects" style="color:#C9982A;text-decoration:none;font-weight:bold;">Projects & Events</a> section.</li>
-            <li style="margin-bottom:12px;"><strong>Read Our Stories:</strong> Check out our <a href="${process.env.NEXT_PUBLIC_SITE_URL}/blogs" style="color:#C9982A;text-decoration:none;font-weight:bold;">Blog</a> for updates, experiences, and community highlights.</li>
+            <li style="margin-bottom:12px;"><strong>Meet the Team:</strong> Get to know the visionaries leading our club this term on our <a href="${SITE_URL}/team" style="color:#C9982A;text-decoration:none;font-weight:bold;">Leadership Page</a>.</li>
+            <li style="margin-bottom:12px;"><strong>Our Impact:</strong> See the projects we've been working on and our journey so far in the <a href="${SITE_URL}/projects" style="color:#C9982A;text-decoration:none;font-weight:bold;">Projects & Events</a> section.</li>
+            <li style="margin-bottom:12px;"><strong>Read Our Stories:</strong> Check out our <a href="${SITE_URL}/blogs" style="color:#C9982A;text-decoration:none;font-weight:bold;">Blog</a> for updates, experiences, and community highlights.</li>
           </ul>
           <p>We're excited to see the change we can create together. Feel free to reach out if you have any questions!</p>
           <p>Cheers,<br/><strong>The RCSB Team</strong></p>

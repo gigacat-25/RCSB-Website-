@@ -110,7 +110,6 @@ Summary/Description: ${description}
 ${content ? `Full Event Details/Context:\n${content}\n` : ""}
 
 URLs (FOR BUTTON LINKS ONLY. DO NOT WRITE THEM OUT AS TEXT IN THE EMAIL BODY):
-- Official Website: ${SITE_URL}
 - Link to view event details: ${SITE_URL}/events/${slug}
 
 CONTEXTUAL DATA:
@@ -160,7 +159,6 @@ Summary/Intro: ${description}
 ${content ? `Full Blog Post Content:\n${content}\n` : ""}
 
 URLs (FOR BUTTON LINKS ONLY. DO NOT WRITE THEM OUT AS TEXT IN THE EMAIL BODY):
-- Official Website: ${SITE_URL}
 - Link to read story on site: ${SITE_URL}/blogs/${slug}
 
 CONTEXTUAL DATA:
@@ -210,7 +208,6 @@ Summary/Citation: ${description}
 ${content ? `Full Award Details:\n${content}\n` : ""}
 
 URLs (FOR BUTTON LINKS ONLY. DO NOT WRITE THEM OUT AS TEXT IN THE EMAIL BODY):
-- Official Website: ${SITE_URL}
 - Link to view award details: ${SITE_URL}/awards/${slug}
 
 CONTEXTUAL DATA:
@@ -256,7 +253,6 @@ Summary/Overview: ${description}
 ${content ? `Full Project Details/Content:\n${content}\n` : ""}
 
 URLs (FOR BUTTON LINKS ONLY. DO NOT WRITE THEM OUT AS TEXT IN THE EMAIL BODY):
-- Official Website: ${SITE_URL}
 - Link to view project details: ${SITE_URL}/projects/${slug}
 
 CONTEXTUAL DATA:
@@ -319,7 +315,6 @@ Details: ${description}
 Countdown: EXACTLY ${diffDays} DAYS REMAINING.
 
 URLs (FOR BUTTON LINKS ONLY. DO NOT WRITE THEM OUT AS TEXT IN THE EMAIL BODY):
-- Official Website: ${SITE_URL}
 - Official Link: ${SITE_URL}/${section}/${slug}
 - RSVP Link: ${rsvp_link || "N/A"}
 
