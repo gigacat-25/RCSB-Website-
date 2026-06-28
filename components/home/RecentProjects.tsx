@@ -5,10 +5,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-function ProjectCard({ project, idx, fixImageUrl }: { project: any; idx: number; fixImageUrl: any }) {
+function ProjectCard({ project, idx, fixImageUrl, isMobile }: { project: any; idx: number; fixImageUrl: any; isMobile: boolean }) {
   const [coords, setCoords] = useState({ x: 0, y: 0 });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isMobile) return;
     const rect = e.currentTarget.getBoundingClientRect();
     setCoords({
       x: e.clientX - rect.left,
@@ -21,10 +22,10 @@ function ProjectCard({ project, idx, fixImageUrl }: { project: any; idx: number;
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.8, delay: idx * 0.15, ease: [0.16, 1, 0.3, 1] as any }}
+      transition={{ duration: 0.8, delay: isMobile ? 0 : idx * 0.15, ease: [0.16, 1, 0.3, 1] as any }}
       className="premium-card card-border-glow group flex flex-col will-change-transform h-full relative"
       onMouseMove={handleMouseMove}
-      whileHover={{ y: -8, transition: { duration: 0.3, ease: "easeOut" } }}
+      whileHover={isMobile ? undefined : { y: -8, transition: { duration: 0.3, ease: "easeOut" } }}
     >
       <Link href={`/projects/${project.slug}`} className="flex flex-col h-full z-10">
         {/* Mouse follow gradient */}
@@ -73,8 +74,13 @@ function ProjectCard({ project, idx, fixImageUrl }: { project: any; idx: number;
 export default function RecentProjects() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
     fetch(`/api/projects?t=${new Date().getTime()}`)
       .then(res => res.json())
       .then(data => {
@@ -94,6 +100,8 @@ export default function RecentProjects() {
         console.error("Failed to fetch recent projects:", err);
         setLoading(false);
       });
+
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const fixImageUrl = (url: string | null | undefined) => {
@@ -145,6 +153,7 @@ export default function RecentProjects() {
                 project={project} 
                 idx={idx} 
                 fixImageUrl={fixImageUrl} 
+                isMobile={isMobile}
               />
             ))
           )}

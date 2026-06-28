@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 
 export default function SubscribePopup() {
@@ -112,6 +113,9 @@ export default function SubscribePopup() {
                                     No thanks
                                 </button>
                             </div>
+                            <p className="text-[10px] text-gray-500 leading-relaxed mt-2 text-center">
+                                By subscribing, you consent to our processing of your email in accordance with our <Link href="/privacy" className="text-[#C9982A] hover:underline font-bold">Privacy Policy</Link>. You can unsubscribe at any time.
+                            </p>
                             {status === "error" && (
                                 <p className="text-red-400 text-xs text-center">Something went wrong. Try again.</p>
                             )}

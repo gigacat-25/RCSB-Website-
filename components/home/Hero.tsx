@@ -8,14 +8,20 @@ import { motion } from "framer-motion";
 export default function Hero() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     setReducedMotion(mediaQuery.matches);
+
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (reducedMotion) return;
+    if (reducedMotion || isMobile) return;
     const { clientX, clientY } = e;
     const { innerWidth, innerHeight } = window;
     const x = (clientX / innerWidth - 0.5) * 30; // Max tilt amplitude
@@ -33,8 +39,8 @@ export default function Hero() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.12,
-        delayChildren: 0.3,
+        staggerChildren: isMobile ? 0.05 : 0.12,
+        delayChildren: isMobile ? 0.1 : 0.3,
       },
     },
   };
@@ -60,7 +66,7 @@ export default function Hero() {
         initial={{ scale: 1.15, opacity: 0 }}
         animate={{ scale: 1.05, opacity: 1 }}
         transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
-        style={!reducedMotion ? {
+        style={(!reducedMotion && !isMobile) ? {
           x: -mousePos.x * 0.4,
           y: -mousePos.y * 0.4,
         } : undefined}

@@ -8,8 +8,13 @@ import { motion } from "framer-motion";
 export default function LeadershipPreview() {
   const [team, setTeam] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
     fetch("/api/team")
       .then((res) => res.json())
       .then((data) => {
@@ -22,6 +27,8 @@ export default function LeadershipPreview() {
         console.error("Failed to fetch team preview:", err);
         setLoading(false);
       });
+
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const containerVariants = {
@@ -29,8 +36,8 @@ export default function LeadershipPreview() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.1,
+        staggerChildren: isMobile ? 0.05 : 0.15,
+        delayChildren: isMobile ? 0.05 : 0.1,
       },
     },
   };
@@ -95,7 +102,7 @@ export default function LeadershipPreview() {
                   />
                   
                   {/* Sliding Glass Bio */}
-                  <div className="absolute inset-x-4 bottom-4 glass p-6 rounded-[1.5rem] opacity-0 group-hover:opacity-100 translate-y-10 group-hover:translate-y-0 transition-all duration-500 z-20 bg-white/80 backdrop-blur-md">
+                  <div className="absolute inset-x-4 bottom-4 glass p-6 rounded-[1.5rem] opacity-100 sm:opacity-0 group-hover:opacity-100 translate-y-0 sm:translate-y-10 group-hover:translate-y-0 transition-all duration-500 z-20 bg-white/80 backdrop-blur-md">
                     <p className="text-brand-blue text-[11px] italic font-medium leading-relaxed font-sans">
                       "{member.bio || "Leading with empathy and impact."}"
                     </p>

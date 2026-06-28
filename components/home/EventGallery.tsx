@@ -36,8 +36,13 @@ export default function EventGallery() {
   const [slides, setSlides] = useState<GallerySlide[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
     fetch("/api/projects")
       .then((r) => r.json())
       .then((data: any[]) => {
@@ -89,29 +94,38 @@ export default function EventGallery() {
         }
       })
       .catch(() => setSlides(FALLBACK_SLIDES as GallerySlide[]));
+
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const slideVariants = {
     enter: (direction: number) => ({
-      clipPath: direction > 0 
-        ? "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)" 
-        : "polygon(0 0, 0 0, 0 100%, 0 100%)",
-      opacity: 0.2,
-      scale: 1.1,
+      x: isMobile ? (direction > 0 ? "100%" : "-100%") : 0,
+      clipPath: isMobile 
+        ? undefined 
+        : (direction > 0 
+            ? "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)" 
+            : "polygon(0 0, 0 0, 0 100%, 0 100%)"),
+      opacity: isMobile ? 0 : 0.2,
+      scale: isMobile ? 1 : 1.1,
     }),
     center: {
       zIndex: 1,
-      clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+      x: 0,
+      clipPath: isMobile ? undefined : "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
       opacity: 1,
       scale: 1,
     },
     exit: (direction: number) => ({
       zIndex: 0,
-      clipPath: direction < 0 
-        ? "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)" 
-        : "polygon(0 0, 0 0, 0 100%, 0 100%)",
+      x: isMobile ? (direction < 0 ? "100%" : "-100%") : 0,
+      clipPath: isMobile 
+        ? undefined 
+        : (direction < 0 
+            ? "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)" 
+            : "polygon(0 0, 0 0, 0 100%, 0 100%)"),
       opacity: 0,
-      scale: 0.96,
+      scale: isMobile ? 1 : 0.96,
     }),
   };
 
@@ -125,6 +139,7 @@ export default function EventGallery() {
     if (slides.length === 0) return;
     const timer = setInterval(() => paginate(1), 6000);
     return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentIndex, slides.length]);
 
   const current = slides[currentIndex];
@@ -157,7 +172,10 @@ export default function EventGallery() {
                 initial="enter"
                 animate="center"
                 exit="exit"
-                transition={{
+                transition={isMobile ? {
+                  x: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+                  opacity: { duration: 0.3 }
+                } : {
                   clipPath: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
                   opacity: { duration: 0.6 },
                   scale: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },

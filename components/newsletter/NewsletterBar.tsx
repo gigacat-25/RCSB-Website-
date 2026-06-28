@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { EnvelopeIcon } from "@heroicons/react/24/outline";
 
 export default function NewsletterBar() {
@@ -72,6 +73,9 @@ export default function NewsletterBar() {
                                 {status === "loading" ? "…" : status === "done" ? "✓" : "Subscribe"}
                             </button>
                         </div>
+                        <p className="text-[10px] text-white/30 mt-2 leading-relaxed">
+                            By subscribing, you consent to our processing of your email in accordance with our <Link href="/privacy" className="text-brand-gold hover:underline font-bold">Privacy Policy</Link>. You can unsubscribe at any time.
+                        </p>
                         {status === "error" && (
                             <p className="text-brand-cranberry text-[10px] uppercase font-black tracking-widest mt-1.5">
                                 Something went wrong. Try again.

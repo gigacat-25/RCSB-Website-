@@ -2,6 +2,7 @@
 export const runtime = 'edge';
 
 import { useState } from "react";
+import Link from "next/link";
 import { EnvelopeIcon, MapPinIcon, GlobeAltIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
@@ -12,6 +13,7 @@ export default function ContactPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [consent, setConsent] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -52,6 +54,7 @@ export default function ContactPage() {
 
       setSuccess(true);
       setTurnstileToken(null);
+      setConsent(false);
       setFormData({ firstName: "", lastName: "", email: "", phone: "", reason: "General Inquiry", message: "" });
     } catch (err: any) {
       setError(err.message);
@@ -299,6 +302,22 @@ export default function ContactPage() {
                           placeholder="How can we help?"
                         ></textarea>
                       </div>
+
+                      {/* DPDP Act 2023 Consent Checkbox */}
+                      <div className="flex items-start gap-3 mt-6 relative z-10">
+                        <input
+                          type="checkbox"
+                          id="data-consent"
+                          checked={consent}
+                          onChange={(e) => setConsent(e.target.checked)}
+                          required
+                          className="w-4 h-4 mt-1 rounded border-slate-300 text-brand-blue focus:ring-brand-blue accent-brand-blue cursor-pointer shrink-0"
+                        />
+                        <label htmlFor="data-consent" className="text-xs text-brand-blue/60 leading-relaxed cursor-pointer select-none">
+                          I consent to the collection and processing of my name, email, phone number, and message to respond to my inquiry, in accordance with the <Link href="/privacy" className="text-brand-azure hover:underline font-bold" target="_blank">Privacy Policy</Link>. I understand I can withdraw this consent at any time.
+                        </label>
+                      </div>
+
                       {process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY && (
                         <Turnstile
                           onVerify={(token) => setTurnstileToken(token)}
@@ -309,7 +328,7 @@ export default function ContactPage() {
 
                       <button
                         type="submit"
-                        disabled={loading || (!!process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY && !turnstileToken)}
+                        disabled={loading || !consent || (!!process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY && !turnstileToken)}
                         className="w-full py-6 bg-brand-blue text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl hover:bg-brand-azure transition-all shadow-xl disabled:opacity-50 hover:-translate-y-1 active:translate-y-0"
                       >
                         {loading ? "Transmitting..." : "Submit Message"}

@@ -32,8 +32,13 @@ function Counter({ value }: { value: number }) {
 export default function About() {
   const [memberCount, setMemberCount] = useState(50);
   const [aboutImage, setAboutImage] = useState("/group-photo-2.jpeg");
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
     fetch('/api/team')
       .then(res => res.json())
       .then(data => {
@@ -49,15 +54,19 @@ export default function About() {
         if (data && data.url) setAboutImage(data.url);
       })
       .catch(err => console.error("Could not load about photo:", err));
+
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const imageContainerVariants = {
-    hidden: { clipPath: "inset(10% 10% 10% 10% rounded 2.5rem)", opacity: 0, scale: 0.95 },
+    hidden: isMobile 
+      ? { opacity: 0, scale: 0.95 }
+      : { clipPath: "inset(10% 10% 10% 10% rounded 2.5rem)", opacity: 0, scale: 0.95 },
     visible: {
-      clipPath: "inset(0% 0% 0% 0% rounded 2.5rem)",
+      clipPath: isMobile ? undefined : "inset(0% 0% 0% 0% rounded 2.5rem)",
       opacity: 1,
       scale: 1,
-      transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] as any }
+      transition: { duration: isMobile ? 0.6 : 1.2, ease: [0.16, 1, 0.3, 1] as any }
     }
   };
 
@@ -66,19 +75,21 @@ export default function About() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2
+        staggerChildren: isMobile ? 0.05 : 0.1,
+        delayChildren: isMobile ? 0.1 : 0.2
       }
     }
   };
 
   const textItemVariants = {
-    hidden: { opacity: 0, y: 25, filter: "blur(4px)" },
+    hidden: isMobile
+      ? { opacity: 0, y: 25 }
+      : { opacity: 0, y: 25, filter: "blur(4px)" },
     visible: {
       opacity: 1,
       y: 0,
-      filter: "blur(0px)",
-      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as any }
+      filter: isMobile ? undefined : "blur(0px)",
+      transition: { duration: isMobile ? 0.5 : 0.8, ease: [0.16, 1, 0.3, 1] as any }
     }
   };
 

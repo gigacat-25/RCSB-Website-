@@ -15,7 +15,7 @@ export default function CookieConsent() {
   const [view, setView] = useState<"banner" | "settings">("banner");
   const [prefs, setPrefs] = useState<CookiePrefs>({
     essential: true,
-    analytics: true,
+    analytics: false,
     marketing: false,
   });
 
@@ -77,7 +77,7 @@ export default function CookieConsent() {
                         Cookie Settings
                       </h3>
                       <p className="text-gray-400 text-xs md:text-sm max-w-2xl leading-relaxed">
-                        We use cookies to enhance your browsing experience, serve personalized ads or content, and analyze our traffic. By clicking "Accept All", you consent to our use of cookies.
+                        We use cookies to enhance your browsing experience, analyze our traffic, and support site features. By clicking "Accept All", you consent to our use of cookies. You have the right to withdraw your consent at any time via these settings. See our <Link href="/privacy" className="text-brand-gold hover:underline">Privacy Policy</Link> for details.
                       </p>
                     </div>
                   </div>
