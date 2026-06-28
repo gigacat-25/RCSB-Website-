@@ -11,7 +11,7 @@ import {
 
 const WORKER_URL = process.env.NEXT_PUBLIC_CLOUDFLARE_API_URL!;
 const WORKER_SECRET = process.env.CLOUDFLARE_WORKER_SECRET!;
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rcsb-website.pages.dev";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rotaractswarnabengaluru.in";
 
 // Gmail API Config for local constants
 const GMAIL_REFRESH_TOKEN = process.env.GMAIL_REFRESH_TOKEN;

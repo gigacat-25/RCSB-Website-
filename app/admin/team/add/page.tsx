@@ -7,12 +7,34 @@ import Link from "next/link";
 import { ArrowLeftIcon, PhotoIcon, XMarkIcon, UserIcon } from "@heroicons/react/24/outline";
 import ImageCropper from "@/components/admin/ImageCropper";
 
+const STANDARD_ROLES = [
+  "President",
+  "Secretary",
+  "Treasurer",
+  "Vice President",
+  "President-Elect",
+  "Immediate Past President",
+  "Sergeant-at-Arms",
+  "Club Advisor",
+  "Club Service Director",
+  "Community Service Director",
+  "International Service Director",
+  "Professional Development Director",
+  "Vocational Service Director",
+  "Public Relations Director",
+  "Webmaster / Technical Coordinator",
+  "Editor / Editorial Director",
+  "Core Member",
+];
+
 export default function AddTeamMemberPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [pendingProfileImage, setPendingProfileImage] = useState<string | null>(null);
+  const [selectedRole, setSelectedRole] = useState("Core Member");
+  const [customRole, setCustomRole] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -137,15 +159,42 @@ export default function AddTeamMemberPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-brand-blue uppercase tracking-wider block">Role *</label>
-                  <input
-                    type="text"
-                    name="role"
-                    value={formData.role}
-                    onChange={handleChange}
-                    required
-                    className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all"
-                    placeholder="e.g. President"
-                  />
+                  <select
+                    name="roleSelect"
+                    value={selectedRole}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setSelectedRole(val);
+                      if (val !== "Custom Role") {
+                        setFormData((prev) => ({ ...prev, role: val }));
+                      } else {
+                        setFormData((prev) => ({ ...prev, role: customRole }));
+                      }
+                    }}
+                    className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all cursor-pointer font-medium text-brand-blue"
+                  >
+                    {STANDARD_ROLES.map((r) => (
+                      <option key={r} value={r}>
+                        {r}
+                      </option>
+                    ))}
+                    <option value="Custom Role">Custom Role...</option>
+                  </select>
+
+                  {selectedRole === "Custom Role" && (
+                    <input
+                      type="text"
+                      value={customRole}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setCustomRole(val);
+                        setFormData((prev) => ({ ...prev, role: val }));
+                      }}
+                      required
+                      className="w-full bg-gray-50 border-2 border-gray-100 focus:border-brand-azure focus:ring-0 rounded-xl px-4 py-3 outline-none transition-all mt-2"
+                      placeholder="e.g. Project Chairman"
+                    />
+                  )}
                 </div>
 
                 <div className="space-y-2">

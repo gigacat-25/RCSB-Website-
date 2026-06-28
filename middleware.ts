@@ -21,12 +21,18 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 export default isClerkEnabled
-  ? clerkMiddleware((auth, req) => {
-    if (isPublicRoute(req)) return NextResponse.next();
-  })
+  ? clerkMiddleware(async (auth, req) => {
+      const isPublic = isPublicRoute(req);
+      const isApiAdmin = req.nextUrl.pathname.startsWith("/api/admin");
+      const isAdminPage = req.nextUrl.pathname.startsWith("/admin");
+
+      if (isAdminPage || isApiAdmin || !isPublic) {
+        await auth.protect();
+      }
+    })
   : function middleware(_req: NextRequest) {
-    return NextResponse.next();
-  };
+      return NextResponse.next();
+    };
 
 export const config = {
   matcher: [
