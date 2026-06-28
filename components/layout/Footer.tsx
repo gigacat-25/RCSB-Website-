@@ -107,8 +107,9 @@ export default function Footer() {
               <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
             </div>
 
-            <div className="text-xs md:text-[13px] font-black uppercase tracking-[0.2em] text-white/50 bg-white/5 px-4 py-2 rounded-xl border border-white/5">
-              <span>Built by <a href="https://www.aarx.space/" target="_blank" rel="noopener noreferrer" className="text-brand-gold hover:text-white transition-colors">Rtr.Thejaswin.P</a></span>
+            <div className="text-xs md:text-[13px] font-black uppercase tracking-[0.2em] text-white/50 bg-white/5 px-4 py-2 rounded-xl border border-white/5 flex items-center gap-2">
+              <img src="/thescene-logo.png" alt="The Scene Co. Logo" className="w-12 h-12 rounded-md object-contain" />
+              <span>Developed by <a href="https://thescene.co.in" target="_blank" rel="noopener noreferrer" className="text-brand-gold hover:text-white transition-colors">The Scene Co.</a></span>
             </div>
           </div>
 
