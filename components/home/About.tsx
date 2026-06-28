@@ -104,9 +104,9 @@ export default function About() {
 
           {/* Visual Side */}
           <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
+            initial={isMobile ? false : "hidden"}
+            whileInView={isMobile ? undefined : "visible"}
+            viewport={isMobile ? undefined : { once: true, margin: "-100px" }}
             variants={imageContainerVariants}
             className="relative lg:col-span-7"
           >
@@ -123,10 +123,10 @@ export default function About() {
 
             {/* Floating Info Card */}
             <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
+              initial={isMobile ? false : { opacity: 0, y: 30 }}
+              whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
+              viewport={isMobile ? undefined : { once: true }}
+              transition={isMobile ? undefined : { delay: 0.5, duration: 0.8, ease: "easeOut" }}
               className="absolute -bottom-6 -right-4 lg:-bottom-10 lg:-right-4 glass p-4 md:p-6 rounded-[2rem] shadow-xl max-w-[200px] md:max-w-[240px] hidden sm:block z-20 bg-white/85 backdrop-blur-xl border border-white/20"
             >
               <div className="flex flex-col gap-1">
@@ -145,9 +145,9 @@ export default function About() {
 
           {/* Content Side */}
           <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.25 }}
+            initial={isMobile ? false : "hidden"}
+            whileInView={isMobile ? undefined : "visible"}
+            viewport={isMobile ? undefined : { once: true, amount: 0.25 }}
             variants={textContainerVariants}
             className="space-y-8 md:space-y-10 mt-8 lg:mt-0 lg:col-span-5"
           >

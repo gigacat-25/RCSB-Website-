@@ -63,9 +63,9 @@ export default function Hero() {
     >
       {/* Dynamic Background with Parallax */}
       <motion.div 
-        initial={{ scale: 1.15, opacity: 0 }}
-        animate={{ scale: 1.05, opacity: 1 }}
-        transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+        initial={isMobile ? false : { scale: 1.15, opacity: 0 }}
+        animate={isMobile ? false : { scale: 1.05, opacity: 1 }}
+        transition={isMobile ? undefined : { duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
         style={(!reducedMotion && !isMobile) ? {
           x: -mousePos.x * 0.4,
           y: -mousePos.y * 0.4,
@@ -103,9 +103,9 @@ export default function Hero() {
       <div className="container-custom relative z-10 text-white w-full">
         <motion.div 
           variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          style={!reducedMotion ? {
+          initial={isMobile ? false : "hidden"}
+          animate={isMobile ? false : "visible"}
+          style={(!reducedMotion && !isMobile) ? {
             rotateY: mousePos.x * 0.05,
             rotateX: -mousePos.y * 0.05,
             x: mousePos.x * 0.2,

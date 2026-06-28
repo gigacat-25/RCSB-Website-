@@ -10,8 +10,13 @@ export default function FeaturedContent() {
   const [blogs, setBlogs] = useState<any[]>([]);
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
     const fetchData = async () => {
       try {
         const res = await fetch(`/api/projects?t=${new Date().getTime()}`);
@@ -27,6 +32,8 @@ export default function FeaturedContent() {
       }
     };
     fetchData();
+
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const fixImageUrl = (url: string | null | undefined) => {
@@ -81,16 +88,16 @@ export default function FeaturedContent() {
 
             <motion.div 
               variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
+              initial={isMobile ? false : "hidden"}
+              whileInView={isMobile ? undefined : "visible"}
+              viewport={isMobile ? undefined : { once: true, amount: 0.2 }}
               className="grid grid-cols-1 lg:grid-cols-2 gap-10"
             >
               {events.map((event, idx) => (
                 <motion.div 
                   key={event.id}
                   variants={itemVariants}
-                  whileHover={{ y: -6, transition: { duration: 0.3 } }}
+                  whileHover={isMobile ? undefined : { y: -6, transition: { duration: 0.3 } }}
                   className="group relative flex flex-col md:flex-row premium-card card-border-glow"
                 >
                   <Link href={`/projects/${event.slug}`} className="flex flex-col md:flex-row w-full">
@@ -141,16 +148,16 @@ export default function FeaturedContent() {
 
             <motion.div 
               variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.15 }}
+              initial={isMobile ? false : "hidden"}
+              whileInView={isMobile ? undefined : "visible"}
+              viewport={isMobile ? undefined : { once: true, amount: 0.15 }}
               className="grid grid-cols-1 md:grid-cols-3 gap-12"
             >
               {blogs.map((blog, idx) => (
                 <motion.div 
                   key={blog.id}
                   variants={itemVariants}
-                  whileHover={{ y: -6, transition: { duration: 0.3 } }}
+                  whileHover={isMobile ? undefined : { y: -6, transition: { duration: 0.3 } }}
                   className="group flex flex-col relative"
                 >
                   <Link href={`/blogs/${blog.slug}`} className="flex flex-col h-full">

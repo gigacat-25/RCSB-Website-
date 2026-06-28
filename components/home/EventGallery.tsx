@@ -100,13 +100,13 @@ export default function EventGallery() {
 
   const slideVariants = {
     enter: (direction: number) => ({
-      x: isMobile ? (direction > 0 ? "100%" : "-100%") : 0,
+      x: 0,
       clipPath: isMobile 
         ? undefined 
         : (direction > 0 
             ? "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)" 
             : "polygon(0 0, 0 0, 0 100%, 0 100%)"),
-      opacity: isMobile ? 0 : 0.2,
+      opacity: 0,
       scale: isMobile ? 1 : 1.1,
     }),
     center: {
@@ -118,7 +118,7 @@ export default function EventGallery() {
     },
     exit: (direction: number) => ({
       zIndex: 0,
-      x: isMobile ? (direction < 0 ? "100%" : "-100%") : 0,
+      x: 0,
       clipPath: isMobile 
         ? undefined 
         : (direction < 0 
@@ -173,8 +173,7 @@ export default function EventGallery() {
                 animate="center"
                 exit="exit"
                 transition={isMobile ? {
-                  x: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
-                  opacity: { duration: 0.3 }
+                  opacity: { duration: 0.25, ease: "easeInOut" }
                 } : {
                   clipPath: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
                   opacity: { duration: 0.6 },

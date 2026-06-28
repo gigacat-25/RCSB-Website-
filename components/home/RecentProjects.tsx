@@ -19,10 +19,10 @@ function ProjectCard({ project, idx, fixImageUrl, isMobile }: { project: any; id
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.8, delay: isMobile ? 0 : idx * 0.15, ease: [0.16, 1, 0.3, 1] as any }}
+      initial={isMobile ? false : { opacity: 0, y: 40 }}
+      whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
+      viewport={isMobile ? undefined : { once: true, margin: "-100px" }}
+      transition={isMobile ? undefined : { duration: 0.8, delay: idx * 0.15, ease: [0.16, 1, 0.3, 1] as any }}
       className="premium-card card-border-glow group flex flex-col will-change-transform h-full relative"
       onMouseMove={handleMouseMove}
       whileHover={isMobile ? undefined : { y: -8, transition: { duration: 0.3, ease: "easeOut" } }}
