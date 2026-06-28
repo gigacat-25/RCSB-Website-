@@ -8,7 +8,6 @@ import Providers from "./providers";
 import SubscribePopup from "@/components/newsletter/SubscribePopup";
 import AutoSubscribeOnLogin from "@/components/newsletter/AutoSubscribeOnLogin";
 import CookieConsent from "@/components/layout/CookieConsent";
-import CustomCursor from "@/components/shared/CustomCursor";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://rotaractswarnabengaluru.in"),
@@ -80,7 +79,6 @@ export default function RootLayout({
             <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#0F3B82]/5 rounded-full blur-[120px] animate-pulse-soft" />
             <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#F7A81B]/5 rounded-full blur-[120px] animate-pulse-soft" style={{ animationDelay: "2s" }} />
           </div>
-          <CustomCursor />
           <Providers>
             <AutoSubscribeOnLogin />
             <Navbar />
