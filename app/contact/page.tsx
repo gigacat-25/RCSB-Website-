@@ -5,11 +5,13 @@ import { useState } from "react";
 import { EnvelopeIcon, MapPinIcon, GlobeAltIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
+import Turnstile from "@/components/shared/Turnstile";
 
 export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -38,13 +40,18 @@ export default function ContactPage() {
           email: formData.email,
           phone: formData.phone,
           reason: formData.reason,
-          message: formData.message
+          message: formData.message,
+          turnstileToken,
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to send message. Please try again.");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Failed to send message. Please try again.");
+      }
 
       setSuccess(true);
+      setTurnstileToken(null);
       setFormData({ firstName: "", lastName: "", email: "", phone: "", reason: "General Inquiry", message: "" });
     } catch (err: any) {
       setError(err.message);
@@ -292,9 +299,17 @@ export default function ContactPage() {
                           placeholder="How can we help?"
                         ></textarea>
                       </div>
+                      {process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY && (
+                        <Turnstile
+                          onVerify={(token) => setTurnstileToken(token)}
+                          onExpire={() => setTurnstileToken(null)}
+                          onError={() => setTurnstileToken(null)}
+                        />
+                      )}
+
                       <button
                         type="submit"
-                        disabled={loading}
+                        disabled={loading || (!!process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY && !turnstileToken)}
                         className="w-full py-6 bg-brand-blue text-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl hover:bg-brand-azure transition-all shadow-xl disabled:opacity-50 hover:-translate-y-1 active:translate-y-0"
                       >
                         {loading ? "Transmitting..." : "Submit Message"}

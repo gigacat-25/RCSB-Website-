@@ -18,6 +18,13 @@ const isPublicRoute = createRouteMatcher([
   '/past-presidents(.*)',
   '/privacy(.*)',
   '/terms(.*)',
+  '/sitemap.xml',
+  '/robots.txt',
+  '/llms.txt',
+  '/llm(.*)',
+  '/awards(.*)',
+  '/unsubscribe(.*)',
+  '/.well-known/(.*)',
 ]);
 
 export default isClerkEnabled

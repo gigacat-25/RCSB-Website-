@@ -21,6 +21,43 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
+    // Verify Turnstile Captcha if the secret key is configured
+    const turnstileSecret = process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY;
+    if (turnstileSecret) {
+      const turnstileToken = body.turnstileToken;
+      if (!turnstileToken) {
+        return NextResponse.json(
+          { error: "Security verification token is required." },
+          { status: 400 }
+        );
+      }
+
+      const ip = request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for");
+      try {
+        const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            secret: turnstileSecret,
+            response: turnstileToken,
+            remoteip: ip || undefined,
+          }),
+        });
+
+        const verifyData = (await verifyRes.json()) as { success: boolean; "error-codes"?: string[] };
+        if (!verifyData.success) {
+          console.error("[Contact] Turnstile verification failed:", verifyData["error-codes"]);
+          return NextResponse.json(
+            { error: "Security verification failed. Please refresh and try again." },
+            { status: 400 }
+          );
+        }
+      } catch (err) {
+        console.error("[Contact] Turnstile API request failed:", err);
+        // Do not block the request if the Turnstile API itself fails/times out
+      }
+    }
+
     // 1. Save inquiry to the worker DB (existing flow)
     const result = await apiFetch("/api/contact", {
       method: "POST",
