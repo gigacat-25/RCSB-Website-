@@ -17,7 +17,7 @@ export default function TermsAndConditionsPage() {
                         </div>
                         <div>
                             <h1 className="text-4xl md:text-5xl font-heading font-black text-brand-blue tracking-tight">Terms and Conditions</h1>
-                            <p className="text-brand-gray/60 font-bold mt-2 uppercase tracking-widest text-[11px]">Last Updated: March 2024</p>
+                            <p className="text-brand-gray/60 font-bold mt-2 uppercase tracking-widest text-[11px]">Last Updated: June 2026</p>
                         </div>
                     </div>
 
@@ -38,22 +38,27 @@ export default function TermsAndConditionsPage() {
                             <li>Remove any copyright or other proprietary notations from the materials.</li>
                         </ul>
 
-                        <h3 className="text-2xl font-black text-brand-blue font-heading mt-8 mb-4">3. Disclaimer</h3>
+                        <h3 className="text-2xl font-black text-brand-blue font-heading mt-8 mb-4">3. User Accounts and Registration</h3>
+                        <p>
+                            To access certain features of the website, including the member dashboard, you may be required to register for an account. By registering, you agree to provide accurate, current, and complete information, and to maintain the security of your login credentials. We use third-party authentication services (Clerk) to manage user accounts and login security.
+                        </p>
+
+                        <h3 className="text-2xl font-black text-brand-blue font-heading mt-8 mb-4">4. Disclaimer</h3>
                         <p>
                             The materials on Rotaract Club of Swarna Bengaluru's website are provided on an 'as is' basis. We make no warranties, expressed or implied, and hereby disclaim and negate all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.
                         </p>
 
-                        <h3 className="text-2xl font-black text-brand-blue font-heading mt-8 mb-4">4. Limitations</h3>
+                        <h3 className="text-2xl font-black text-brand-blue font-heading mt-8 mb-4">5. Limitations</h3>
                         <p>
                             In no event shall Rotaract Club of Swarna Bengaluru or its members be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on our website.
                         </p>
 
-                        <h3 className="text-2xl font-black text-brand-blue font-heading mt-8 mb-4">5. Website Links</h3>
+                        <h3 className="text-2xl font-black text-brand-blue font-heading mt-8 mb-4">6. Website Links</h3>
                         <p>
                             We have not reviewed all of the sites linked to our website and are not responsible for the contents of any such linked site. The inclusion of any link does not imply endorsement by us of the site. Use of any such linked website is at the user's own risk.
                         </p>
 
-                        <h3 className="text-2xl font-black text-brand-blue font-heading mt-8 mb-4">6. Modifications</h3>
+                        <h3 className="text-2xl font-black text-brand-blue font-heading mt-8 mb-4">7. Modifications</h3>
                         <p>
                             We may revise these terms of service for our website at any time without notice. By using this website you are agreeing to be bound by the then current version of these terms of service.
                         </p>
