@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { apiFetch } from '@/lib/api';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const staticRoutes = ['', '/about', '/projects', '/team', '/blogs', '/contact'].map((route) => ({
+    const staticRoutes = ['', '/about', '/projects', '/awards', '/team', '/blogs', '/contact'].map((route) => ({
         url: `https://rotaractswarnabengaluru.in${route}`,
         lastModified: new Date(),
         changeFrequency: 'weekly' as const,
@@ -15,12 +15,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         const res = await fetch(`https://rotaractswarnabengaluru.in/api/projects`, { next: { revalidate: 3600 } });
         if (res.ok) {
             const data = await res.json();
-            projectUrls = data.map((item: any) => ({
-                url: `https://rotaractswarnabengaluru.in/${item.type === 'blog' ? 'blogs' : 'projects'}/${item.slug}`,
-                lastModified: new Date(item.updated_at || item.created_at || new Date()),
-                changeFrequency: 'monthly' as const,
-                priority: 0.6,
-            }));
+            projectUrls = data.map((item: any) => {
+                let segment = 'projects';
+                if (item.type === 'blog') {
+                    segment = 'blogs';
+                } else if (item.type === 'award') {
+                    segment = 'awards';
+                }
+                return {
+                    url: `https://rotaractswarnabengaluru.in/${segment}/${item.slug}`,
+                    lastModified: new Date(item.updated_at || item.created_at || new Date()),
+                    changeFrequency: 'monthly' as const,
+                    priority: 0.6,
+                };
+            });
         }
     } catch (error) {
         console.error("Failed to fetch dynamic routes for sitemap:", error);
