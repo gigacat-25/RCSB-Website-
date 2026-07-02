@@ -178,17 +178,12 @@ export default function ChatMessage({ role, content, isStreaming }: ChatMessageP
     <div className="flex justify-start mb-3 animate-slide-up group">
       {/* AI Avatar */}
       <div className="flex-shrink-0 mr-2.5 mt-0.5">
-        <div
-          className="
-            w-7 h-7 rounded-full
-            bg-gradient-to-br from-amber-500 to-amber-700
-            flex items-center justify-center
-            shadow-md shadow-amber-900/40
-            text-[10px] font-bold text-white select-none
-          "
-          aria-label="Swarna AI"
-        >
-          S
+        <div className="w-7 h-7 rounded-full overflow-hidden bg-white/10 flex items-center justify-center">
+          <img
+            src="/favicon.png"
+            alt="Swarna AI"
+            className="w-full h-full object-cover"
+          />
         </div>
       </div>
 

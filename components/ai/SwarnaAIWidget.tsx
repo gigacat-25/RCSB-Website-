@@ -503,13 +503,16 @@ export default function SwarnaAIWidget() {
             {/* Logo mark */}
             <div className="relative flex-shrink-0">
               <div
-                className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-inner"
+                className="w-9 h-9 rounded-full flex items-center justify-center shadow-inner overflow-hidden bg-white/10"
                 style={{
-                  background: "linear-gradient(135deg, #F7A81B, #d4840a)",
                   boxShadow: "0 2px 8px rgba(247,168,27,0.4)",
                 }}
               >
-                S
+                <img
+                  src="/favicon.png"
+                  alt="Swarna AI Logo"
+                  className="w-full h-full object-cover"
+                />
               </div>
               {/* Online indicator */}
               <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border border-[#800020]" />
@@ -580,8 +583,12 @@ export default function SwarnaAIWidget() {
           {isLoading && !isStreaming && (
             <div className="flex justify-start mb-2">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-[10px] font-bold text-white">
-                  S
+                <div className="w-7 h-7 rounded-full overflow-hidden bg-white/10 flex items-center justify-center">
+                  <img
+                    src="/favicon.png"
+                    alt="Swarna AI"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="bg-white/5 border border-white/10 rounded-2xl rounded-tl-sm shadow-md">
                   <TypingIndicator />
