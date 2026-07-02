@@ -509,7 +509,7 @@ export default function SwarnaAIWidget() {
                 }}
               >
                 <img
-                  src="/favicon.png"
+                  src="/images/swarna-ai-icon.png"
                   alt="Swarna AI Logo"
                   className="w-full h-full object-cover"
                 />
@@ -585,7 +585,7 @@ export default function SwarnaAIWidget() {
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7 rounded-full overflow-hidden bg-white/10 flex items-center justify-center">
                   <img
-                    src="/favicon.png"
+                    src="/images/swarna-ai-icon.png"
                     alt="Swarna AI"
                     className="w-full h-full object-cover"
                   />

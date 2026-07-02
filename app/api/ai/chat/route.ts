@@ -19,6 +19,8 @@ import { classifyIntent } from "@/lib/ai/intent";
 import { buildContext } from "@/lib/ai/context-builder";
 import { buildSystemMessage } from "@/lib/ai/system-prompt";
 
+export const runtime = "edge";
+
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------

@@ -180,7 +180,7 @@ export default function ChatMessage({ role, content, isStreaming }: ChatMessageP
       <div className="flex-shrink-0 mr-2.5 mt-0.5">
         <div className="w-7 h-7 rounded-full overflow-hidden bg-white/10 flex items-center justify-center">
           <img
-            src="/favicon.png"
+            src="/images/swarna-ai-icon.png"
             alt="Swarna AI"
             className="w-full h-full object-cover"
           />
