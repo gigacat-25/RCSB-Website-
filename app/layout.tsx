@@ -8,6 +8,7 @@ import Providers from "./providers";
 import SubscribePopup from "@/components/newsletter/SubscribePopup";
 import AutoSubscribeOnLogin from "@/components/newsletter/AutoSubscribeOnLogin";
 import CookieConsent from "@/components/layout/CookieConsent";
+import SwarnaAIWidget from "@/components/ai/SwarnaAIWidget";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://rotaractswarnabengaluru.in"),
@@ -86,6 +87,7 @@ export default function RootLayout({
             <Footer />
             <SubscribePopup />
             <CookieConsent />
+            <SwarnaAIWidget />
           </Providers>
         </body>
       </html>
