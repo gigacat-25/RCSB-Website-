@@ -12,11 +12,11 @@ const WORKER_URL =
   process.env.NEXT_PUBLIC_CLOUDFLARE_API_URL ||
   "https://rcsb-api-worker.impact1-iceas.workers.dev";
 
-// Generic public fetch — no auth header (public endpoints only)
+// Generic public fetch — always fresh (no-store so AI never serves stale board/team data)
 async function publicFetch<T>(endpoint: string): Promise<T | null> {
   try {
     const res = await fetch(`${WORKER_URL}${endpoint}`, {
-      next: { revalidate: 60 }, // Cache for 60 seconds for performance
+      cache: "no-store",
       headers: { "Content-Type": "application/json" },
     });
     if (!res.ok) return null;

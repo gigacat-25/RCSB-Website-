@@ -22,7 +22,7 @@ function ProjectCard({ project, idx, fixImageUrl }: { project: any; idx: number;
       whileHover={{ y: -6, transition: { duration: 0.2 } }}
       className="premium-card card-border-glow group flex flex-col h-full relative"
     >
-      <Link href={`/projects/${project.slug}`} className="flex flex-col h-full z-10">
+      <Link href={project.type === "award" ? `/awards/${project.slug}` : `/projects/${project.slug}`} className="flex flex-col h-full z-10">
         <div className="relative h-80 overflow-hidden z-10">
           <div className="absolute inset-0 bg-brand-blue/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
           <Image
@@ -69,6 +69,7 @@ export default function RecentProjects() {
         if (Array.isArray(data)) {
           setProjects(data.filter((p: any) => 
             p.type !== "blog" && 
+            p.type !== "award" &&
             p.type !== "system_setting" && 
             (p.category || "").toUpperCase() !== "SYSTEM" &&
             p.status !== "trash"

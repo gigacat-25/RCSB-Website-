@@ -59,6 +59,19 @@ export default function SignInPage() {
                     path="/sign-in"
                     signUpUrl="/sign-up"
                 />
+
+                {/* Spam mail hint */}
+                <div className="mt-5 flex items-start gap-3 bg-brand-gold/10 border border-brand-gold/30 rounded-2xl px-5 py-4 max-w-sm w-full backdrop-blur-sm animate-fade-up">
+                    <span className="text-brand-gold text-lg mt-0.5 flex-shrink-0">📬</span>
+                    <div>
+                        <p className="text-[11px] font-black uppercase tracking-[0.15em] text-brand-gold mb-1">
+                            Didn't receive the OTP?
+                        </p>
+                        <p className="text-[12px] text-slate-300 leading-relaxed font-light">
+                            Please check your <span className="font-bold text-white">spam or junk folder</span> — OTP emails sometimes land there.
+                        </p>
+                    </div>
+                </div>
             </div>
         </main>
     );

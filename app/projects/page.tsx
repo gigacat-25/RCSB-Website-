@@ -7,6 +7,9 @@ import Link from "next/link";
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 9;
 
   useEffect(() => {
     fetch(`/api/projects?t=${new Date().getTime()}`)
@@ -15,6 +18,7 @@ export default function ProjectsPage() {
         if (Array.isArray(data)) {
           setProjects(data.filter((p: any) => 
             p.type !== "blog" && 
+            p.type !== "award" &&
             p.type !== "system_setting" && 
             (p.category || "").toUpperCase() !== "SYSTEM" &&
             p.status !== "trash"
@@ -29,6 +33,20 @@ export default function ProjectsPage() {
         setLoading(false);
       });
   }, []);
+
+  // Filter projects by active category (case-insensitive contains match)
+  const filteredProjects = activeFilter === "All"
+    ? projects
+    : projects.filter((p: any) =>
+        (p.category || "").toLowerCase().includes(activeFilter.toLowerCase())
+      );
+
+  // Pagination
+  const totalPages = Math.ceil(filteredProjects.length / ITEMS_PER_PAGE);
+  const paginatedProjects = filteredProjects.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   // Helper to fix broken legacy image URLs
   const fixImageUrl = (url: string | null | undefined) => {
@@ -91,7 +109,8 @@ export default function ProjectsPage() {
               {["All", "Leadership", "Community Service", "Club Service", "Environment", "Education"].map((tag) => (
                 <button
                   key={tag}
-                  className={`px-5 py-2 md:px-6 rounded-full text-[9px] md:text-[10px] whitespace-nowrap font-black uppercase tracking-[0.1em] transition-all border ${tag === "All"
+                  onClick={() => { setActiveFilter(tag); setCurrentPage(1); }}
+                  className={`px-5 py-2 md:px-6 rounded-full text-[9px] md:text-[10px] whitespace-nowrap font-black uppercase tracking-[0.1em] transition-all border ${activeFilter === tag
                     ? "bg-brand-blue text-white border-brand-blue shadow-lg"
                     : "bg-white text-brand-blue border-slate-200 hover:border-brand-blue hover:shadow-md"
                     }`}
@@ -107,12 +126,12 @@ export default function ProjectsPage() {
               <div className="col-span-full glass p-10 md:p-24 text-center rounded-[2rem] md:rounded-[4rem] text-slate-400 font-heading font-bold text-xl md:text-3xl italic animate-pulse">
                 Loading projects...
               </div>
-            ) : projects.length === 0 ? (
+            ) : filteredProjects.length === 0 ? (
               <div className="col-span-full glass p-10 md:p-24 text-center rounded-[2rem] md:rounded-[4rem] text-slate-400 font-heading font-bold text-xl md:text-3xl italic">
-                Our portfolio is evolving. New stories coming soon.
+                No projects found in this category.
               </div>
             ) : (
-              projects.map((project: any, idx: number) => (
+              paginatedProjects.map((project: any, idx: number) => (
                 <Link
                   key={idx}
                   href={`/projects/${project.slug}`}
@@ -164,6 +183,77 @@ export default function ProjectsPage() {
               ))
             )}
           </div>
+
+          {/* Interactive Pagination */}
+          {!loading && totalPages > 1 && (
+            <div className="mt-16 md:mt-20 flex flex-col items-center gap-6">
+
+              {/* Results count */}
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-blue/40">
+                Showing{" "}
+                <span className="text-brand-blue">
+                  {(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, filteredProjects.length)}
+                </span>{" "}
+                of <span className="text-brand-blue">{filteredProjects.length}</span> projects
+              </p>
+
+              {/* Pagination controls */}
+              <div className="flex items-center gap-2 md:gap-3">
+
+                {/* Previous */}
+                <button
+                  onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                  disabled={currentPage === 1}
+                  className="group flex items-center gap-2 px-4 md:px-6 py-2.5 md:py-3 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-[0.15em] border transition-all duration-300 disabled:opacity-25 disabled:cursor-not-allowed bg-white text-brand-blue border-slate-200 hover:border-brand-blue hover:shadow-lg hover:-translate-x-0.5 active:scale-95"
+                >
+                  <span className="group-hover:-translate-x-0.5 transition-transform duration-200">←</span>
+                  <span className="hidden sm:inline">Prev</span>
+                </button>
+
+                {/* Page number buttons */}
+                <div className="flex items-center gap-1.5 md:gap-2">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                    const isActive = page === currentPage;
+                    const isNear = Math.abs(page - currentPage) <= 1;
+                    const isEdge = page === 1 || page === totalPages;
+                    if (!isNear && !isEdge) {
+                      if (page === 2 || page === totalPages - 1) {
+                        return <span key={page} className="text-brand-blue/30 font-black text-xs px-1">…</span>;
+                      }
+                      return null;
+                    }
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => { setCurrentPage(page); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                        className={`relative w-9 h-9 md:w-10 md:h-10 rounded-full text-[10px] md:text-[11px] font-black uppercase tracking-wider transition-all duration-300 active:scale-90 ${
+                          isActive
+                            ? "bg-brand-blue text-white shadow-lg shadow-brand-blue/30 scale-110"
+                            : "bg-white text-brand-blue border border-slate-200 hover:border-brand-blue hover:shadow-md hover:scale-105"
+                        }`}
+                      >
+                        {page}
+                        {isActive && (
+                          <span className="absolute inset-0 rounded-full bg-brand-blue animate-ping opacity-20 pointer-events-none" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Next */}
+                <button
+                  onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                  disabled={currentPage === totalPages}
+                  className="group flex items-center gap-2 px-4 md:px-6 py-2.5 md:py-3 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-[0.15em] border transition-all duration-300 disabled:opacity-25 disabled:cursor-not-allowed bg-brand-blue text-white border-brand-blue hover:shadow-lg hover:translate-x-0.5 active:scale-95"
+                >
+                  <span className="hidden sm:inline">Next</span>
+                  <span className="group-hover:translate-x-0.5 transition-transform duration-200">→</span>
+                </button>
+
+              </div>
+            </div>
+          )}
         </div>
       </section>
     </div>

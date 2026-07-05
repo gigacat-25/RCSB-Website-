@@ -283,6 +283,7 @@ export function requiresLiveData(intents: Intent[]): boolean {
     "gallery",
     "partners",
     "announcements",
+    "awards",
   ];
   return intents.some((i) => dynamicIntents.includes(i));
 }
