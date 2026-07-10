@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { apiFetch } from '@/lib/api';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const staticRoutes = ['', '/about', '/projects', '/awards', '/team', '/blogs', '/contact'].map((route) => ({
+    const staticRoutes = ['', '/about', '/projects', '/awards', '/team', '/blogs', '/contact', '/past-presidents', '/privacy', '/terms'].map((route) => ({
         url: `https://rotaractswarnabengaluru.in${route}`,
         lastModified: new Date(),
         changeFrequency: 'weekly' as const,

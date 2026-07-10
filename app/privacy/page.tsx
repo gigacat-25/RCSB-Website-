@@ -1,6 +1,16 @@
-export const runtime = 'edge';
+import { Metadata } from 'next';
 import Link from "next/link";
 import { ShieldCheckIcon } from "@heroicons/react/24/outline";
+
+export const runtime = 'edge';
+
+export const metadata: Metadata = {
+    title: 'Privacy Policy | Rotaract Club of Swarna Bengaluru',
+    description: 'Read the privacy policy of the Rotaract Club of Swarna Bengaluru official website to understand how we collect, use, and protect your information.',
+    alternates: {
+        canonical: '/privacy',
+    },
+};
 
 export default function PrivacyPolicyPage() {
     return (

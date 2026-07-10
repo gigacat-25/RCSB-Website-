@@ -1,6 +1,16 @@
-export const runtime = 'edge';
+import { Metadata } from 'next';
 import Link from "next/link";
 import { DocumentTextIcon } from "@heroicons/react/24/outline";
+
+export const runtime = 'edge';
+
+export const metadata: Metadata = {
+    title: 'Terms & Conditions | Rotaract Club of Swarna Bengaluru',
+    description: 'Read the terms and conditions for using the Rotaract Club of Swarna Bengaluru official website.',
+    alternates: {
+        canonical: '/terms',
+    },
+};
 
 export default function TermsAndConditionsPage() {
     return (
