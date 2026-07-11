@@ -64,6 +64,70 @@ export async function POST(req: NextRequest) {
         let subscribers: { email: string; name: string | null; token: string }[] = await subsRes.json();
         console.log(`[Newsletter] Found ${subscribers.length} total subscribers.`);
 
+        // --- BYPASS SUBREQUEST LIMIT BY SELF-CHUNKING ---
+        const origin = new URL(req.url).origin;
+        const isBulkSend = !targetEmails || !Array.isArray(targetEmails) || targetEmails.length === 0;
+
+        if (isBulkSend && subscribers.length > 35) {
+            console.log(`[Newsletter] Bulk send requested for ${subscribers.length} subscribers. Chunking to bypass Cloudflare subrequest limits...`);
+            
+            const chunkSize = 35;
+            const chunks: string[][] = [];
+            for (let i = 0; i < subscribers.length; i += chunkSize) {
+                chunks.push(subscribers.slice(i, i + chunkSize).map(s => s.email));
+            }
+
+            console.log(`[Newsletter] Split into ${chunks.length} chunks. Dispatching chunk requests...`);
+            
+            const chunkPromises = chunks.map((chunkEmails, index) => {
+                return fetch(`${origin}/api/newsletter/send`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "x-internal-key": WORKER_SECRET,
+                    },
+                    body: JSON.stringify({
+                        subject,
+                        body,
+                        targetEmails: chunkEmails
+                    })
+                }).then(async (res) => {
+                    if (!res.ok) {
+                        const errText = await res.text();
+                        console.error(`[Newsletter] Chunk ${index + 1} failed:`, errText);
+                        return { success: false, error: errText };
+                    }
+                    const data = await res.json();
+                    return { success: true, sent: data.sent || 0, errors: data.errors || [] };
+                }).catch(e => {
+                    console.error(`[Newsletter] Network error for chunk ${index + 1}:`, e);
+                    return { success: false, error: e.message };
+                });
+            });
+
+            const results = await Promise.all(chunkPromises);
+            
+            let totalSent = 0;
+            const allErrors: string[] = [];
+            results.forEach((r, idx) => {
+                if (r.success) {
+                    totalSent += r.sent;
+                    if (r.errors && r.errors.length > 0) {
+                        allErrors.push(...r.errors);
+                    }
+                } else {
+                    allErrors.push(`Chunk ${idx + 1} execution failed: ${r.error}`);
+                }
+            });
+
+            return NextResponse.json({
+                success: true,
+                sent: totalSent,
+                total: subscribers.length,
+                errors: allErrors
+            });
+        }
+
         // Filter if targetEmails is provided
         if (targetEmails && Array.isArray(targetEmails) && targetEmails.length > 0) {
             const dbEmails = new Set(subscribers.map(s => s.email));
