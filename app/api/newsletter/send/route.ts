@@ -94,14 +94,14 @@ export async function POST(req: NextRequest) {
                 }).then(async (res) => {
                     if (!res.ok) {
                         const errText = await res.text();
-                        console.error(`[Newsletter] Chunk ${index + 1} failed:`, errText);
-                        return { success: false, error: errText };
+                        console.log(`[Newsletter] Chunk ${index + 1} failed: ${errText}`);
+                        return { success: false, error: errText, sent: 0, errors: [] };
                     }
-                    const data = await res.json();
-                    return { success: true, sent: data.sent || 0, errors: data.errors || [] };
+                    const data = await res.json() as any;
+                    return { success: true, sent: data.sent || 0, errors: data.errors || [], error: null };
                 }).catch(e => {
                     console.error(`[Newsletter] Network error for chunk ${index + 1}:`, e);
-                    return { success: false, error: e.message };
+                    return { success: false, error: e.message, sent: 0, errors: [] };
                 });
             });
 
