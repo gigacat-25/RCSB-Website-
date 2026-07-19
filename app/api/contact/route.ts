@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { apiFetch } from "@/lib/api";
 import { sendEmail } from "@/lib/email-utils";
 
-const SUPER_ADMIN = "rota.rcsb@gmail.com";
+const SUPER_ADMIN = "rota.rcbs@gmail.com";
 
 async function getAdminEmails(): Promise<string[]> {
   try {

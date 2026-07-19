@@ -123,7 +123,7 @@ export async function buildContext(
     } else {
       sections.push(
         `Club History: Our past presidents list is not yet fully populated in our records. ` +
-          `For accurate founding history, please contact rota.rcsb@gmail.com.\n`
+          `For accurate founding history, please contact rota.rcbs@gmail.com.\n`
       );
     }
   }
@@ -135,7 +135,7 @@ export async function buildContext(
     toolsUsed.push("getAwards");
     if (!awards.length) {
       sections.push(
-        `Awards & Recognition: No award records found in the database currently. For information about club achievements and recognition, please contact rota.rcsb@gmail.com or visit https://rotaractswarnabengaluru.in.\n`
+        `Awards & Recognition: No award records found in the database currently. For information about club achievements and recognition, please contact rota.rcbs@gmail.com or visit https://rotaractswarnabengaluru.in.\n`
       );
     } else {
       const lines = awards.map(

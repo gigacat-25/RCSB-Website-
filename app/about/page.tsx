@@ -1,16 +1,16 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { 
-  GlobeAltIcon, 
-  HeartIcon, 
-  BeakerIcon,
-  SparklesIcon, 
-  UserGroupIcon, 
-  AcademicCapIcon, 
-  CurrencyDollarIcon, 
-  GlobeAmericasIcon,
-  BriefcaseIcon
+import {
+    GlobeAltIcon,
+    HeartIcon,
+    BeakerIcon,
+    SparklesIcon,
+    UserGroupIcon,
+    AcademicCapIcon,
+    CurrencyDollarIcon,
+    GlobeAmericasIcon,
+    BriefcaseIcon
 } from "@heroicons/react/24/outline";
 
 export const runtime = 'edge';
@@ -25,50 +25,50 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
     const focusAreas = [
-        { 
-            title: "Promoting Peace", 
+        {
+            title: "Promoting Peace",
             desc: "Dialogue, empathy, and conflict resolution for resilient communities.",
             icon: GlobeAltIcon,
             color: "text-blue-500",
             bg: "bg-blue-50"
         },
-        { 
-            title: "Fighting Disease", 
+        {
+            title: "Fighting Disease",
             desc: "Prevention, awareness, and access to healthcare through local initiatives.",
             icon: BeakerIcon,
             color: "text-red-500",
             bg: "bg-red-50"
         },
-        { 
-            title: "Clean Water & Sanitation", 
+        {
+            title: "Clean Water & Sanitation",
             desc: "WASH projects that improve public health outcomes.",
             icon: SparklesIcon,
             color: "text-cyan-500",
             bg: "bg-cyan-50"
         },
-        { 
-            title: "Saving Mothers & Children", 
+        {
+            title: "Saving Mothers & Children",
             desc: "Nutrition, prenatal care, and immunization support for healthier families.",
             icon: UserGroupIcon,
             color: "text-rose-500",
             bg: "bg-rose-50"
         },
-        { 
-            title: "Supporting Education", 
+        {
+            title: "Supporting Education",
             desc: "Access to learning, literacy, and skill-building for students and youth.",
             icon: AcademicCapIcon,
             color: "text-brand-gold",
             bg: "bg-yellow-50"
         },
-        { 
-            title: "Growing Local Economies", 
+        {
+            title: "Growing Local Economies",
             desc: "Entrepreneurship, employability, and sustainable development.",
             icon: BriefcaseIcon,
             color: "text-emerald-500",
             bg: "bg-emerald-50"
         },
-        { 
-            title: "Protecting the Environment", 
+        {
+            title: "Protecting the Environment",
             desc: "Tree planting, waste management, and climate action initiatives.",
             icon: GlobeAmericasIcon,
             color: "text-green-500",
@@ -168,7 +168,7 @@ export default function AboutPage() {
 
                         <div className="flex-1 relative z-10">
                             <p className="text-xl text-brand-blue font-medium mb-6 leading-relaxed">
-                                We're a youth-led club in South Bengaluru. We learn by doing&mdash;serving our neighbourhoods, building leadership, and making friendships that last.
+                                We're a youth-led club in Bengaluru. We learn by doing&mdash;serving our neighbourhoods, building leadership, and making friendships that last.
                             </p>
 
                             <ul className="space-y-5 text-lg text-brand-gray/80 mb-8 pl-2">
@@ -205,7 +205,7 @@ export default function AboutPage() {
                 <section className="mb-24 animate-fade-up" style={{ animationDelay: '300ms' }}>
                     <div className="text-center mb-16 md:mb-20">
                         <span className="text-[10px] font-black text-brand-gold uppercase tracking-[0.4em] mb-4 block">Our Impact</span>
-                        <h2 className="text-4xl md:text-5xl font-heading font-black text-brand-blue mb-6">Mastering Impact Across <br/> Seven <span className="text-brand-gold italic">Key Areas.</span></h2>
+                        <h2 className="text-4xl md:text-5xl font-heading font-black text-brand-blue mb-6">Mastering Impact Across <br /> Seven <span className="text-brand-gold italic">Key Areas.</span></h2>
                         <p className="text-lg text-brand-gray/60 max-w-2xl mx-auto font-light leading-relaxed">
                             Through Rotaract, we champion the core causes that make the world a better, safer, and cleaner place for everyone.
                         </p>
@@ -213,8 +213,8 @@ export default function AboutPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
                         {focusAreas.map((area, i) => (
-                            <div 
-                                key={i} 
+                            <div
+                                key={i}
                                 className="bg-white p-8 md:p-10 rounded-[2.5rem] shadow-sm border border-slate-100/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 relative overflow-hidden group"
                             >
                                 <div className="absolute -top-4 -right-2 text-[120px] font-black text-slate-50 group-hover:text-brand-gold/5 transition-colors duration-500 select-none">
@@ -228,13 +228,13 @@ export default function AboutPage() {
                                 <h3 className="text-xl font-heading font-black text-brand-blue mb-4 group-hover:text-brand-azure transition-colors">
                                     {area.title}
                                 </h3>
-                                
+
                                 <p className="text-brand-gray/70 leading-relaxed font-light text-sm md:text-base mb-6">
                                     {area.desc}
                                 </p>
 
                                 <div className="flex items-center gap-2 pt-4 border-t border-slate-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${area.color}`}>Focus Area {i+1}</span>
+                                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${area.color}`}>Focus Area {i + 1}</span>
                                     <div className={`h-1 flex-1 rounded-full ${area.bg}`} />
                                 </div>
                             </div>

@@ -334,7 +334,7 @@ export default function AdminMessagesPage() {
                               <div className="mb-6 text-[#c8d0e0] text-[11px] leading-relaxed opacity-80">
                                   <p className="m-0 font-bold text-white">Rotaract Club of Swarna Bengaluru</p>
                                   <p className="mt-1">Rotary House of Friendship, 11 Lavelle Road, Bengaluru</p>
-                                  <p className="mt-0.5 text-[#C9982A]">rota.rcsb@gmail.com | Visit Website</p>
+                                  <p className="mt-0.5 text-[#C9982A]">rota.rcbs@gmail.com | Visit Website</p>
                               </div>
 
                               <p className="m-0 text-[#556677] text-[9px] font-bold uppercase tracking-widest">

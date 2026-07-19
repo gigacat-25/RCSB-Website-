@@ -2,7 +2,24 @@ export const runtime = 'edge';
 import { apiFetch } from "@/lib/api";
 import Link from "next/link";
 import { ArrowLeftIcon, CalendarIcon, MapPinIcon, RocketLaunchIcon, PencilSquareIcon, ClockIcon } from "@heroicons/react/24/outline";
-import { FaYoutube, FaInstagram, FaFacebook, FaLinkedin, FaTwitter, FaGlobe, FaGithub } from "react-icons/fa";
+import {
+  FaYoutube,
+  FaInstagram,
+  FaFacebook,
+  FaLinkedin,
+  FaTwitter,
+  FaGlobe,
+  FaGithub,
+  FaWhatsapp,
+  FaMapMarkerAlt,
+  FaEnvelope,
+  FaPhoneAlt,
+  FaCalendarAlt,
+  FaTicketAlt,
+  FaClipboardList,
+  FaGoogleDrive,
+  FaTelegram
+} from "react-icons/fa";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import ImageGallery from "@/components/projects/ImageGallery";
@@ -82,6 +99,15 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
 
   const renderLinkIcon = (iconName: string) => {
     switch (iconName) {
+      case 'whatsapp': return <FaWhatsapp className="w-5 h-5 flex-shrink-0" />;
+      case 'location': return <FaMapMarkerAlt className="w-5 h-5 flex-shrink-0" />;
+      case 'email': return <FaEnvelope className="w-5 h-5 flex-shrink-0" />;
+      case 'phone': return <FaPhoneAlt className="w-5 h-5 flex-shrink-0" />;
+      case 'calendar': return <FaCalendarAlt className="w-5 h-5 flex-shrink-0" />;
+      case 'ticket': return <FaTicketAlt className="w-5 h-5 flex-shrink-0" />;
+      case 'form': return <FaClipboardList className="w-5 h-5 flex-shrink-0" />;
+      case 'drive': return <FaGoogleDrive className="w-5 h-5 flex-shrink-0" />;
+      case 'telegram': return <FaTelegram className="w-5 h-5 flex-shrink-0" />;
       case 'youtube': return <FaYoutube className="w-5 h-5 flex-shrink-0" />;
       case 'instagram': return <FaInstagram className="w-5 h-5 flex-shrink-0" />;
       case 'facebook': return <FaFacebook className="w-5 h-5 flex-shrink-0" />;
@@ -123,6 +149,19 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
               <h1 className="text-3xl md:text-6xl font-heading font-black text-white leading-tight mb-6">
                 {project.title}
               </h1>
+
+              {((project.type === "event" && project.status === "upcoming") || project.rsvp_link) && (
+                <div className="mt-4">
+                  <Link
+                    href={project.rsvp_link || "/contact"}
+                    target={project.rsvp_link ? "_blank" : undefined}
+                    rel={project.rsvp_link ? "noopener noreferrer" : undefined}
+                    className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-brand-gold via-yellow-400 to-amber-500 text-brand-blue font-black rounded-2xl hover:scale-105 transition-all shadow-2xl text-sm uppercase tracking-widest"
+                  >
+                    {project.rsvp_link ? "RSVP Now" : "Register Interest"} &rarr;
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -134,17 +173,9 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
 
           {/* Article */}
           <article className="flex-1 w-full max-w-3xl">
-            <div className="text-brand-gray text-lg md:text-2xl leading-relaxed font-bold mb-8 md:mb-12 text-brand-blue/90">
-              {project.description}
-            </div>
-
-            <div className="text-brand-gray text-lg leading-relaxed whitespace-pre-wrap">
-              {project.content || "Full project details coming soon..."}
-            </div>
-
-            {/* If it's an event, maybe show a "Register" call to action */}
-            {(project.type === "event" && project.status === "upcoming") || project.rsvp_link ? (
-              <div className="mt-12 md:mt-16 p-6 md:p-8 bg-brand-gold/10 border-2 border-brand-gold rounded-[2rem] md:rounded-[40px] flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+            {/* Always display RSVP Call To Action at the TOP when available */}
+            {((project.type === "event" && project.status === "upcoming") || project.rsvp_link) && (
+              <div className="mb-8 md:mb-12 p-6 md:p-8 bg-brand-gold/10 border-2 border-brand-gold rounded-[2rem] md:rounded-[40px] flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left shadow-lg">
                 <div>
                   <h3 className="text-xl font-black text-brand-blue mb-2">Interested in participating?</h3>
                   <p className="text-brand-gray font-medium">Join us as a volunteer or guest for this upcoming event.</p>
@@ -153,12 +184,20 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
                   href={project.rsvp_link || "/contact"}
                   target={project.rsvp_link ? "_blank" : undefined}
                   rel={project.rsvp_link ? "noopener noreferrer" : undefined}
-                  className="w-full md:w-auto px-6 py-3 md:px-8 md:py-4 bg-brand-blue text-white font-black rounded-2xl hover:bg-brand-azure transition-all shadow-xl text-center"
+                  className="w-full md:w-auto px-6 py-3 md:px-8 md:py-4 bg-brand-blue text-white font-black rounded-2xl hover:bg-brand-azure transition-all shadow-xl text-center shrink-0"
                 >
                   {project.rsvp_link ? "RSVP Now" : "Register Interest"}
                 </Link>
               </div>
-            ) : null}
+            )}
+
+            <div className="text-brand-gray text-lg md:text-2xl leading-relaxed font-bold mb-8 md:mb-12 text-brand-blue/90">
+              {project.description}
+            </div>
+
+            <div className="text-brand-gray text-lg leading-relaxed whitespace-pre-wrap">
+              {project.content || "Full project details coming soon..."}
+            </div>
 
 
             {/* Share Experience CTA */}
@@ -195,6 +234,19 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
           {/* Quick Info Sidebar */}
           <aside className="w-full lg:w-96 flex-shrink-0">
             <div className="sticky top-24 md:top-32 bg-gray-50 rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 border border-gray-100 shadow-sm space-y-8 md:space-y-10">
+              {((project.type === "event" && project.status === "upcoming") || project.rsvp_link) && (
+                <div className="pb-6 border-b border-gray-200">
+                  <Link
+                    href={project.rsvp_link || "/contact"}
+                    target={project.rsvp_link ? "_blank" : undefined}
+                    rel={project.rsvp_link ? "noopener noreferrer" : undefined}
+                    className="block w-full py-3.5 px-6 bg-brand-blue text-white font-black text-center rounded-2xl hover:bg-brand-azure transition-all shadow-md text-xs uppercase tracking-widest"
+                  >
+                    {project.rsvp_link ? "RSVP Now" : "Register Interest"} &rarr;
+                  </Link>
+                </div>
+              )}
+
               <div>
                 <h4 className="text-[11px] font-black text-brand-gray uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-brand-gold rounded-full"></span>

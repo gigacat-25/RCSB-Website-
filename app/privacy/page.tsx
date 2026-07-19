@@ -103,7 +103,7 @@ export default function PrivacyPolicyPage() {
                             <div className="mt-4 text-sm font-sans text-brand-blue/80 space-y-1">
                                 <p><strong>Designation:</strong> Grievance Redressal Officer</p>
                                 <p><strong>Entity:</strong> Rotaract Club of Swarna Bengaluru (RI District 3192)</p>
-                                <p><strong>Email Address:</strong> <a href="mailto:rota.rcsb@gmail.com" className="text-brand-azure hover:underline font-bold">rota.rcsb@gmail.com</a></p>
+                                <p><strong>Email Address:</strong> <a href="mailto:rota.rcbs@gmail.com" className="text-brand-azure hover:underline font-bold">rota.rcbs@gmail.com</a></p>
                                 <p><strong>Address:</strong> Bengaluru, Karnataka, India</p>
                             </div>
                             <p className="text-xs text-slate-500 mt-4">

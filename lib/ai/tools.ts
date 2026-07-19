@@ -324,8 +324,8 @@ export function getClubInformation(): ClubInformation {
       Twitter: "https://x.com/RCSwarnaB",
     },
     meetingInfo:
-      "For weekly meeting schedule and location, please contact us at rota.rcsb@gmail.com or check our social media pages for the latest updates.",
-    contactEmail: "rota.rcsb@gmail.com",
+      "For weekly meeting schedule and location, please contact us at rota.rcbs@gmail.com or check our social media pages for the latest updates.",
+    contactEmail: "rota.rcbs@gmail.com",
     avenues: [
       "Community Service",
       "International Service",
@@ -377,7 +377,7 @@ export function getMembershipInformation(): MembershipInfo {
     ageRange: "18–30 years",
     howToJoin: [
       "Visit our website at rotaractswarnabengaluru.in",
-      "Reach out to us via email at rota.rcsb@gmail.com",
+      "Reach out to us via email at rota.rcbs@gmail.com",
       "Follow us on Instagram @rotaract_swarnabengaluru for updates",
       "Attend one of our club meetings or events as a guest",
       "Fill out the membership application form (available on request)",
@@ -392,8 +392,8 @@ export function getMembershipInformation(): MembershipInfo {
       "Access to Rotary International resources and programs",
     ],
     fees:
-      "Membership fees information is available upon inquiry. Please contact us at rota.rcsb@gmail.com for current fee structure.",
-    contact: "rota.rcsb@gmail.com",
+      "Membership fees information is available upon inquiry. Please contact us at rota.rcbs@gmail.com for current fee structure.",
+    contact: "rota.rcbs@gmail.com",
   };
 }
 
@@ -414,7 +414,7 @@ export interface ContactInfo {
 
 export function getContactInformation(): ContactInfo {
   return {
-    primaryEmail: "rota.rcsb@gmail.com",
+    primaryEmail: "rota.rcbs@gmail.com",
     website: "https://rotaractswarnabengaluru.in",
     instagram: "https://www.instagram.com/rotaract_swarnabengaluru",
     facebook: "https://www.facebook.com/rotaractswarnabengaluru/",

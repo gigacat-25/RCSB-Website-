@@ -88,7 +88,7 @@ export default function Footer() {
               </div>
               <div className="flex flex-col gap-1">
                 <p className="text-white font-bold text-sm">Inquiries</p>
-                <a href="mailto:rota.rcsb@gmail.com" className="text-brand-azure text-xs font-black uppercase tracking-widest hover:text-white transition-colors">rota.rcsb@gmail.com</a>
+                <a href="mailto:rota.rcbs@gmail.com" className="text-brand-azure text-xs font-black uppercase tracking-widest hover:text-white transition-colors">rota.rcbs@gmail.com</a>
               </div>
             </address>
           </div>

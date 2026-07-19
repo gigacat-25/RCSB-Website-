@@ -1,11 +1,37 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { FaYoutube, FaInstagram, FaFacebook, FaLinkedin, FaTwitter, FaGlobe, FaGithub } from "react-icons/fa";
+import {
+    FaYoutube,
+    FaInstagram,
+    FaFacebook,
+    FaLinkedin,
+    FaTwitter,
+    FaGlobe,
+    FaGithub,
+    FaWhatsapp,
+    FaMapMarkerAlt,
+    FaEnvelope,
+    FaPhoneAlt,
+    FaCalendarAlt,
+    FaTicketAlt,
+    FaClipboardList,
+    FaGoogleDrive,
+    FaTelegram
+} from "react-icons/fa";
 
 const ICONS = [
     { value: "none", label: "No Icon", icon: null },
     { value: "globe", label: "Website", icon: FaGlobe },
+    { value: "whatsapp", label: "WhatsApp", icon: FaWhatsapp },
+    { value: "location", label: "Google Maps / Location", icon: FaMapMarkerAlt },
+    { value: "email", label: "Email / Mail", icon: FaEnvelope },
+    { value: "phone", label: "Phone / Call", icon: FaPhoneAlt },
+    { value: "calendar", label: "Calendar / Event", icon: FaCalendarAlt },
+    { value: "ticket", label: "RSVP / Ticket", icon: FaTicketAlt },
+    { value: "form", label: "Form / Survey", icon: FaClipboardList },
+    { value: "drive", label: "Google Drive", icon: FaGoogleDrive },
+    { value: "telegram", label: "Telegram", icon: FaTelegram },
     { value: "youtube", label: "YouTube", icon: FaYoutube },
     { value: "instagram", label: "Instagram", icon: FaInstagram },
     { value: "linkedin", label: "LinkedIn", icon: FaLinkedin },
@@ -32,21 +58,21 @@ export default function IconSelect({ value, onChange }: { value: string, onChang
     const Icon = selected.icon;
 
     return (
-        <div className="relative w-[180px] shrink-0" ref={ref}>
+        <div className="relative w-[210px] shrink-0" ref={ref}>
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-full flex items-center justify-between bg-gray-50 border-2 border-gray-100 hover:border-brand-azure focus:border-brand-azure rounded-xl px-4 py-2 outline-none transition-all text-sm"
             >
-                <span className="flex items-center gap-2 text-brand-blue font-semibold">
-                    {Icon ? <Icon className="w-4 h-4" /> : <div className="w-4 h-4 rounded-full border-2 border-gray-300" />}
-                    {selected.label}
+                <span className="flex items-center gap-2 text-brand-blue font-semibold truncate">
+                    {Icon ? <Icon className="w-4 h-4 shrink-0" /> : <div className="w-4 h-4 rounded-full border-2 border-gray-300 shrink-0" />}
+                    <span className="truncate">{selected.label}</span>
                 </span>
-                <span className="text-gray-400 text-xs">▼</span>
+                <span className="text-gray-400 text-xs ml-2 shrink-0">▼</span>
             </button>
 
             {isOpen && (
-                <div className="absolute z-50 mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden py-1">
+                <div className="absolute left-0 z-50 mt-2 w-full max-h-64 overflow-y-auto bg-white border border-gray-100 rounded-xl shadow-2xl py-1">
                     {ICONS.map((item) => {
                         const ItemIcon = item.icon;
                         const isSelected = value === item.value;
