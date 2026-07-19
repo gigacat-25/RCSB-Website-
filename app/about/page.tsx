@@ -9,6 +9,7 @@ import {
     UserGroupIcon,
     AcademicCapIcon,
     CurrencyDollarIcon,
+    GlobeAmericasIcon,
     BriefcaseIcon
 } from "@heroicons/react/24/outline";
 import MembershipModalButton from '@/components/membership/MembershipModalButton';
