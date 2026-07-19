@@ -77,6 +77,7 @@ function generateId() {
 // ---------------------------------------------------------------------------
 
 export default function SwarnaAIWidget() {
+  const [isPageLoaded, setIsPageLoaded] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
   const [input, setInput] = useState("");
@@ -90,6 +91,20 @@ export default function SwarnaAIWidget() {
   const chatPanelRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const widgetId = useId();
+
+  // Delay widget rendering until loading screen has finished fading out
+  useEffect(() => {
+    const handleReady = () => {
+      setTimeout(() => setIsPageLoaded(true), 600);
+    };
+
+    if (document.readyState === "complete") {
+      handleReady();
+    } else {
+      window.addEventListener("load", handleReady);
+      return () => window.removeEventListener("load", handleReady);
+    }
+  }, []);
 
   // ---------------------------------------------------------------------------
   // Auto-scroll
@@ -384,6 +399,8 @@ export default function SwarnaAIWidget() {
   // ---------------------------------------------------------------------------
   // RENDER
   // ---------------------------------------------------------------------------
+
+  if (!isPageLoaded) return null;
 
   return (
     <>

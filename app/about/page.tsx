@@ -9,9 +9,9 @@ import {
     UserGroupIcon,
     AcademicCapIcon,
     CurrencyDollarIcon,
-    GlobeAmericasIcon,
     BriefcaseIcon
 } from "@heroicons/react/24/outline";
+import MembershipModalButton from '@/components/membership/MembershipModalButton';
 
 export const runtime = 'edge';
 
@@ -254,15 +254,15 @@ export default function AboutPage() {
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
-                                <Link href="/contact" className="px-8 py-4 bg-brand-gold hover:bg-yellow-500 text-brand-blue font-black rounded-full transition-all shadow-[0_10px_30px_rgba(247,168,27,0.3)] hover:shadow-[0_15px_35px_rgba(247,168,27,0.5)] hover:-translate-y-1">
+                                <MembershipModalButton className="px-8 py-4 bg-brand-gold hover:bg-yellow-500 text-brand-blue font-black rounded-full transition-all shadow-[0_10px_30px_rgba(247,168,27,0.3)] hover:shadow-[0_15px_35px_rgba(247,168,27,0.5)] hover:-translate-y-1">
+                                    Apply for Membership &rarr;
+                                </MembershipModalButton>
+                                <Link href="/contact" className="px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold rounded-full transition-all backdrop-blur-md hover:-translate-y-1">
                                     Get in Touch
                                 </Link>
                                 <Link href="/projects" className="px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold rounded-full transition-all backdrop-blur-md hover:-translate-y-1">
                                     View Our Projects
                                 </Link>
-                                <a href="https://showcase.rotaract3192.org/club/cme32bmr7003wvf4blxk2618p" target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold rounded-full transition-all backdrop-blur-md hover:-translate-y-1">
-                                    Rotaract 3192 Project Dashboard
-                                </a>
                             </div>
                         </div>
                     </div>

@@ -7,8 +7,10 @@ import { EnvelopeIcon, MapPinIcon, GlobeAltIcon, CheckCircleIcon } from "@heroic
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import Turnstile from "@/components/shared/Turnstile";
+import MembershipModal from "@/components/membership/MembershipModal";
 
 export default function ContactPage() {
+  const [isMembershipOpen, setIsMembershipOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -181,11 +183,20 @@ export default function ContactPage() {
                   <p className="text-blue-50/70 text-sm font-light leading-relaxed mb-8 md:mb-10 mx-auto md:mx-0 max-w-sm">
                     Join a community of 18-30 year olds dedicated to service above self. Let's make a difference together.
                   </p>
-                  <button className="w-full md:w-auto px-6 py-4 md:px-10 md:py-5 bg-brand-gold text-brand-blue font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl hover:bg-white transition-all shadow-xl">
+                  <button 
+                    type="button"
+                    onClick={() => setIsMembershipOpen(true)}
+                    className="w-full md:w-auto px-6 py-4 md:px-10 md:py-5 bg-brand-gold text-brand-blue font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl hover:bg-white transition-all shadow-xl hover:scale-105 active:scale-95"
+                  >
                     Inquire About Membership
                   </button>
                 </div>
               </div>
+
+              <MembershipModal 
+                isOpen={isMembershipOpen} 
+                onClose={() => setIsMembershipOpen(false)} 
+              />
             </div>
 
             {/* Contact Form */}

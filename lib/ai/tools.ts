@@ -11,17 +11,26 @@
 const WORKER_URL =
   process.env.NEXT_PUBLIC_CLOUDFLARE_API_URL ||
   "https://rcsb-api-worker.impact1-iceas.workers.dev";
+const WORKER_SECRET = process.env.CLOUDFLARE_WORKER_SECRET;
 
 // Generic public fetch — always fresh (no-store so AI never serves stale board/team data)
 async function publicFetch<T>(endpoint: string): Promise<T | null> {
   try {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (WORKER_SECRET) {
+      headers["Authorization"] = `Bearer ${WORKER_SECRET}`;
+    }
     const res = await fetch(`${WORKER_URL}${endpoint}`, {
       cache: "no-store",
-      headers: { "Content-Type": "application/json" },
+      headers,
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error(`[SwarnaAI publicFetch Error] ${endpoint} returned status ${res.status}`);
+      return null;
+    }
     return (await res.json()) as T;
-  } catch {
+  } catch (err) {
+    console.error(`[SwarnaAI publicFetch Exception] ${endpoint}:`, err);
     return null;
   }
 }
@@ -169,11 +178,34 @@ function sanitizePartner(p: RawPartner): PublicPartner {
   return { name: p.name };
 }
 
-// Full-text search helper (client-side since D1 doesn't expose FTS over public API)
+// Common conversational filler words to ignore during search query filtering
+const SEARCH_STOP_WORDS = new Set([
+  "what", "whats", "what's", "the", "a", "an", "is", "are", "was", "were",
+  "recent", "latest", "new", "current", "past", "upcoming", "ongoing",
+  "project", "projects", "event", "events", "blog", "blogs", "article", "articles",
+  "show", "me", "tell", "us", "about", "your", "our", "list", "all", "any",
+  "do", "you", "have", "can", "please", "find", "get", "details", "info", "information",
+  "uppcoming", "recent", "top"
+]);
+
+// Full-text search helper with stop-word stripping and token matching
 function matchesQuery(text: string, query: string): boolean {
-  if (!query) return true;
-  const q = query.toLowerCase();
-  return text.toLowerCase().includes(q);
+  if (!query || !query.trim()) return true;
+  
+  // Extract meaningful keywords from query by removing stop words
+  const keywords = query
+    .toLowerCase()
+    .replace(/[^\w\s]/g, " ")
+    .split(/\s+/)
+    .filter((word) => word.length > 2 && !SEARCH_STOP_WORDS.has(word));
+
+  // If after removing stop words, no specific search keyword remains
+  // (e.g. user just said "whats the recent project"), return true to list all records!
+  if (keywords.length === 0) return true;
+
+  // Otherwise, match if ANY of the specific keywords appear in the text
+  const lowerText = text.toLowerCase();
+  return keywords.some((kw) => lowerText.includes(kw));
 }
 
 // ---------------------------------------------------------------------------
@@ -182,15 +214,26 @@ function matchesQuery(text: string, query: string): boolean {
 
 export async function getUpcomingEvents(): Promise<PublicProject[]> {
   const all = await publicFetch<RawProject[]>("/api/projects");
-  if (!all) return [];
-  return all
+  if (!all || !Array.isArray(all)) return [];
+
+  const upcoming = all
     .filter(
       (p) =>
         p.type === "event" &&
         (p.status === "upcoming" || p.status === "ongoing")
     )
+    .map(sanitizeProject);
+
+  // If specific upcoming events are found, return them.
+  // Otherwise, fall back to recent events or projects so AI can provide active initiatives.
+  if (upcoming.length > 0) {
+    return upcoming.slice(0, 5);
+  }
+
+  return all
+    .filter((p) => (p.type === "event" || p.type === "project") && p.status !== "trash")
     .map(sanitizeProject)
-    .slice(0, 5); // Limit to 5 for context size
+    .slice(0, 5);
 }
 
 // ---------------------------------------------------------------------------
@@ -199,13 +242,18 @@ export async function getUpcomingEvents(): Promise<PublicProject[]> {
 
 export async function getPastEvents(limit = 5): Promise<PublicProject[]> {
   const all = await publicFetch<RawProject[]>("/api/projects");
-  if (!all) return [];
+  if (!all || !Array.isArray(all)) return [];
+
+  const pastEvents = all
+    .filter((p) => p.type === "event" && p.status === "completed")
+    .map(sanitizeProject);
+
+  if (pastEvents.length > 0) {
+    return pastEvents.slice(0, limit);
+  }
+
   return all
-    .filter(
-      (p) =>
-        p.type === "event" &&
-        p.status === "completed"
-    )
+    .filter((p) => p.type === "event" && p.status !== "trash")
     .map(sanitizeProject)
     .slice(0, limit);
 }
@@ -214,20 +262,29 @@ export async function getPastEvents(limit = 5): Promise<PublicProject[]> {
 // TOOL 3: Search Projects
 // ---------------------------------------------------------------------------
 
-export async function searchProjects(query: string, limit = 5): Promise<PublicProject[]> {
+export async function searchProjects(query: string, limit = 6): Promise<PublicProject[]> {
   const all = await publicFetch<RawProject[]>("/api/projects");
-  if (!all) return [];
-  return all
-    .filter(
-      (p) =>
-        p.type === "project" &&
-        p.status !== "trash" &&
-        (matchesQuery(p.title, query) ||
-          matchesQuery(p.description, query) ||
-          matchesQuery(p.category, query))
-    )
-    .map(sanitizeProject)
-    .slice(0, limit);
+  if (!all || !Array.isArray(all)) return [];
+
+  // Consider both "project" and "event" as projects if user asks for initiatives
+  const projects = all.filter(
+    (p) => (p.type === "project" || p.type === "event") && p.status !== "trash"
+  );
+
+  if (!query || !query.trim()) {
+    return projects.slice(0, limit).map(sanitizeProject);
+  }
+
+  const matched = projects.filter(
+    (p) =>
+      matchesQuery(p.title, query) ||
+      matchesQuery(p.description, query) ||
+      matchesQuery(p.category, query)
+  );
+
+  // If specific match found, return matched; otherwise return latest projects
+  const finalResults = matched.length > 0 ? matched : projects;
+  return finalResults.slice(0, limit).map(sanitizeProject);
 }
 
 // ---------------------------------------------------------------------------
@@ -236,17 +293,22 @@ export async function searchProjects(query: string, limit = 5): Promise<PublicPr
 
 export async function searchBlogs(query: string, limit = 5): Promise<PublicProject[]> {
   const all = await publicFetch<RawProject[]>("/api/projects");
-  if (!all) return [];
-  return all
-    .filter(
-      (p) =>
-        p.type === "blog" &&
-        p.status !== "trash" &&
-        (matchesQuery(p.title, query) ||
-          matchesQuery(p.description, query))
-    )
-    .map(sanitizeProject)
-    .slice(0, limit);
+  if (!all || !Array.isArray(all)) return [];
+
+  const blogs = all.filter((p) => p.type === "blog" && p.status !== "trash");
+
+  if (!query || !query.trim()) {
+    return blogs.slice(0, limit).map(sanitizeProject);
+  }
+
+  const matched = blogs.filter(
+    (p) =>
+      matchesQuery(p.title, query) ||
+      matchesQuery(p.description, query)
+  );
+
+  const finalResults = matched.length > 0 ? matched : blogs;
+  return finalResults.slice(0, limit).map(sanitizeProject);
 }
 
 // ---------------------------------------------------------------------------

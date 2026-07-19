@@ -34,7 +34,7 @@ export interface IntentResult {
 
 const INTENT_MAP: Record<Intent, RegExp[]> = {
   events_upcoming: [
-    /upcoming\s+event/i,
+    /up+com+ing/i,
     /next\s+event/i,
     /future\s+event/i,
     /scheduled\s+event/i,
@@ -56,10 +56,11 @@ const INTENT_MAP: Record<Intent, RegExp[]> = {
     /recent\s+event/i,
   ],
   projects: [
-    /project/i,
+    /proj/i,
     /initiative/i,
     /program/i,
     /what\s+(did|has|have)\s+(the\s+club|rcsb|you|rotaract)\s+(done|completed|worked)/i,
+    /recent/i,
     /sparsha/i,
     /ryla/i,
     /community\s+service/i,
