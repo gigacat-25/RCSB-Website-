@@ -50,6 +50,7 @@ ${formData.reason || "Interested in community service and networking."}
                     name: formData.name,
                     email: formData.email,
                     phone: formData.phone,
+                    reason: "Membership Application",
                     subject: `🏆 Membership Inquiry - ${formData.name}`,
                     message: formattedMessage,
                 }),
