@@ -3,6 +3,7 @@ export const runtime = 'edge';
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { BlogCardSkeleton } from "@/components/ui/SkeletonCard";
 import { BookOpenIcon, UserIcon, MagnifyingGlassIcon, TagIcon, PencilSquareIcon, ChevronLeftIcon, ChevronRightIcon, HeartIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
@@ -178,9 +179,9 @@ export default function BlogsPage() {
         {/* Blogs Grid */}
         <div className="max-w-7xl mx-auto mb-20 md:mb-40">
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-12">
-              {[1, 2, 3].map((n) => (
-                <div key={n} className="bg-white rounded-[2rem] md:rounded-[3rem] h-[500px] animate-pulse border border-slate-100 shadow-sm"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-16 lg:gap-20">
+              {[1, 2, 3, 4, 5, 6].map((n) => (
+                <BlogCardSkeleton key={n} />
               ))}
             </div>
           ) : filteredBlogs.length > 0 ? (

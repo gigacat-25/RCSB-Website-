@@ -3,6 +3,7 @@ export const runtime = 'edge';
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { ProjectCardSkeleton } from "@/components/ui/SkeletonCard";
 
 export default function AwardsPage() {
   const [awards, setAwards] = useState<any[]>([]);
@@ -117,9 +118,9 @@ export default function AwardsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-16 lg:gap-20">
             {loading ? (
-              <div className="col-span-full glass p-10 md:p-24 text-center rounded-[2rem] md:rounded-[4rem] text-slate-400 font-heading font-bold text-xl md:text-3xl italic animate-pulse">
-                Loading awards...
-              </div>
+              [1, 2, 3, 4, 5, 6].map((n) => (
+                <ProjectCardSkeleton key={n} />
+              ))
             ) : filteredAwards.length === 0 ? (
               <div className="col-span-full glass p-10 md:p-24 text-center rounded-[2rem] md:rounded-[4rem] text-slate-400 font-heading font-bold text-xl md:text-3xl italic">
                 No awards found in this category.
@@ -173,74 +174,35 @@ export default function AwardsPage() {
             )}
           </div>
 
-          {/* Interactive Pagination */}
-          {!loading && totalPages > 1 && (
-            <div className="mt-16 md:mt-20 flex flex-col items-center gap-6">
-
-              {/* Results count */}
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-blue/40">
-                Showing{" "}
-                <span className="text-brand-blue">
-                  {(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, filteredAwards.length)}
-                </span>{" "}
-                of <span className="text-brand-blue">{filteredAwards.length}</span> awards
-              </p>
-
-              {/* Pagination controls */}
-              <div className="flex items-center gap-2 md:gap-3">
-
-                {/* Previous */}
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-16 md:mt-24 flex items-center justify-center gap-3">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                className="w-12 h-12 rounded-full border border-slate-200 bg-white text-brand-blue font-bold flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed hover:bg-brand-blue hover:text-white transition-colors"
+              >
+                &larr;
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                 <button
-                  onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                  disabled={currentPage === 1}
-                  className="group flex items-center gap-2 px-4 md:px-6 py-2.5 md:py-3 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-[0.15em] border transition-all duration-300 disabled:opacity-25 disabled:cursor-not-allowed bg-white text-brand-blue border-slate-200 hover:border-brand-blue hover:shadow-lg hover:-translate-x-0.5 active:scale-95"
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`w-12 h-12 rounded-full text-sm font-black transition-all ${currentPage === page
+                    ? "bg-brand-blue text-white shadow-lg scale-110"
+                    : "bg-white text-brand-blue border border-slate-200 hover:border-brand-blue"
+                    }`}
                 >
-                  <span className="group-hover:-translate-x-0.5 transition-transform duration-200">←</span>
-                  <span className="hidden sm:inline">Prev</span>
+                  {page}
                 </button>
-
-                {/* Page number buttons */}
-                <div className="flex items-center gap-1.5 md:gap-2">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                    const isActive = page === currentPage;
-                    const isNear = Math.abs(page - currentPage) <= 1;
-                    const isEdge = page === 1 || page === totalPages;
-                    if (!isNear && !isEdge) {
-                      if (page === 2 || page === totalPages - 1) {
-                        return <span key={page} className="text-brand-blue/30 font-black text-xs px-1">…</span>;
-                      }
-                      return null;
-                    }
-                    return (
-                      <button
-                        key={page}
-                        onClick={() => { setCurrentPage(page); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                        className={`relative w-9 h-9 md:w-10 md:h-10 rounded-full text-[10px] md:text-[11px] font-black uppercase tracking-wider transition-all duration-300 active:scale-90 ${
-                          isActive
-                            ? "bg-brand-blue text-white shadow-lg shadow-brand-blue/30 scale-110"
-                            : "bg-white text-brand-blue border border-slate-200 hover:border-brand-blue hover:shadow-md hover:scale-105"
-                        }`}
-                      >
-                        {page}
-                        {isActive && (
-                          <span className="absolute inset-0 rounded-full bg-brand-blue animate-ping opacity-20 pointer-events-none" />
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Next */}
-                <button
-                  onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                  disabled={currentPage === totalPages}
-                  className="group flex items-center gap-2 px-4 md:px-6 py-2.5 md:py-3 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-[0.15em] border transition-all duration-300 disabled:opacity-25 disabled:cursor-not-allowed bg-brand-blue text-white border-brand-blue hover:shadow-lg hover:translate-x-0.5 active:scale-95"
-                >
-                  <span className="hidden sm:inline">Next</span>
-                  <span className="group-hover:translate-x-0.5 transition-transform duration-200">→</span>
-                </button>
-
-              </div>
+              ))}
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                className="w-12 h-12 rounded-full border border-slate-200 bg-white text-brand-blue font-bold flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed hover:bg-brand-blue hover:text-white transition-colors"
+              >
+                &rarr;
+              </button>
             </div>
           )}
         </div>

@@ -173,24 +173,6 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
 
           {/* Article */}
           <article className="flex-1 w-full max-w-3xl">
-            {/* Always display RSVP Call To Action at the TOP when available */}
-            {((project.type === "event" && project.status === "upcoming") || project.rsvp_link) && (
-              <div className="mb-8 md:mb-12 p-6 md:p-8 bg-brand-gold/10 border-2 border-brand-gold rounded-[2rem] md:rounded-[40px] flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left shadow-lg">
-                <div>
-                  <h3 className="text-xl font-black text-brand-blue mb-2">Interested in participating?</h3>
-                  <p className="text-brand-gray font-medium">Join us as a volunteer or guest for this upcoming event.</p>
-                </div>
-                <Link
-                  href={project.rsvp_link || "/contact"}
-                  target={project.rsvp_link ? "_blank" : undefined}
-                  rel={project.rsvp_link ? "noopener noreferrer" : undefined}
-                  className="w-full md:w-auto px-6 py-3 md:px-8 md:py-4 bg-brand-blue text-white font-black rounded-2xl hover:bg-brand-azure transition-all shadow-xl text-center shrink-0"
-                >
-                  {project.rsvp_link ? "RSVP Now" : "Register Interest"}
-                </Link>
-              </div>
-            )}
-
             <div className="text-brand-gray text-lg md:text-2xl leading-relaxed font-bold mb-8 md:mb-12 text-brand-blue/90">
               {project.description}
             </div>
@@ -198,6 +180,26 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
             <div className="text-brand-gray text-lg leading-relaxed whitespace-pre-wrap">
               {project.content || "Full project details coming soon..."}
             </div>
+
+            {/* Single RSVP Call To Action at the bottom of the article */}
+            {((project.type === "event" && project.status === "upcoming") || project.rsvp_link) && (
+              <div className="mt-12 p-8 md:p-10 bg-gradient-to-r from-brand-blue to-slate-900 text-white rounded-[2rem] md:rounded-[40px] flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left shadow-2xl relative overflow-hidden border border-brand-gold/30">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/10 rounded-full blur-[80px] -z-0" />
+                <div className="relative z-10">
+                  <span className="text-[10px] font-black text-brand-gold uppercase tracking-[0.3em] mb-2 block">Upcoming Initiative</span>
+                  <h3 className="text-2xl font-heading font-black text-white mb-2">Interested in participating?</h3>
+                  <p className="text-blue-100/80 font-light text-sm max-w-md">Join us as a volunteer, attendee, or guest speaker for this event.</p>
+                </div>
+                <Link
+                  href={project.rsvp_link || "/contact"}
+                  target={project.rsvp_link ? "_blank" : undefined}
+                  rel={project.rsvp_link ? "noopener noreferrer" : undefined}
+                  className="relative z-10 w-full md:w-auto px-8 py-4 bg-brand-gold hover:bg-yellow-400 text-brand-blue font-black uppercase tracking-[0.15em] text-xs rounded-2xl transition-all shadow-xl text-center shrink-0 hover:scale-105"
+                >
+                  {project.rsvp_link ? "RSVP Now" : "Register Interest"} &rarr;
+                </Link>
+              </div>
+            )}
 
 
             {/* Share Experience CTA */}
@@ -234,19 +236,6 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
           {/* Quick Info Sidebar */}
           <aside className="w-full lg:w-96 flex-shrink-0">
             <div className="sticky top-24 md:top-32 bg-gray-50 rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 border border-gray-100 shadow-sm space-y-8 md:space-y-10">
-              {((project.type === "event" && project.status === "upcoming") || project.rsvp_link) && (
-                <div className="pb-6 border-b border-gray-200">
-                  <Link
-                    href={project.rsvp_link || "/contact"}
-                    target={project.rsvp_link ? "_blank" : undefined}
-                    rel={project.rsvp_link ? "noopener noreferrer" : undefined}
-                    className="block w-full py-3.5 px-6 bg-brand-blue text-white font-black text-center rounded-2xl hover:bg-brand-azure transition-all shadow-md text-xs uppercase tracking-widest"
-                  >
-                    {project.rsvp_link ? "RSVP Now" : "Register Interest"} &rarr;
-                  </Link>
-                </div>
-              )}
-
               <div>
                 <h4 className="text-[11px] font-black text-brand-gray uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-brand-gold rounded-full"></span>

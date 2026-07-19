@@ -183,9 +183,9 @@ export default function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="lg:hidden fixed inset-0 bg-[#0a0f1e]/98 backdrop-blur-2xl z-40"
+            className="lg:hidden fixed inset-0 bg-[#0a0f1e]/98 backdrop-blur-2xl z-40 overflow-y-auto"
           >
-            <div className="flex flex-col items-center justify-center min-h-screen gap-8 p-8">
+            <div className="flex flex-col items-center justify-center min-h-screen py-12 px-6 gap-6">
               {navLinks.map((link, idx) => {
                 const isActive = pathname === link.href;
                 return (

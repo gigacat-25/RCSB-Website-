@@ -243,6 +243,14 @@ export default function AboutPage() {
                     </div>
                 </section>
 
+                {/* Active Members Banner at the Bottom */}
+                <section className="mb-16 md:mb-20 max-w-xl mx-auto px-4">
+                    <div className="bg-white p-8 md:p-10 rounded-3xl md:rounded-[2.5rem] shadow-xl border border-gray-100 text-center">
+                        <span className="text-4xl md:text-6xl font-heading font-black text-brand-blue block mb-2">48+</span>
+                        <span className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-slate-400 block">Active Members Dedicated to Community Change</span>
+                    </div>
+                </section>
+
                 <section className="text-center animate-fade-up" style={{ animationDelay: '400ms' }}>
                     <div className="bg-brand-blue p-10 md:p-16 rounded-[3rem] relative overflow-hidden shadow-2xl">
                         <div className="absolute inset-0 opacity-10 bg-[url('https://rotaractjpnagar.org/shapes/blob.svg')] bg-no-repeat bg-center bg-cover" />

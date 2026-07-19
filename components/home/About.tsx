@@ -114,16 +114,16 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="absolute -bottom-6 -right-4 lg:-bottom-10 lg:-right-4 glass p-4 md:p-6 rounded-[2rem] shadow-xl max-w-[200px] md:max-w-[240px] hidden sm:block z-20 bg-white/85 backdrop-blur-xl border border-white/20"
+              className="absolute bottom-3 right-3 sm:-bottom-6 sm:-right-4 lg:-bottom-10 lg:-right-4 glass p-3.5 sm:p-4 md:p-6 rounded-2xl sm:rounded-[2rem] shadow-xl max-w-[160px] sm:max-w-[200px] md:max-w-[240px] z-20 bg-white/90 sm:bg-white/85 backdrop-blur-xl border border-white/30"
             >
               <div className="flex flex-col gap-1">
-                <span className="text-2xl md:text-3xl font-heading font-black text-brand-blue">
+                <span className="text-xl sm:text-2xl md:text-3xl font-heading font-black text-brand-blue">
                   <Counter value={memberCount} />+
                 </span>
-                <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-brand-gray/60 leading-tight">
+                <span className="text-[8px] sm:text-[9px] md:text-[10px] font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-brand-gray/80 sm:text-brand-gray/60 leading-tight">
                   Active Members Dedicated to Community Change
                 </span>
-                <div className="w-10 h-1 bg-brand-gold mt-1.5 rounded-full" />
+                <div className="w-8 sm:w-10 h-1 bg-brand-gold mt-1 sm:mt-1.5 rounded-full" />
               </div>
             </motion.div>
 

@@ -3,6 +3,7 @@ export const runtime = 'edge';
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { ProjectCardSkeleton } from "@/components/ui/SkeletonCard";
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<any[]>([]);
@@ -123,9 +124,9 @@ export default function ProjectsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-16 lg:gap-20">
             {loading ? (
-              <div className="col-span-full glass p-10 md:p-24 text-center rounded-[2rem] md:rounded-[4rem] text-slate-400 font-heading font-bold text-xl md:text-3xl italic animate-pulse">
-                Loading projects...
-              </div>
+              [1, 2, 3, 4, 5, 6].map((n) => (
+                <ProjectCardSkeleton key={n} />
+              ))
             ) : filteredProjects.length === 0 ? (
               <div className="col-span-full glass p-10 md:p-24 text-center rounded-[2rem] md:rounded-[4rem] text-slate-400 font-heading font-bold text-xl md:text-3xl italic">
                 No projects found in this category.

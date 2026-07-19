@@ -121,7 +121,7 @@ export default function ContactPage() {
                     <div>
                       <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-1 md:mb-2">Email Us</h4>
                       <p className="text-brand-blue font-black text-lg md:text-2xl tracking-tight mb-1 md:mb-2 break-all">rota.rcbs@gmail.com</p>
-                      <p className="text-[9px] md:text-[11px] font-black text-[#00A1E0] uppercase tracking-widest hidden sm:block">Typical response: 24h</p>
+                      <p className="text-[9px] md:text-[11px] font-black text-[#00A1E0] uppercase tracking-widest">Typical response: 24h</p>
                     </div>
                   </div>
 
@@ -132,7 +132,7 @@ export default function ContactPage() {
                     <div>
                       <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-1 md:mb-2">Find Us</h4>
                       <p className="text-brand-blue font-black text-lg md:text-2xl tracking-tight mb-1 md:mb-2">Rotary House of Friendship, 11 Lavelle Road, Bengaluru</p>
-                      <p className="text-[9px] md:text-[11px] font-black text-[#00A1E0] uppercase tracking-widest hidden sm:block">Headquarters</p>
+                      <p className="text-[9px] md:text-[11px] font-black text-[#00A1E0] uppercase tracking-widest">Headquarters</p>
                     </div>
                   </div>
 
