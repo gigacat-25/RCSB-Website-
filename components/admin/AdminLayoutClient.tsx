@@ -13,7 +13,7 @@ export default function AdminLayoutClient({ children, userIsAdmin }: AdminLayout
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-brand-light relative">
+    <div className="flex h-screen h-[100dvh] bg-brand-light relative overflow-hidden">
       {/* Sidebar Navigation */}
       <AdminSidebar
         userIsAdmin={userIsAdmin}
@@ -22,9 +22,9 @@ export default function AdminLayoutClient({ children, userIsAdmin }: AdminLayout
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 w-full md:ml-64 flex flex-col min-w-0 transition-all">
+      <div className="flex-1 w-full md:ml-64 flex flex-col min-w-0 h-full overflow-hidden transition-all">
         <AdminHeader onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)} />
-        <main className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto max-w-full">
+        <main className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto max-w-full min-h-0">
           {children}
         </main>
       </div>

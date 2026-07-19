@@ -26,7 +26,7 @@ export default function ImageGallery({ images, title, isBlogLayout = false }: { 
 
     const closeModal = () => {
         setIsOpen(false);
-        document.body.style.overflow = "auto";
+        document.body.style.overflow = "";
     };
 
     const showNext = (e: React.MouseEvent) => {

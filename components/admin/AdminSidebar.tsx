@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
@@ -50,6 +51,18 @@ export default function AdminSidebar({
     ? propUserIsAdmin 
     : isAdmin(email, user?.publicMetadata?.role);
   const userIsSuperAdmin = isSuperAdmin(email);
+
+  // Lock background scroll when mobile sidebar is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
   return (
     <>
