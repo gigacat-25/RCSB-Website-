@@ -12,9 +12,6 @@ import SwarnaAIWidget from "@/components/ai/SwarnaAIWidget";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://rotaractswarnabengaluru.in"),
-  alternates: {
-    canonical: "/",
-  },
   title: {
     template: "%s | Rotaract Swarna Bengaluru",
     default: "Rotaract Club of Swarna Bengaluru | RI District 3192",

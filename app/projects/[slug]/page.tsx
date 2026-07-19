@@ -27,10 +27,11 @@ import ImageGallery from "@/components/projects/ImageGallery";
 export const revalidate = 0;
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const canonicalUrl = `/projects/${params.slug}`;
   try {
     const data = await apiFetch("/api/projects");
     const project = data.find((p: any) => p.slug === params.slug && p.status !== 'trash');
-    if (!project) return {};
+    if (!project) return { alternates: { canonical: canonicalUrl } };
 
     const fixImageUrl = (url: string | null | undefined) => {
       if (!url) return "https://rotaractswarnabengaluru.in/Images/placeholder.jpg";
@@ -45,7 +46,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       title: project.title,
       description: project.description?.substring(0, 160),
       alternates: {
-        canonical: `/projects/${project.slug}`,
+        canonical: canonicalUrl,
       },
       openGraph: {
         title: project.title,
@@ -56,7 +57,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       },
     };
   } catch (e) {
-    return {};
+    return { alternates: { canonical: canonicalUrl } };
   }
 }
 
