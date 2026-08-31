@@ -1,27 +1,49 @@
-async function callGroq(systemPrompt: string, prompt: string, apiKey: string) {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
-            messages: [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: prompt }
-            ],
-            temperature: 0.7,
-            response_format: { type: "json_object" }
-        }),
-    });
+const GROQ_MODELS = [
+    'openai/gpt-oss-120b',
+    'qwen/qwen3.8-27b',
+    'openai/gpt-oss-20b',
+    'qwen/qwen3.6-27b',
+];
 
-    if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(`AI Generation failed: ${errorData}`);
+async function callGroq(systemPrompt: string, prompt: string, apiKey: string) {
+    let data: any = null;
+    let lastError = "";
+
+    for (const model of GROQ_MODELS) {
+        try {
+            const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    model,
+                    messages: [
+                        { role: 'system', content: systemPrompt },
+                        { role: 'user', content: prompt }
+                    ],
+                    temperature: 0.7,
+                    response_format: { type: "json_object" }
+                }),
+            });
+
+            if (response.ok) {
+                data = await response.json();
+                break;
+            } else {
+                lastError = await response.text();
+                console.warn(`[Newsletter AI] Model ${model} failed with status ${response.status}: ${lastError}`);
+            }
+        } catch (err: any) {
+            lastError = err?.message || "Network error";
+            console.warn(`[Newsletter AI] Model ${model} error:`, lastError);
+        }
     }
 
-    const data = await response.json();
+    if (!data) {
+        throw new Error(`AI Generation failed across all models: ${lastError}`);
+    }
     const generatedText = data.choices[0]?.message?.content;
 
     if (!generatedText) {

@@ -158,7 +158,7 @@ export default function EventGallery() {
                     fill
                     sizes="(max-width: 768px) 100vw, 1200px"
                     className="object-cover transition-transform duration-[2000ms] group-hover/card:scale-110"
-                    priority={currentIndex === 0}
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/20 to-transparent" />
 

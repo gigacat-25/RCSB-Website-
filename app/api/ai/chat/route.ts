@@ -26,7 +26,12 @@ export const runtime = "edge";
 // ---------------------------------------------------------------------------
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-const GROQ_MODEL = "llama-3.3-70b-versatile";
+const GROQ_MODELS = [
+  "openai/gpt-oss-120b",
+  "qwen/qwen3.8-27b",
+  "openai/gpt-oss-20b",
+  "qwen/qwen3.6-27b",
+];
 
 const MAX_HISTORY_MESSAGES = 8; // Keep last 8 turns for context
 const MAX_USER_MESSAGE_LENGTH = 1000;
@@ -208,35 +213,43 @@ export async function POST(req: NextRequest) {
     ...historyMessages,
   ];
 
-  // --- 7. Call Groq API with streaming ---
-  let groqResponse: Response;
-  try {
-    groqResponse = await fetch(GROQ_API_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${groqApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: GROQ_MODEL,
-        messages: groqMessages,
-        stream: true,
-        temperature: 0.3, // Lower = more factual, less creative
-        max_tokens: 1024,
-        top_p: 0.9,
-      }),
-    });
-  } catch (err) {
-    console.error("[SwarnaAI] Groq API network error:", err);
-    return new Response(
-      JSON.stringify({ error: "AI service connection failed. Please try again." }),
-      { status: 503, headers: { "Content-Type": "application/json" } }
-    );
+  // --- 7. Call Groq API with streaming & resilient model fallback ---
+  let groqResponse: Response | null = null;
+  let lastErrorText = "";
+
+  for (const model of GROQ_MODELS) {
+    try {
+      const res = await fetch(GROQ_API_URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${groqApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model,
+          messages: groqMessages,
+          stream: true,
+          temperature: 0.3, // Lower = more factual, less creative
+          max_tokens: 1024,
+          top_p: 0.9,
+        }),
+      });
+
+      if (res.ok) {
+        groqResponse = res;
+        break;
+      } else {
+        lastErrorText = await res.text().catch(() => "Unknown error");
+        console.warn(`[SwarnaAI] Model ${model} failed with status ${res.status}: ${lastErrorText}. Trying fallback...`);
+      }
+    } catch (err: any) {
+      console.warn(`[SwarnaAI] Model ${model} network error:`, err?.message || err);
+      lastErrorText = err?.message || "Network error";
+    }
   }
 
-  if (!groqResponse.ok) {
-    const errorText = await groqResponse.text().catch(() => "Unknown error");
-    console.error(`[SwarnaAI] Groq API error ${groqResponse.status}: ${errorText}`);
+  if (!groqResponse || !groqResponse.ok) {
+    console.error(`[SwarnaAI] All Groq models failed. Last error: ${lastErrorText}`);
     return new Response(
       JSON.stringify({ error: "AI service returned an error. Please try again." }),
       { status: 502, headers: { "Content-Type": "application/json" } }

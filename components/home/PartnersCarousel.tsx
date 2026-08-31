@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export default function PartnersCarousel() {
     const [partners, setPartners] = useState<any[]>([]);
@@ -37,11 +38,16 @@ export default function PartnersCarousel() {
                 <div className="flex animate-marquee hover:[animation-play-state:paused] whitespace-nowrap w-max">
                     {displayPartners.map((partner, idx) => (
                         <div key={`${partner.id}-${idx}`} className="flex flex-col items-center justify-center min-w-[200px] md:min-w-[250px] px-8">
-                            <img
-                                src={partner.image_url}
-                                alt={partner.name}
-                                className="h-16 md:h-20 w-auto object-contain grayscale hover:grayscale-0 hover:scale-110 transition-all duration-500 opacity-60 hover:opacity-100"
-                            />
+                            <div className="relative h-16 md:h-20 w-36 md:w-44 flex items-center justify-center">
+                                <Image
+                                    src={partner.image_url}
+                                    alt={partner.name}
+                                    width={180}
+                                    height={80}
+                                    loading="lazy"
+                                    className="max-h-16 md:max-h-20 w-auto object-contain grayscale hover:grayscale-0 hover:scale-110 transition-all duration-500 opacity-60 hover:opacity-100"
+                                />
+                            </div>
                         </div>
                     ))}
                 </div>

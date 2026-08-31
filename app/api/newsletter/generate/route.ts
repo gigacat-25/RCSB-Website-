@@ -29,31 +29,52 @@ Return ONLY a JSON object with "subject" and "body".`;
 
         console.log("[AI Generate] Incoming Prompt:", prompt);
 
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                model: 'llama-3.3-70b-versatile',
-                messages: [
-                    { role: 'system', content: systemPrompt },
-                    { role: 'user', content: prompt }
-                ],
-                temperature: 0.7,
-                response_format: { type: "json_object" }
-            }),
-        });
+        const GROQ_MODELS = [
+            'openai/gpt-oss-120b',
+            'qwen/qwen3.8-27b',
+            'openai/gpt-oss-20b',
+            'qwen/qwen3.6-27b',
+        ];
 
-        if (!response.ok) {
-            const errorData = await response.text();
-            console.error('Groq API Error Status:', response.status);
-            console.error('Groq API Error Body:', errorData);
-            return NextResponse.json({ error: 'Failed to generate draft', details: errorData }, { status: response.status });
+        let data: any = null;
+        let lastErrorData = "";
+
+        for (const model of GROQ_MODELS) {
+            try {
+                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model,
+                        messages: [
+                            { role: 'system', content: systemPrompt },
+                            { role: 'user', content: prompt }
+                        ],
+                        temperature: 0.7,
+                        response_format: { type: "json_object" }
+                    }),
+                });
+
+                if (response.ok) {
+                    data = await response.json();
+                    break;
+                } else {
+                    lastErrorData = await response.text();
+                    console.warn(`[AI Generate] Model ${model} failed:`, lastErrorData);
+                }
+            } catch (err: any) {
+                lastErrorData = err?.message || "Network error";
+                console.warn(`[AI Generate] Model ${model} error:`, lastErrorData);
+            }
         }
 
-        const data = await response.json();
+        if (!data) {
+            return NextResponse.json({ error: 'Failed to generate draft', details: lastErrorData }, { status: 502 });
+        }
+
         const generatedText = data.choices[0]?.message?.content;
 
         if (!generatedText) {

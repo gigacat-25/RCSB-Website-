@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
@@ -37,9 +38,13 @@ function AuthSection({ scrolled = false }: { scrolled?: boolean }) {
 
         <button
           onClick={() => openUserProfile()}
-          className="w-9 h-9 rounded-full overflow-hidden border-2 border-brand-gold/40 hover:border-brand-gold transition-colors shrink-0"
+          className="w-9 h-9 rounded-full overflow-hidden border-2 border-brand-gold/40 hover:border-brand-gold transition-colors shrink-0 relative"
         >
-          <img src={user?.imageUrl} alt="Profile" className="w-full h-full object-cover" />
+          {user?.imageUrl ? (
+            <Image src={user.imageUrl} alt="Profile" fill sizes="36px" className="object-cover" />
+          ) : (
+            <div className="w-full h-full bg-brand-gold/20" />
+          )}
         </button>
 
         <button
@@ -117,11 +122,14 @@ export default function Navbar() {
       <div className={`max-w-screen-xl mx-auto px-6 md:px-8 flex items-center justify-between transition-all duration-500 ${scrolled ? "h-[72px]" : "h-[88px]"
         }`}>
         {/* Logo */}
-        <Link href="/" className="shrink-0 relative z-50">
-          <img
+        <Link href="/" className="shrink-0 relative z-50 flex items-center">
+          <Image
             src="/logo.png"
             alt="Rotaract Swarna Bengaluru"
-            className={`transition-all duration-500 object-contain ${scrolled ? "h-12 md:h-14" : "h-16 md:h-20"
+            width={160}
+            height={64}
+            priority
+            className={`transition-all duration-500 w-auto object-contain ${scrolled ? "h-12 md:h-14" : "h-16 md:h-20"
               }`}
           />
         </Link>
@@ -226,7 +234,7 @@ export default function Navbar() {
                 transition={{ delay: 0.3 + navLinks.length * 0.04, duration: 0.5 }}
                 className="mt-8 flex flex-col items-center gap-2 opacity-40"
               >
-                <img src="/logo.png" alt="RCSB" className="h-10 grayscale invert brightness-0" />
+                <Image src="/logo.png" alt="RCSB" width={100} height={40} className="h-10 w-auto grayscale invert brightness-0 object-contain" />
                 <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-white">Swarna Bengaluru</p>
               </motion.div>
             </div>

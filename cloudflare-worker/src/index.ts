@@ -145,6 +145,7 @@ export default {
         const mediaHeaders = new Headers();
         object.writeHttpMetadata(mediaHeaders);
         mediaHeaders.set("Access-Control-Allow-Origin", "*");
+        mediaHeaders.set("Cache-Control", "public, max-age=31536000, immutable");
         mediaHeaders.set("etag", object.httpEtag);
 
         return new Response(object.body, { headers: mediaHeaders });
@@ -315,7 +316,7 @@ export default {
         if (workflowBinding) {
           try {
             await workflowBinding.create({
-              id: `${insertedType}-${insertedId}`,
+              id: `${insertedType}-${insertedId}-${Date.now()}`,
               params: { eventId: insertedId, type: insertedType }
             });
             console.log(`[Workflow] Spawned ${workflowName} for ${insertedType}-${insertedId}`);
@@ -428,7 +429,7 @@ export default {
               if (workflowBinding) {
                 try {
                   await workflowBinding.create({
-                    id: `${updateType}-${numId}`,
+                    id: `${updateType}-${numId}-${Date.now()}`,
                     params: { eventId: numId, type: updateType }
                   });
                   console.log(`[Workflow] Spawned updated workflow ${workflowName} for ${updateType}-${numId}`);
@@ -812,7 +813,7 @@ export class EventReminderWorkflow extends WorkflowEntrypoint<Env, EventReminder
 
     // 1. Send immediate creation notification
     await step.do("Send initial creation email", async () => {
-      const siteUrl = "https://rotaractswarnabengaluru.in";
+      const siteUrl = this.env.SITE_URL || "https://rotaractswarnabengaluru.in";
       const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
         method: "POST",
         headers: {
@@ -865,7 +866,7 @@ export class EventReminderWorkflow extends WorkflowEntrypoint<Env, EventReminder
 
       if (Date.now() < twoDaysNear) {
         await step.do("Send periodic update reminder", async () => {
-          const siteUrl = "https://rotaractswarnabengaluru.in";
+          const siteUrl = this.env.SITE_URL || "https://rotaractswarnabengaluru.in";
           const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
             method: "POST",
             headers: {
@@ -904,7 +905,7 @@ export class EventReminderWorkflow extends WorkflowEntrypoint<Env, EventReminder
 
       if (Date.now() < eventTime) {
         await step.do("Send daily countdown reminder", async () => {
-          const siteUrl = "https://rotaractswarnabengaluru.in";
+          const siteUrl = this.env.SITE_URL || "https://rotaractswarnabengaluru.in";
           const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
             method: "POST",
             headers: {
@@ -939,7 +940,7 @@ export class EventReminderWorkflow extends WorkflowEntrypoint<Env, EventReminder
       }
 
       await step.do("Send post-event recap", async () => {
-        const siteUrl = "https://rotaractswarnabengaluru.in";
+        const siteUrl = this.env.SITE_URL || "https://rotaractswarnabengaluru.in";
         const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
           method: "POST",
           headers: {
@@ -968,7 +969,7 @@ export class BlogAnnouncementWorkflow extends WorkflowEntrypoint<Env, EventRemin
     if (!eventId) return;
 
     await step.do("Send blog creation email", async () => {
-      const siteUrl = "https://rotaractswarnabengaluru.in";
+      const siteUrl = this.env.SITE_URL || "https://rotaractswarnabengaluru.in";
       const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
         method: "POST",
         headers: {
@@ -996,7 +997,7 @@ export class AwardAnnouncementWorkflow extends WorkflowEntrypoint<Env, EventRemi
     if (!eventId) return;
 
     await step.do("Send award creation email", async () => {
-      const siteUrl = "https://rotaractswarnabengaluru.in";
+      const siteUrl = this.env.SITE_URL || "https://rotaractswarnabengaluru.in";
       const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
         method: "POST",
         headers: {
@@ -1024,7 +1025,7 @@ export class ProjectAnnouncementWorkflow extends WorkflowEntrypoint<Env, EventRe
     if (!eventId) return;
 
     await step.do("Send project creation email", async () => {
-      const siteUrl = "https://rotaractswarnabengaluru.in";
+      const siteUrl = this.env.SITE_URL || "https://rotaractswarnabengaluru.in";
       const response = await fetch(`${siteUrl}/api/newsletter/reminders`, {
         method: "POST",
         headers: {

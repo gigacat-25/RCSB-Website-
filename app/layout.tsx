@@ -2,7 +2,6 @@ import { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import LoadingScreen from "@/components/layout/LoadingScreen";
 import { ClerkProvider } from "@clerk/nextjs";
 import Providers from "./providers";
 import SubscribePopup from "@/components/newsletter/SubscribePopup";
@@ -71,7 +70,6 @@ export default function RootLayout({
               })
             }}
           />
-          <LoadingScreen />
           <div className="noise-overlay" />
           <div className="fixed inset-0 -z-50 overflow-hidden pointer-events-none">
             <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#0F3B82]/5 rounded-full blur-[120px] animate-pulse-soft" />

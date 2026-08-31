@@ -36,29 +36,52 @@ Administrator's Brief: ${brief}
 
 Please generate the reply.`;
 
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                model: 'llama-3.3-70b-versatile',
-                messages: [
-                    { role: 'system', content: systemPrompt },
-                    { role: 'user', content: userPrompt }
-                ],
-                temperature: 0.7,
-                response_format: { type: "json_object" }
-            }),
-        });
+        const GROQ_MODELS = [
+            'openai/gpt-oss-120b',
+            'qwen/qwen3.8-27b',
+            'openai/gpt-oss-20b',
+            'qwen/qwen3.6-27b',
+        ];
 
-        if (!response.ok) {
-            const errorData = await response.text();
-            return NextResponse.json({ error: 'Failed to generate reply', details: errorData }, { status: response.status });
+        let data: any = null;
+        let lastErrorData = "";
+
+        for (const model of GROQ_MODELS) {
+            try {
+                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model,
+                        messages: [
+                            { role: 'system', content: systemPrompt },
+                            { role: 'user', content: userPrompt }
+                        ],
+                        temperature: 0.7,
+                        response_format: { type: "json_object" }
+                    }),
+                });
+
+                if (response.ok) {
+                    data = await response.json();
+                    break;
+                } else {
+                    lastErrorData = await response.text();
+                    console.warn(`[AI Reply] Model ${model} failed:`, lastErrorData);
+                }
+            } catch (err: any) {
+                lastErrorData = err?.message || "Network error";
+                console.warn(`[AI Reply] Model ${model} error:`, lastErrorData);
+            }
         }
 
-        const data = await response.json();
+        if (!data) {
+            return NextResponse.json({ error: 'Failed to generate reply', details: lastErrorData }, { status: 502 });
+        }
+
         const generatedText = data.choices[0]?.message?.content;
 
         if (!generatedText) {

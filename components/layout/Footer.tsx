@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
@@ -25,9 +26,12 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="space-y-8">
             <Link href="/" className="inline-block group">
-              <img
+              <Image
                 src="/logo.png"
                 alt="Rotaract Swarna Bengaluru Logo"
+                width={180}
+                height={72}
+                loading="lazy"
                 className="h-24 w-auto object-contain brightness-0 invert group-hover:scale-105 transition-transform duration-500"
               />
             </Link>
@@ -108,7 +112,14 @@ export default function Footer() {
             </div>
 
             <div className="text-xs md:text-[13px] font-black uppercase tracking-[0.2em] text-white/50 bg-white/5 px-4 py-2 rounded-xl border border-white/5 flex items-center gap-2">
-              <img src="/thescene-logo.png" alt="The Scene Co. Logo" className="w-12 h-12 rounded-md object-contain" />
+              <Image
+                src="/thescene-logo.png"
+                alt="The Scene Co. Logo"
+                width={48}
+                height={48}
+                loading="lazy"
+                className="w-12 h-12 rounded-md object-contain"
+              />
               <span>Developed by <a href="https://thescene.co.in" target="_blank" rel="noopener noreferrer" className="text-brand-gold hover:text-white transition-colors">The Scene Co.</a></span>
             </div>
           </div>
