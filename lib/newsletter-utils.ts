@@ -68,6 +68,7 @@ export async function generateNewsletterContent(project: {
     title: string;
     description: string;
     type: string;
+    status?: string;
     slug: string;
     image_url?: string;
     event_date?: string;
@@ -257,22 +258,41 @@ async function generateProjectNewsletter(project: {
     title: string;
     description: string;
     slug: string;
+    status?: string;
     image_url?: string;
     content?: string;
 }) {
     const apiKey = process.env.GROQ_API_KEY!;
     const SITE_URL = "https://rotaractswarnabengaluru.in";
-    const { title, description, slug, image_url, content } = project;
+    const { title, description, slug, status, image_url, content } = project;
+
+    const isOngoing = status === "ongoing";
+    const isUpcoming = status === "upcoming";
 
     const absImageUrl = image_url ? (image_url.startsWith("http") ? image_url : `${SITE_URL}${image_url}`) : "";
     const imageTag = absImageUrl ? `<img src="${absImageUrl}" alt="${title}" style="width:100%; border-radius:12px; margin-bottom:24px; border: 1px solid rgba(255,215,0,0.1);" />` : "";
 
+    const statusContext = isOngoing
+        ? `STATUS: This is an ONGOING, ACTIVE initiative currently in progress. Do NOT claim the project is completed. Highlight the ongoing mission, current field work, activities in motion, and invite the community to follow along or support.`
+        : isUpcoming
+        ? `STATUS: This is an UPCOMING project initiative that will commence soon.`
+        : `STATUS: This is a COMPLETED project initiative. Highlight the successful execution, impact achieved, and milestones reached.`;
+
+    const subjectExample = isOngoing
+        ? `"Initiative in Motion: [Title]" or "Spotlight: Our Ongoing [Title] Initiative"`
+        : isUpcoming
+        ? `"Coming Soon: [Title] Initiative" or "Launching Soon: [Title]"`
+        : `"Project Showcase: [Title]" or "Making a Difference: [Title]"`;
+
     const prompt = `You are a professional communications officer for the Rotaract Club of Swarna Bengaluru (RCSB). 
-Please write an inspiring, impact-driven HTML email newsletter highlighting a completed project initiative.
+Please write an inspiring, impact-driven HTML email newsletter highlighting our ${isOngoing ? 'ongoing' : isUpcoming ? 'upcoming' : 'completed'} project initiative.
 
 Title: ${title}
 Summary/Overview: ${description}
 ${content ? `Full Project Details/Content:\n${content}\n` : ""}
+
+CONTEXT & STATUS:
+${statusContext}
 
 URLs (FOR BUTTON LINKS ONLY. DO NOT WRITE THEM OUT AS TEXT IN THE EMAIL BODY):
 - Link to view project details: ${SITE_URL}/projects/${slug}
@@ -283,17 +303,17 @@ ${imageTag ? `\nCRITICAL: Include this cover image at the top of the body: ${ima
 Guidelines:
 1. Always start the email body with a professional header: "Rotaract Club of Swarna Bengaluru".
 2. Tone: Impactful, inspiring, service-minded, and community-focused.
-3. **DO NOT treat this as an event**: Do NOT mention future event dates, ticket links, or RSVP. This is a showcase of a project that has been successfully completed.
-4. **Subject Line**: The subject line must announce the successful completion or showcase of the project (e.g., "Project Completed: [Title]" or "Making a Difference: [Title]"). NEVER use words like "Invited", "Invitation", "Register", "RSVP", or dates/countdowns in the subject.
-5. **Body Text**: Explain what the project is about. Based on the 'Summary/Overview' and the 'Full Project Details/Content' provided, write an inspiring overview describing the project's goals, execution, its impact on the community, and key figures/outcomes. Do NOT invite people to an event or write in an RSVP context.
+3. **Status Accuracy**: ${isOngoing ? 'Emphasize that this is an ACTIVE / ONGOING project currently taking place. Do NOT say the project has concluded or ended.' : 'Provide a clear showcase of the project.'}
+4. **Subject Line**: The subject line must reflect the status accurately (e.g., ${subjectExample}). NEVER use words like "Invited", "Invitation", "Register", "RSVP", or dates/countdowns in the subject.
+5. **Body Text**: Explain what the project is about. Based on the 'Summary/Overview' and the 'Full Project Details/Content' provided, write an inspiring overview describing the project's mission, execution, its impact on the community, and active focus.
 6. **NO Hardcoded / Raw Links**: Do NOT include raw URLs, raw link text, or standard blue anchor links in the text. All links MUST be formatted as styled gold buttons. Never write something like "visit our website at ${SITE_URL}".
-7. **Buttons**: Provide a prominent "Read Case Study" or "View Project Details" button pointing to ${SITE_URL}/projects/${slug}. Use this EXACT HTML:
+7. **Buttons**: Provide a prominent "Read Project Details" or "Explore Initiative" button pointing to ${SITE_URL}/projects/${slug}. Use this EXACT HTML:
    <div style="margin: 32px 0; text-align: center;">
      <a href="${SITE_URL}/projects/${slug}" style="background-color: #C9982A; color: #0a0f1e; padding: 16px 32px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 15px; display: inline-block; letter-spacing: 1px; text-transform: uppercase;">View Project Details</a>
    </div>
 8. Output ONLY a valid JSON object with keys "subject" and "body". Use semantic HTML tags in the body.`;
 
-    const systemPrompt = `You are a professional copywriter for RCSB. Write a project showcase newsletter. Do not include RSVP or future event details. Never print raw text links or default anchor links. Return ONLY a JSON object with "subject" and "body".`;
+    const systemPrompt = `You are a professional copywriter for RCSB. Write a project showcase newsletter respecting the project's actual status (${status || 'ongoing'}). Never print raw text links or default anchor links. Return ONLY a JSON object with "subject" and "body".`;
     
     return callGroq(systemPrompt, prompt, apiKey);
 }

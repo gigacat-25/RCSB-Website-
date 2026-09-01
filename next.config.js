@@ -45,6 +45,29 @@ const nextConfig = {
         hostname: "*.s3.ap-south-1.amazonaws.com",
         pathname: "/**",
       },
+      // Clerk User Avatars
+      {
+        protocol: "https",
+        hostname: "img.clerk.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images.clerk.dev",
+        pathname: "/**",
+      },
+      // Google User Profile Images
+      {
+        protocol: "https",
+        hostname: "*.googleusercontent.com",
+        pathname: "/**",
+      },
+      // GitHub Avatars
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+        pathname: "/**",
+      },
     ],
   },
   async headers() {

@@ -49,11 +49,12 @@ export async function POST(request: Request) {
 
             if (isNewPost) {
                 // Immediate notification on creation
-                console.log(`[Workflow Reminder] Generating new post notification for: "${project.title}"`);
+                console.log(`[Workflow Reminder] Generating new post notification for: "${project.title}" (status: ${project.status})`);
                 aiContent = await generateNewsletterContent({
                     title: project.title,
                     description: project.description,
                     type: project.type,
+                    status: project.status,
                     slug: project.slug,
                     image_url: project.image_url,
                     event_date: project.event_date,
@@ -68,6 +69,7 @@ export async function POST(request: Request) {
                     title: project.title,
                     description: project.description,
                     type: project.type,
+                    status: project.status,
                     slug: project.slug,
                     image_url: project.image_url,
                     event_date: project.event_date,

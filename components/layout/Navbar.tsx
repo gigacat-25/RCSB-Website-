@@ -17,6 +17,35 @@ const navLinks = [
   { href: "/contact", label: "Contact Us" },
 ];
 
+function UserAvatar({ user, size = "w-9 h-9" }: { user: any; size?: string }) {
+  const [imgError, setImgError] = useState(false);
+  const initials = user?.firstName
+    ? `${user.firstName[0]}${user.lastName ? user.lastName[0] : ""}`.toUpperCase()
+    : user?.username?.[0]?.toUpperCase() || user?.fullName?.[0]?.toUpperCase() || "U";
+
+  if (!user?.imageUrl || imgError) {
+    return (
+      <div className={`${size} rounded-full bg-brand-gold text-brand-blue flex items-center justify-center font-bold text-xs shrink-0 select-none shadow-sm`}>
+        {initials}
+      </div>
+    );
+  }
+
+  return (
+    <div className={`${size} rounded-full overflow-hidden shrink-0 relative bg-brand-gold/20`}>
+      <Image
+        src={user.imageUrl}
+        alt={user.fullName || "User profile"}
+        fill
+        sizes="36px"
+        className="object-cover"
+        unoptimized
+        onError={() => setImgError(true)}
+      />
+    </div>
+  );
+}
+
 function AuthSection({ scrolled = false }: { scrolled?: boolean }) {
   const { isSignedIn, isLoaded, user } = useUser();
   const { openSignIn, openSignUp, signOut, openUserProfile } = useClerk();
@@ -38,13 +67,11 @@ function AuthSection({ scrolled = false }: { scrolled?: boolean }) {
 
         <button
           onClick={() => openUserProfile()}
-          className="w-9 h-9 rounded-full overflow-hidden border-2 border-brand-gold/40 hover:border-brand-gold transition-colors shrink-0 relative"
+          className="rounded-full border-2 border-brand-gold/40 hover:border-brand-gold hover:scale-105 transition-all shrink-0 focus:outline-none focus:ring-2 focus:ring-brand-gold"
+          title="Account Profile"
+          aria-label="Open User Profile"
         >
-          {user?.imageUrl ? (
-            <Image src={user.imageUrl} alt="Profile" fill sizes="36px" className="object-cover" />
-          ) : (
-            <div className="w-full h-full bg-brand-gold/20" />
-          )}
+          <UserAvatar user={user} size="w-9 h-9" />
         </button>
 
         <button
@@ -246,18 +273,32 @@ export default function Navbar() {
 }
 
 function MobileAuth() {
-  const { isSignedIn, isLoaded } = useUser();
-  const { openSignIn, openSignUp, signOut } = useClerk();
+  const { isSignedIn, isLoaded, user } = useUser();
+  const { openSignIn, openSignUp, signOut, openUserProfile } = useClerk();
 
   if (!isLoaded) return null;
 
   if (isSignedIn) {
     return (
       <>
-        <Link href="/admin" className="w-full text-center py-3 rounded-xl text-sm font-bold bg-brand-gold text-brand-blue">
+        <button
+          onClick={() => openUserProfile()}
+          className="flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/10 transition-colors w-full text-left"
+        >
+          <UserAvatar user={user} size="w-10 h-10" />
+          <div className="flex flex-col min-w-0 flex-1">
+            <span className="text-sm font-bold text-white truncate">
+              {user.fullName || user.username || "My Account"}
+            </span>
+            <span className="text-xs text-brand-gold/80 truncate">
+              {user.primaryEmailAddress?.emailAddress}
+            </span>
+          </div>
+        </button>
+        <Link href="/admin" className="w-full text-center py-3 rounded-xl text-sm font-bold bg-brand-gold text-brand-blue shadow-md">
           My Dashboard
         </Link>
-        <button onClick={() => signOut()} className="w-full text-center py-3 rounded-xl text-sm font-bold text-red-400 border border-red-900/30">
+        <button onClick={() => signOut()} className="w-full text-center py-3 rounded-xl text-sm font-bold text-red-400 border border-red-900/30 hover:bg-red-500/10 transition-colors">
           Sign Out
         </button>
       </>
