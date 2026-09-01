@@ -16,14 +16,19 @@ export async function POST(req: Request) {
         }
 
         const systemPrompt = `You are a professional copywriter for the Rotaract Club of Swarna Bengaluru (RCSB). 
-The user will provide project details and any necessary media links.
+The user will provide project/event details and any necessary media or registration links.
 
 STRICT GUIDELINES:
-1. **NO Hallucinations**: Do NOT use placeholder URLs (like via.placeholder.com). If a cover image URL is provided in the prompt, use it EXACTLY.
-2. **Proper Buttons**: Primary Call-To-Actions (e.g. Feedback forms, RSVP, "Read More") MUST be a styled button. 
-   Use this HTML: <div style="margin: 24px 0; text-align: center;"><a href="URL" style="background-color: #C9982A; color: #0a0f1e; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; display: inline-block;">BUTTON TEXT</a></div>
-3. **Minimal HTML**: Do NOT include <style>, <head>, or <html> tags. Write only the inner content for a container.
-4. **Branding**: Maintain a warm, community-driven tone. No headers (handled by wrapper).
+1. **NO Hallucinations**: Do NOT invent details or use placeholder URLs (like via.placeholder.com). If a cover image URL is provided in the prompt, use it EXACTLY at the top: <img src="EXACT_IMAGE_URL" alt="Cover" style="width:100%; border-radius:12px; margin-bottom:24px;" />
+2. **RSVP / REGISTRATION BUTTON (MANDATORY WHEN RSVP LINK EXISTS)**: If an RSVP link, ticket URL, or registration link is provided in the prompt (e.g. Google Form, website link), you MUST include a large, prominent call-to-action button pointing to that exact RSVP link.
+   Use this EXACT HTML structure for the RSVP button:
+   <div style="margin: 32px 0; text-align: center;">
+     <a href="EXACT_RSVP_URL" style="background-color: #C9982A; color: #0a0f1e; padding: 16px 32px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 15px; display: inline-block; letter-spacing: 1px; text-transform: uppercase;">RSVP Now / Register Here →</a>
+   </div>
+3. **Other Buttons**: Any other primary link (like "View Event Details" or "Read More") MUST also be formatted as a styled button using the above gold button HTML.
+4. **NO Raw Links**: Never print plain text URLs in the email body.
+5. **Minimal HTML**: Do NOT include <style>, <head>, or <html> tags. Write only the inner content for a container with semantic HTML (<p>, <h3>, <ul>, etc.).
+6. **Branding**: Maintain an exciting, warm, community-driven tone.
 
 Return ONLY a JSON object with "subject" and "body".`;
 
@@ -32,8 +37,8 @@ Return ONLY a JSON object with "subject" and "body".`;
         const GROQ_MODELS = [
             'openai/gpt-oss-120b',
             'qwen/qwen3.8-27b',
+            'groq/compound-mini',
             'openai/gpt-oss-20b',
-            'qwen/qwen3.6-27b',
         ];
 
         let data: any = null;

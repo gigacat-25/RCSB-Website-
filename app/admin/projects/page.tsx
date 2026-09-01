@@ -306,9 +306,16 @@ export default function AdminProjectsPage() {
                               <PencilIcon className="w-5 h-5" />
                             </Link>
                             <Link
-                              href={`/admin/newsletter?autoDraftPrompt=${encodeURIComponent(`Write a newsletter email about our project titled "${item.title}". Category: ${item.category}. Description: ${item.description || ''}. Cover image: ${item.image_url || ''}.`)}`}
+                              href={`/admin/newsletter?autoDraftPrompt=${encodeURIComponent(`Write an exciting newsletter email about our ${item.type === 'event' ? 'event' : item.type === 'award' ? 'award' : 'project'} titled "${item.title}".
+Type: ${item.type || 'project'}.
+Category: ${item.category || ''}.
+Description: ${item.description || ''}.
+Cover image: ${item.image_url || ''}.
+${item.event_date ? `Event Date: ${item.event_date}.` : ''}
+${item.rsvp_link ? `RSVP / Registration Link: ${item.rsvp_link}.` : ''}
+Link to view details on website: https://rotaractswarnabengaluru.in/${item.type === 'event' ? 'events' : item.type === 'blog' ? 'blogs' : item.type === 'award' ? 'awards' : 'projects'}/${item.slug}`)}`}
                               className="p-2 text-brand-gold hover:bg-yellow-50 rounded-lg transition-colors flex items-center justify-center"
-                              title="Draft Newsletter for this Project"
+                              title="Draft Newsletter for this Entry"
                             >
                               <NewspaperIcon className="w-5 h-5" />
                             </Link>

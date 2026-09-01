@@ -1,8 +1,8 @@
 const GROQ_MODELS = [
     'openai/gpt-oss-120b',
     'qwen/qwen3.8-27b',
+    'groq/compound-mini',
     'openai/gpt-oss-20b',
-    'qwen/qwen3.6-27b',
 ];
 
 async function callGroq(systemPrompt: string, prompt: string, apiKey: string) {
@@ -121,8 +121,8 @@ async function generateEventNewsletter(project: {
     const imageTag = absImageUrl ? `<img src="${absImageUrl}" alt="${title}" style="width:100%; border-radius:12px; margin-bottom:24px; border: 1px solid rgba(255,215,0,0.1);" />` : "";
     
     let rsvpContext = "";
-    if (rsvp_link && !isRecap) {
-        rsvpContext = `\nThere is an RSVP link for this event: ${rsvp_link}. Create a large, prominent RSVP button that points to this exact link with the text "RSVP Now" or "Get Your Tickets".`;
+    if (rsvp_link) {
+        rsvpContext = `\nCRITICAL: There is an active RSVP / Registration link for this event: ${rsvp_link}. You MUST create a large, prominent RSVP button that points to this exact link with the text "RSVP Now / Register Here →".`;
     }
 
     const prompt = `You are a professional communications officer for the Rotaract Club of Swarna Bengaluru (RCSB). 

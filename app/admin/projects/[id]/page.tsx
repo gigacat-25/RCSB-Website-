@@ -138,7 +138,14 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
 
         <div className="flex gap-3">
           <Link
-            href={`/admin/newsletter?subject=${encodeURIComponent(`New Announcement: ${formData.title}`)}&body=${encodeURIComponent(`<p>Hello! We're excited to share an update on <b>${formData.title}</b>.</p><p>${formData.description}</p><p><a href='https://rotaractswarnabengaluru.in/${formData.type === 'event' ? 'events' : 'projects'}/${formData.slug}'>View on official site →</a></p>`)}`}
+            href={`/admin/newsletter?autoDraftPrompt=${encodeURIComponent(`Write an exciting newsletter email about our ${formData.type === 'event' ? 'event' : formData.type === 'award' ? 'award' : 'project'} titled "${formData.title}".
+Type: ${formData.type || 'project'}.
+Category: ${formData.category || ''}.
+Description: ${formData.description || ''}.
+Cover image: ${formData.image_url || ''}.
+${formData.event_date ? `Event Date: ${formData.event_date}.` : ''}
+${formData.rsvp_link ? `RSVP / Registration Link: ${formData.rsvp_link}.` : ''}
+Link to view details on website: https://rotaractswarnabengaluru.in/${formData.type === 'event' ? 'events' : formData.type === 'blog' ? 'blogs' : formData.type === 'award' ? 'awards' : 'projects'}/${formData.slug}`)}`}
             className="flex items-center gap-2 px-6 py-2 bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 font-bold rounded-full transition-colors border border-brand-gold/20"
           >
             <NewspaperIcon className="w-5 h-5" />

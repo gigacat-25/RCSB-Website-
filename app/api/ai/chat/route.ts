@@ -29,8 +29,8 @@ const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODELS = [
   "openai/gpt-oss-120b",
   "qwen/qwen3.8-27b",
+  "groq/compound-mini",
   "openai/gpt-oss-20b",
-  "qwen/qwen3.6-27b",
 ];
 
 const MAX_HISTORY_MESSAGES = 8; // Keep last 8 turns for context
@@ -229,7 +229,7 @@ export async function POST(req: NextRequest) {
           model,
           messages: groqMessages,
           stream: true,
-          temperature: 0.3, // Lower = more factual, less creative
+          temperature: 0.1, // Lower = more factual, eliminates hallucinations
           max_tokens: 1024,
           top_p: 0.9,
         }),

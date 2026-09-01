@@ -39,8 +39,8 @@ Please generate the reply.`;
         const GROQ_MODELS = [
             'openai/gpt-oss-120b',
             'qwen/qwen3.8-27b',
+            'groq/compound-mini',
             'openai/gpt-oss-20b',
-            'qwen/qwen3.6-27b',
         ];
 
         let data: any = null;
